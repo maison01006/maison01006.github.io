@@ -1,4 +1,8 @@
-
+---
+title: "Elasticsearch"
+date: 2021-07-08
+categories: Elasticsearch
+---
 
 # Elasticsearch
 
@@ -12,8 +16,6 @@ wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.13.2-a
 wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.13.2-arm64.deb
 ```
 
-
-
 ### 데몬 실행
 
 ```bash
@@ -21,15 +23,11 @@ $ sudo systemctl start elasticsearch.service
 $ sudo systemctl status elasticsearch.service
 ```
 
-
-
 ### 설정
 
 ```bash
 $ sudo vi /etc/elasticsearch/elasticsearch.yml
 ```
-
-
 
 ### 명령어
 
@@ -82,4 +80,3 @@ curl -XGET localhost:9200/_search?pretty --data-binary @json파일
 ```
 
 관련 자료 https://victorydntmd.tistory.com/311
-
