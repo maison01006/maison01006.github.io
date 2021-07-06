@@ -55,7 +55,7 @@ curl -XPOST -H "Content-Type: application/json" localhost:9200 -d '{"title":"Alg
 curl -XPOST localhost:9200/classes/class/1/ -d @json파일
 ```
 
-많은 양의 도큐먼트를 삽입
+많은 양의 도큐먼트를 삽입 (여러 테이블의 데이터 삽입)
 
 ```bash
 curl -XPOST localhost:9200/_bulk --data-binary @json파일
@@ -79,4 +79,3 @@ curl -XGET localhost:9200/classes/class/_search?q=points:30
 curl -XGET localhost:9200/_search?pretty --data-binary @json파일
 ```
 
-관련 자료 https://victorydntmd.tistory.com/311
