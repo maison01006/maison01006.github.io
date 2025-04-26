@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>보상 앱 - 사용한 보상</title>
+    <link rel="stylesheet" href="../css/global_style.css" />
+    <link rel="stylesheet" href="../css/reward-box.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1>사용한 보상</h1>
+    </header>
+    <main>
+      <section class="reward-tabs">
+        <a href="rewardBox.html" class="tab">획득한 보상</a>
+        <a href="rewardUsed.html" class="tab active">사용한 보상</a>
+      </section>
+
+      <ul id="historyList"></ul>
+    </main>
+
+    <!-- 네비게이션 바 -->
+    <nav class="nav-bar">
+      <a href="index.html" class="nav-item">
+        <img src="../assets/icons/home.svg" alt="할일" width="24" height="24" />
+        <span>할일</span>
+      </a>
+      <a href="rewardBox.html" class="nav-item active">
+        <img
+          src="../assets/icons/gift.svg"
+          alt="보상함"
+          width="24"
+          height="24"
+        />
+        <span>보상함</span>
+      </a>
+      <a href="settings.html" class="nav-item">
+        <img
+          src="../assets/icons/settings.svg"
+          alt="설정"
+          width="24"
+          height="24"
+        />
+        <span>설정</span>
+      </a>
+    </nav>
+
+    <script type="module">
+      import storage from "../js/storage.js";
+      document.addEventListener("DOMContentLoaded", async () => {
+        const historyList = document.getElementById("historyList");
+
+        // 사용 내역 로드
+        async function loadHistory() {
+          try {
+            // 획득한 보상 중 사용한 보상만 가져오기
+            const earnedRewards = await storage.getEarnedRewards();
+            console.log("획득한 보상:", earnedRewards);
+
+            const usedRewards = earnedRewards.filter((reward) => reward.used);
+            console.log("사용한 보상:", usedRewards);
+
+            historyList.innerHTML = "";
+
+            if (usedRewards.length === 0) {
+              historyList.innerHTML =
+                '<li class="empty-message">사용한 보상이 없습니다.</li>';
+              return;
+            }
+
+            // 최근 순으로 정렬
+            const sortedRewards = usedRewards.sort(
+              (a, b) => new Date(b.date) - new Date(a.date)
+            );
+
+            sortedRewards.forEach((reward) => {
+              const li = document.createElement("li");
+              li.className = "reward-item";
+              li.innerHTML = `
+                <div class="reward-info">
+                  <span class="reward-name">${reward.rewardName}</span>
+                  <span class="reward-date">${formatDate(reward.date)}</span>
+                </div>
+              `;
+              historyList.appendChild(li);
+            });
+          } catch (error) {
+            console.error("보상 내역 로드 중 오류 발생:", error);
+            historyList.innerHTML =
+              '<li class="empty-message">보상 내역을 불러오는 중 오류가 발생했습니다.</li>';
+          }
+        }
+
+        // 날짜 포맷팅
+        function formatDate(dateStr) {
+          const date = new Date(dateStr);
+          return date.toLocaleDateString("ko-KR", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+        }
+
+        // 초기 로드
+        await loadHistory();
+      });
+    </script>
+  </body>
+</html>

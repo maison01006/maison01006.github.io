@@ -1,0 +1,496 @@
+/* 메인 컨텐츠 배경색 설정 */
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0 16px;
+}
+
+.header-actions h1 {
+  margin: 0;
+  text-align: left;
+}
+
+.header-actions > button {
+  border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  background-color: var(--background-color);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+/* 할일 목록 스타일 */
+.todo-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.todo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.todo-input {
+  display: flex;
+  margin-bottom: 40px;
+  > input {
+    margin-bottom: 0;
+  }
+  > button {
+    width: 100px;
+    padding: 0;
+  }
+}
+
+.todo-input input {
+  flex-grow: 1;
+  margin-right: var(--spacing-sm);
+}
+
+/* Todo 아이템 스타일 */
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  gap: 10px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0px 16px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  transition: background-color 0.2s;
+}
+
+.todo-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid var(--border-color);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.todo-checkbox.checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.todo-checkbox.checked::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.todo-content {
+  flex: 1;
+  font-size: 16px;
+  color: var(--color-text);
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.todo-content.checked {
+  text-decoration: line-through;
+  color: var(--color-text-secondary);
+}
+
+.todo-content.editing {
+  background-color: var(--color-background);
+  border: 1px solid var(--border-color);
+  outline: none;
+}
+
+.todo-content.editing:focus {
+  border-color: var(--primary-color);
+  background-color: white;
+}
+
+.kebab-menu {
+  position: relative;
+  padding: 8px 0px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.kebab-menu:hover {
+  opacity: 1;
+}
+
+.kebab-menu-content {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  min-width: 120px;
+  z-index: 100;
+  display: none;
+}
+
+.kebab-menu.active .kebab-menu-content {
+  display: block;
+}
+
+.kebab-menu-item {
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kebab-menu-item:hover {
+  background-color: var(--color-background-hover);
+}
+
+.kebab-menu-item.delete {
+  color: var(--error-color);
+}
+
+/* 모달 스타일 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  display: none;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-content {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.modal-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.modal-close:hover {
+  opacity: 1;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-form input {
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.modal-form input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.modal-actions .cancel {
+  background-color: var(--color-background);
+  border: 1px solid var(--border-color);
+  color: var(--color-text);
+}
+
+.modal-actions .confirm {
+  background-color: var(--primary-color);
+  border: none;
+  color: white;
+}
+
+.modal-actions .confirm:hover {
+  background-color: var(--primary-hover);
+}
+
+/* 보상함 스타일 */
+.reward-box {
+  text-align: center;
+}
+.reward-history-title {
+  margin-bottom: var(--spacing-lg);
+}
+.reward-box h3 {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.reward-date {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+/* 상태 뱃지 */
+.status-badge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--secondary-color);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  width: 70px;
+}
+
+.status-badge.success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.status-badge.progress {
+  /* background-color: var(--primary-color); */
+  /* color: white; */
+}
+
+/* 리워드 히스토리 */
+.reward-history {
+  margin-top: var(--spacing-lg);
+}
+
+.reward-history h3 {
+  margin-bottom: var(--spacing-md);
+}
+
+.reward-history .list-item {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.reward-history .list-item:last-child {
+  border-bottom: none;
+}
+
+.reward-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.reward-title {
+  font-weight: bold;
+}
+
+/* 빈 메시지 */
+.empty-message {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: var(--spacing-lg);
+  font-style: italic;
+}
+
+/* 통계 섹션 스타일 */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+}
+
+.stat-item {
+  text-align: center;
+  padding: var(--spacing-md);
+  background-color: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  transition: transform var(--transition-fast);
+}
+
+.stat-title {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.stat-value {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-color);
+}
+
+/* 완료 현황 사각형 스타일 */
+.weekly-completion {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-top: var(--spacing-sm);
+}
+
+.completion-box {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background-color: var(--border-color);
+  transition: background-color var(--transition-fast);
+}
+
+.completion-box.completed {
+  background-color: var(--primary-color);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .stats-container {
+    /* grid-template-columns: 1fr; */
+    gap: var(--spacing-sm);
+  }
+
+  .stat-item {
+    padding: var(--spacing-sm);
+  }
+
+  .completion-box {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+#rewardHistoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* PWA 설치 프롬프트 스타일 */
+.install-prompt {
+  position: fixed;
+  bottom: 80px;
+  left: 0;
+  right: 0;
+  background-color: white;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 0 16px;
+}
+
+.install-prompt-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.install-prompt-icon {
+  margin-right: 16px;
+}
+
+.install-prompt-text {
+  flex: 1;
+}
+
+.install-prompt-text h3 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.install-prompt-text p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.install-prompt-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.button-primary {
+  background-color: #4a6cf7;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.button-secondary {
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+}

@@ -1,0 +1,20 @@
+{
+  "name": "자주",
+  "short_name": "자주",
+  "description": "할 일을 완료하고 보상을 받는 앱",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4a6cf7",
+  "icons": [
+    {
+      "src": "/assets/icons/icon128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "orientation": "portrait",
+  "scope": "/",
+  "prefer_related_applications": false
+}

@@ -1,0 +1,67 @@
+.reward-tabs {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: 0;
+  overflow: hidden;
+  margin: 0px;
+}
+
+.reward-tabs a {
+  text-decoration: none;
+  color: var(--text-color);
+  padding: var(--spacing-sm);
+  transition: background-color 0.2s;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.reward-tabs a.active {
+  color: var(--primary-color);
+  background-color: #f1daff;
+}
+
+/* 보상 항목 스타일 */
+#rewardList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.reward-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s;
+}
+
+.reward-item:last-child {
+  border-bottom: none;
+}
+
+.reward-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.reward-name {
+  font-weight: bold;
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-xs);
+}
+
+.reward-date {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+/* 빈 메시지 스타일 */
+.empty-message {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: var(--spacing-xl);
+  font-style: italic;
+}

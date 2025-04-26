@@ -1,0 +1,128 @@
+/* 보상 결과 페이지 스타일 */
+.result-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: calc(100vh - var(--header-height));
+  padding: var(--spacing-4);
+  text-align: center;
+  position: relative;
+}
+
+.success-content,
+.failure-content {
+  padding-top: 100px;
+}
+
+.reward-animation {
+  font-size: 5rem;
+  margin-bottom: var(--spacing-4);
+  animation: bounce 1s ease infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.result-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-3);
+  color: var(--text-primary);
+}
+
+.result-description {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-6);
+  color: var(--text-secondary);
+}
+
+.failure-message {
+  font-size: var(--font-size-xxl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-2);
+  color: var(--error-color);
+}
+
+.failure-description {
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-6);
+  color: var(--text-secondary);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 500px;
+  padding: 0 var(--spacing-4);
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.action-buttons button {
+  flex: 1;
+  height: 52px;
+  border-radius: 12px;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  /* transition: all 0.2s ease; */
+}
+
+.button-primary {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  border: none;
+}
+
+.button-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.button-secondary {
+  background-color: var(--primary-color-light);
+  color: var(--primary-color);
+  border: 0px;
+}
+
+.button-secondary:hover {
+  background-color: var(--border-color);
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+  .result-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .result-description,
+  .failure-description {
+    font-size: var(--font-size-md);
+  }
+
+  .action-buttons {
+    padding: 0 var(--spacing-4);
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 20px;
+  }
+}
+
+.reward-result-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}

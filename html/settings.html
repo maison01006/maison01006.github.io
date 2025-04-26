@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>보상 앱 - 설정</title>
+    <link rel="stylesheet" href="../css/reward-settings.css" />
+    <link rel="stylesheet" href="../css/global_style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1>받고싶은 보상 등록</h1>
+    </header>
+    <main>
+      <section class="reward-setting-section">
+        <div class="reward-input">
+          <input type="text" id="rewardName" placeholder="보상 이름" />
+          <input
+            type="number"
+            id="rewardProbability"
+            placeholder="확률 (%)"
+            min="0"
+            max="100"
+          />
+          <button id="addReward" class="button-primary">추가</button>
+        </div>
+      </section>
+      <section>
+        <div class="reward-list">
+          <h2>보상 목록</h2>
+          <div class="total-probability">
+            총 확률: <span id="totalProbability">0</span>%
+          </div>
+          <div class="reward-grid" id="rewardList"></div>
+        </div>
+      </section>
+      <div class="reward-actions">
+        <button id="saveRewards" class="button-primary" disabled>저장</button>
+      </div>
+    </main>
+
+    <nav class="nav-bar">
+      <a href="index.html" class="nav-item">
+        <img src="../assets/icons/home.svg" alt="할일" width="24" height="24" />
+        <span>할일</span>
+      </a>
+      <a href="rewardBox.html" class="nav-item">
+        <img
+          src="../assets/icons/gift.svg"
+          alt="보상함"
+          width="24"
+          height="24"
+        />
+        <span>보상함</span>
+      </a>
+      <a href="settings.html" class="nav-item active">
+        <img
+          src="../assets/icons/settings.svg"
+          alt="설정"
+          width="24"
+          height="24"
+        />
+        <span>설정</span>
+      </a>
+    </nav>
+
+    <script type="module">
+      import storage from "../js/storage.js";
+      document.addEventListener("DOMContentLoaded", async () => {
+        const rewardName = document.getElementById("rewardName");
+        const rewardProbability = document.getElementById("rewardProbability");
+        const addRewardBtn = document.getElementById("addReward");
+        const rewardList = document.getElementById("rewardList");
+        const totalProbability = document.getElementById("totalProbability");
+        const saveRewardsBtn = document.getElementById("saveRewards");
+
+        let rewards = [];
+        let totalProb = 0;
+
+        // 보상 목록 로드
+        async function loadRewards() {
+          rewards = await storage.getRewards();
+          console.log("로드된 보상 목록:", rewards);
+
+          // "꽝" 보상이 없으면 추가
+          const hasFail = rewards.some((r) => r.name === "꽝");
+          if (!hasFail) {
+            console.log("꽝 보상 추가");
+            rewards.push({ name: "꽝", probability: 10 });
+          }
+
+          // 보상 목록이 비어있으면 기본 보상 추가
+          if (rewards.length === 0) {
+            console.log("보상 목록이 비어있어 기본 보상 추가");
+            rewards.push({ name: "꽝", probability: 10 });
+            rewards.push({ name: "기본 보상", probability: 90 });
+          }
+
+          console.log("업데이트된 보상 목록:", rewards);
+          updateRewardList();
+          updateTotalProbability();
+        }
+
+        // 보상 목록 업데이트
+        function updateRewardList() {
+          console.log("보상 목록 업데이트 시작:", rewards);
+          rewardList.innerHTML = "";
+
+          if (rewards.length === 0) {
+            console.log("보상 목록이 비어있음");
+            // 보상 목록이 비어있으면 기본 보상 추가
+            rewards.push({ name: "꽝", probability: 10 });
+            rewards.push({ name: "기본 보상", probability: 90 });
+          }
+
+          rewards.forEach((reward, index) => {
+            const card = document.createElement("div");
+            card.className = "reward-card";
+            card.innerHTML = `
+              <div class="reward-card-content">
+                <div class="reward-card-icon">
+                  <img src="../assets/icons/gift.svg" alt="보상" />
+                </div>
+                <div class="reward-card-text">
+                  <h3>${reward.name}</h3>
+                  <p class="probability">${reward.probability}%</p>
+                </div>
+              </div>
+              ${
+                reward.name === "꽝"
+                  ? ""
+                  : `
+                <div class="kebab-menu" data-index="${index}">
+                  <img src="../assets/icons/more.svg" alt="더보기" />
+                  <div class="kebab-menu-content">
+                    <div class="kebab-menu-item edit">
+                      <img src="../assets/icons/edit.svg" alt="수정" width="16" height="16" />
+                      수정
+                    </div>
+                    <div class="kebab-menu-item delete">
+                      <img src="../assets/icons/delete.svg" alt="삭제" width="16" height="16" />
+                      삭제
+                    </div>
+                  </div>
+                </div>
+              `
+              }
+            `;
+            rewardList.appendChild(card);
+          });
+
+          // 모달 HTML 추가
+          const modalHTML = `
+            <div class="modal-overlay" id="editModal">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h2>보상 수정</h2>
+                  <button class="modal-close">
+                    <img src="../assets/icons/close.svg" alt="닫기" width="24" height="24" />
+                  </button>
+                </div>
+                <div class="modal-form">
+                  <input type="text" id="editRewardName" placeholder="보상 이름" />
+                  <input type="number" id="editRewardProbability" placeholder="확률 (%)" min="0" max="100" />
+                </div>
+                <div class="modal-actions">
+                  <button class="cancel">취소</button>
+                  <button class="confirm">수정</button>
+                </div>
+              </div>
+            </div>
+          `;
+
+          document.body.insertAdjacentHTML("beforeend", modalHTML);
+
+          // 케밥 메뉴 이벤트 리스너
+          document.addEventListener("click", (e) => {
+            const kebabMenu = e.target.closest(".kebab-menu");
+            if (kebabMenu) {
+              const allMenus = document.querySelectorAll(".kebab-menu");
+              allMenus.forEach((menu) => {
+                if (menu !== kebabMenu) menu.classList.remove("active");
+              });
+              kebabMenu.classList.toggle("active");
+            } else {
+              document
+                .querySelectorAll(".kebab-menu")
+                .forEach((menu) => menu.classList.remove("active"));
+            }
+          });
+
+          // 수정 및 삭제 이벤트 리스너
+          document.addEventListener("click", async (e) => {
+            const menuItem = e.target.closest(".kebab-menu-item");
+            if (!menuItem) return;
+
+            const kebabMenu = menuItem.closest(".kebab-menu");
+            const index = parseInt(kebabMenu.dataset.index);
+            const reward = rewards[index];
+
+            if (menuItem.classList.contains("edit")) {
+              const modal = document.getElementById("editModal");
+              const nameInput = document.getElementById("editRewardName");
+              const probabilityInput = document.getElementById(
+                "editRewardProbability"
+              );
+
+              nameInput.value = reward.name;
+              probabilityInput.value = reward.probability;
+              modal.classList.add("active");
+
+              const confirmBtn = modal.querySelector(".confirm");
+              const cancelBtn = modal.querySelector(".cancel");
+              const closeBtn = modal.querySelector(".modal-close");
+
+              const closeModal = () => {
+                modal.classList.remove("active");
+                confirmBtn.removeEventListener("click", handleConfirm);
+                cancelBtn.removeEventListener("click", closeModal);
+                closeBtn.removeEventListener("click", closeModal);
+              };
+
+              const handleConfirm = async () => {
+                const newName = nameInput.value.trim();
+                const newProbability = parseInt(probabilityInput.value);
+
+                if (!newName || isNaN(newProbability) || newProbability <= 0) {
+                  alert("올바른 보상 이름과 확률을 입력해주세요.");
+                  return;
+                }
+
+                const totalProbWithoutCurrent = rewards.reduce(
+                  (sum, r, i) => (i === index ? sum : sum + r.probability),
+                  0
+                );
+
+                if (totalProbWithoutCurrent + newProbability > 100) {
+                  alert("총 확률이 100%를 초과할 수 없습니다.");
+                  return;
+                }
+
+                rewards[index] = {
+                  ...reward,
+                  name: newName,
+                  probability: newProbability,
+                };
+                updateRewardList();
+                updateTotalProbability();
+                closeModal();
+              };
+
+              confirmBtn.addEventListener("click", handleConfirm);
+              cancelBtn.addEventListener("click", closeModal);
+              closeBtn.addEventListener("click", closeModal);
+            }
+
+            if (menuItem.classList.contains("delete")) {
+              if (confirm("정말로 이 보상을 삭제하시겠습니까?")) {
+                rewards.splice(index, 1);
+                updateRewardList();
+                updateTotalProbability();
+              }
+            }
+          });
+        }
+
+        // 총 확률 업데이트
+        function updateTotalProbability() {
+          totalProb = rewards.reduce(
+            (sum, reward) => sum + reward.probability,
+            0
+          );
+          totalProbability.textContent = totalProb;
+          saveRewardsBtn.disabled = totalProb !== 100;
+        }
+
+        // 보상 추가
+        addRewardBtn.addEventListener("click", () => {
+          const name = rewardName.value.trim();
+          const probability = parseInt(rewardProbability.value);
+
+          if (!name || isNaN(probability) || probability <= 0) {
+            alert("올바른 보상 이름과 확률을 입력해주세요.");
+            return;
+          }
+
+          if (totalProb + probability > 100) {
+            alert("총 확률이 100%를 초과할 수 없습니다.");
+            return;
+          }
+
+          rewards.push({ name, probability });
+          rewardName.value = "";
+          rewardProbability.value = "";
+          updateRewardList();
+          updateTotalProbability();
+        });
+
+        // 보상 저장
+        saveRewardsBtn.addEventListener("click", async () => {
+          if (totalProb !== 100) {
+            alert("총 확률이 100%가 되어야 합니다.");
+            return;
+          }
+
+          // 꽝 항목이 있는지 확인
+          const hasFail = rewards.some((r) => r.name === "꽝");
+          if (!hasFail) {
+            alert("꽝 항목을 추가해주세요.");
+            return;
+          }
+
+          // 기존 보상 삭제 후 새로운 보상 저장
+          const oldRewards = await storage.getRewards();
+          for (const reward of oldRewards) {
+            await storage.delete("rewards", reward.id);
+          }
+
+          for (const reward of rewards) {
+            await storage.addReward(reward);
+          }
+
+          alert("보상이 저장되었습니다.");
+        });
+
+        // 초기 로드
+        await loadRewards();
+      });
+    </script>
+  </body>
+</html>
