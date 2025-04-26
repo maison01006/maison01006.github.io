@@ -492,7 +492,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
     navigator.serviceWorker
-      .register("/js/service-worker.js")
+      .register("/service-worker.js")
       .then(function (registration) {
         console.log("ServiceWorker 등록 성공:", registration.scope);
       })

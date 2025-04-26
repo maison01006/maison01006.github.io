@@ -1,6 +1,6 @@
 {
   "name": "자주",
-  "short_name": "자주",
+  "short_name": "자주APP",
   "description": "할 일을 완료하고 보상을 받는 앱",
   "start_url": "/",
   "display": "standalone",
@@ -16,5 +16,7 @@
   ],
   "orientation": "portrait",
   "scope": "/",
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "id": "JAJU",
+  "categories": ["education"]
 }
