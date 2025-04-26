@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>보상 앱 - 설정</title>
-    <link rel="stylesheet" href="../css/reward-settings.css" />
-    <link rel="stylesheet" href="../css/global_style.css" />
+    <link rel="stylesheet" href="css/reward-settings.css" />
+    <link rel="stylesheet" href="css/global_style.css" />
   </head>
   <body>
     <header class="header">
@@ -41,21 +41,16 @@
 
     <nav class="nav-bar">
       <a href="index.html" class="nav-item">
-        <img src="../assets/icons/home.svg" alt="할일" width="24" height="24" />
+        <img src="assets/icons/home.svg" alt="할일" width="24" height="24" />
         <span>할일</span>
       </a>
       <a href="rewardBox.html" class="nav-item">
-        <img
-          src="../assets/icons/gift.svg"
-          alt="보상함"
-          width="24"
-          height="24"
-        />
+        <img src="assets/icons/gift.svg" alt="보상함" width="24" height="24" />
         <span>보상함</span>
       </a>
       <a href="settings.html" class="nav-item active">
         <img
-          src="../assets/icons/settings.svg"
+          src="assets/icons/settings.svg"
           alt="설정"
           width="24"
           height="24"
@@ -65,7 +60,7 @@
     </nav>
 
     <script type="module">
-      import storage from "../js/storage.js";
+      import storage from "js/storage.js";
       document.addEventListener("DOMContentLoaded", async () => {
         const rewardName = document.getElementById("rewardName");
         const rewardProbability = document.getElementById("rewardProbability");
@@ -119,7 +114,7 @@
             card.innerHTML = `
               <div class="reward-card-content">
                 <div class="reward-card-icon">
-                  <img src="../assets/icons/gift.svg" alt="보상" />
+                  <img src="assets/icons/gift.svg" alt="보상" />
                 </div>
                 <div class="reward-card-text">
                   <h3>${reward.name}</h3>
@@ -131,14 +126,14 @@
                   ? ""
                   : `
                 <div class="kebab-menu" data-index="${index}">
-                  <img src="../assets/icons/more.svg" alt="더보기" />
+                  <img src="assets/icons/more.svg" alt="더보기" />
                   <div class="kebab-menu-content">
                     <div class="kebab-menu-item edit">
-                      <img src="../assets/icons/edit.svg" alt="수정" width="16" height="16" />
+                      <img src="assets/icons/edit.svg" alt="수정" width="16" height="16" />
                       수정
                     </div>
                     <div class="kebab-menu-item delete">
-                      <img src="../assets/icons/delete.svg" alt="삭제" width="16" height="16" />
+                      <img src="assets/icons/delete.svg" alt="삭제" width="16" height="16" />
                       삭제
                     </div>
                   </div>
@@ -156,7 +151,7 @@
                 <div class="modal-header">
                   <h2>보상 수정</h2>
                   <button class="modal-close">
-                    <img src="../assets/icons/close.svg" alt="닫기" width="24" height="24" />
+                    <img src="assets/icons/close.svg" alt="닫기" width="24" height="24" />
                   </button>
                 </div>
                 <div class="modal-form">

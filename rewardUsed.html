@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>보상 앱 - 사용한 보상</title>
-    <link rel="stylesheet" href="../css/global_style.css" />
-    <link rel="stylesheet" href="../css/reward-box.css" />
+    <link rel="stylesheet" href="css/global_style.css" />
+    <link rel="stylesheet" href="css/reward-box.css" />
   </head>
   <body>
     <header class="header">
@@ -23,21 +23,16 @@
     <!-- 네비게이션 바 -->
     <nav class="nav-bar">
       <a href="index.html" class="nav-item">
-        <img src="../assets/icons/home.svg" alt="할일" width="24" height="24" />
+        <img src="assets/icons/home.svg" alt="할일" width="24" height="24" />
         <span>할일</span>
       </a>
       <a href="rewardBox.html" class="nav-item active">
-        <img
-          src="../assets/icons/gift.svg"
-          alt="보상함"
-          width="24"
-          height="24"
-        />
+        <img src="assets/icons/gift.svg" alt="보상함" width="24" height="24" />
         <span>보상함</span>
       </a>
       <a href="settings.html" class="nav-item">
         <img
-          src="../assets/icons/settings.svg"
+          src="assets/icons/settings.svg"
           alt="설정"
           width="24"
           height="24"
@@ -47,7 +42,7 @@
     </nav>
 
     <script type="module">
-      import storage from "../js/storage.js";
+      import storage from "js/storage.js";
       document.addEventListener("DOMContentLoaded", async () => {
         const historyList = document.getElementById("historyList");
 
