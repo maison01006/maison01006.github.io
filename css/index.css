@@ -1,93 +1,478 @@
-/* 메인 컨텐츠 배경색 설정 */
-.header-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 0 16px;
+:root {
+  --primary-color: #4a90e2;
+  --primary-color-dark: #357abd;
+  --success-color: #2ecc71;
+  --secondary-color: #f5a623;
+  --background-color: #f8f9fa;
+  --card-background: #ffffff;
+  --text-color: #333333;
+  --border-color: #e0e0e0;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-6: 1.5rem;
 }
 
-.header-actions h1 {
+* {
   margin: 0;
-  text-align: left;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.header-actions > button {
-  border: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  transition: background-color 0.2s;
-  background-color: var(--background-color);
+body {
+  font-family: "Arial", sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--spacing-4);
+  background-color: #f5f5f5;
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-md);
+.container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* 할일 목록 스타일 */
-.todo-section {
-  margin-bottom: var(--spacing-lg);
-}
-
-.todo-header {
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 20px;
+}
+
+.progress {
+  font-size: 1.2em;
+  color: #666;
+}
+
+.coin-display {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1.2em;
+  color: #f1c40f;
+}
+
+.todo-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .todo-input {
-  display: flex;
-  margin-bottom: 40px;
-  > input {
-    margin-bottom: 0;
-  }
-  > button {
-    width: 100px;
-    padding: 0;
-  }
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1em;
 }
 
-.todo-input input {
-  flex-grow: 1;
-  margin-right: var(--spacing-sm);
+.add-button {
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-/* Todo 아이템 스타일 */
+.add-button:hover {
+  background-color: #2980b9;
+}
+
 .todo-list {
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  margin: 0;
   list-style: none;
-  gap: 10px;
 }
 
 .todo-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0px 16px;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  transition: background-color 0.2s;
+  padding: var(--spacing-3);
+  border-bottom: 1px solid var(--gray-200);
+  animation: slideIn 0.3s ease-out;
+}
+
+.todo-item.completed {
+  animation: complete 0.5s ease-out;
+  background-color: var(--gray-100);
 }
 
 .todo-checkbox {
+  margin-right: var(--spacing-3);
   width: 20px;
   height: 20px;
-  border-radius: 6px;
-  border: 2px solid var(--border-color);
+  cursor: pointer;
+}
+
+.todo-text {
+  flex: 1;
+  color: var(--gray-800);
+}
+
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: var(--gray-500);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes complete {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+    background-color: var(--primary-100);
+  }
+  100% {
+    transform: scale(1);
+    background-color: var(--gray-100);
+  }
+}
+
+.coin-animation {
+  position: fixed;
+  font-size: 24px;
+  color: var(--primary-500);
+  pointer-events: none;
+  animation: coinFloat 1s ease-out forwards;
+}
+
+@keyframes coinFloat {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* 축하 모달 스타일 */
+.congrats-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  z-index: 10000;
+  animation: modalPop 0.5s ease-out;
+}
+
+.congrats-modal h2 {
+  color: var(--primary-500);
+  margin-bottom: 1rem;
+}
+
+.congrats-modal p {
+  color: var(--gray-700);
+  margin-bottom: 1.5rem;
+}
+
+.congrats-modal button {
+  background: var(--primary-500);
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.congrats-modal button:hover {
+  background: var(--primary-600);
+}
+
+@keyframes modalPop {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* 모달 배경 오버레이 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 대시보드 레이아웃 */
+.dashboard {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-4);
+}
+
+/* TodaySummary */
+.today-summary {
+  margin-bottom: var(--spacing-6);
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  color: white;
+}
+
+.summary-content {
+  padding: var(--spacing-6);
+}
+
+.summary-text {
+  margin-bottom: var(--spacing-4);
+}
+
+.summary-text h2 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: var(--spacing-2);
+}
+
+.coin-count {
+  font-size: 2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.coin-icon {
+  font-size: 1.8rem;
+}
+
+.summary-progress {
+  background: rgba(255, 255, 255, 0.1);
+  padding: var(--spacing-4);
+  border-radius: 0.5rem;
+}
+
+/* 전체 진행률 */
+.total-progress {
+  margin-bottom: var(--spacing-4);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2);
+}
+
+.progress-title {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.progress-percentage {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: var(--spacing-2);
+}
+
+.progress-fill {
+  height: 100%;
+  background: white;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* 목표별 진행률 */
+.goal-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.goal-progress-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.goal-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.goal-progress-name {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.goal-progress-count {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.goal-progress-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.goal-progress-fill {
+  height: 100%;
+  background: white;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* GoalCardList */
+.section-title {
+  font-size: 1.5rem;
+  color: var(--gray-800);
+  margin-bottom: var(--spacing-4);
+}
+
+.goal-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-4);
+}
+
+.goal-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: var(--spacing-4);
+  transition: transform 0.3s ease;
   cursor: pointer;
   position: relative;
-  transition: all 0.2s;
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
+}
+
+.goal-card.swiping {
+  transition: none;
+}
+
+.goal-card-content {
+  position: relative;
+  z-index: 1;
+  background: white;
+  transition: transform 0.3s ease;
+}
+
+.goal-actions {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: 0 var(--spacing-4);
+  background: var(--gray-100);
+  border-radius: 0 1rem 1rem 0;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.goal-card.swiped .goal-actions {
+  transform: translateX(0);
+}
+
+.edit-goal-button,
+.delete-goal-button {
+  background: none;
+  border: none;
+  padding: var(--spacing-2);
+  cursor: pointer;
+  color: var(--gray-600);
+  transition: color 0.2s ease;
+  font-size: 1.2rem;
+}
+
+.edit-goal-button:hover {
+  color: var(--primary-500);
+}
+
+.delete-goal-button:hover {
+  color: var(--error-500);
+}
+
+.goal-title[contenteditable="true"] {
+  background: var(--gray-100);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+  outline: none;
+  border: 1px solid var(--primary-500);
+}
+
+.goal-progress {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+}
+
+.goal-todos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease;
+}
+
+.todo-item:hover {
+  background-color: var(--background-color);
+}
+
+.todo-checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--border-color);
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .todo-checkbox.checked {
@@ -95,402 +480,737 @@
   border-color: var(--primary-color);
 }
 
-.todo-checkbox.checked::after {
-  content: "";
-  position: absolute;
-  top: 2px;
-  left: 6px;
-  width: 5px;
-  height: 10px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-
-.todo-content {
+.todo-text {
   flex: 1;
-  font-size: 16px;
-  color: var(--color-text);
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  font-size: 0.9rem;
+  color: var(--text-color);
+  transition: all 0.2s ease;
 }
 
-.todo-content.checked {
+.todo-text.completed {
   text-decoration: line-through;
-  color: var(--color-text-secondary);
+  color: var(--gray-500);
 }
 
-.todo-content.editing {
-  background-color: var(--color-background);
-  border: 1px solid var(--border-color);
-  outline: none;
-}
-
-.todo-content.editing:focus {
-  border-color: var(--primary-color);
-  background-color: white;
-}
-
-.kebab-menu {
-  position: relative;
-  padding: 8px 0px;
-  cursor: pointer;
-  opacity: 0.6;
-  transition: opacity 0.2s;
-}
-
-.kebab-menu:hover {
-  opacity: 1;
-}
-
-.kebab-menu-content {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.1);
-  padding: 8px 0;
-  min-width: 120px;
-  z-index: 100;
-  display: none;
-}
-
-.kebab-menu.active .kebab-menu-content {
-  display: block;
-}
-
-.kebab-menu-item {
-  padding: 8px 16px;
-  font-size: 14px;
-  color: var(--color-text);
-  cursor: pointer;
-  transition: background-color 0.2s;
+.goal-reward {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  padding-top: var(--spacing-3);
+  border-top: 1px solid var(--gray-100);
 }
 
-.kebab-menu-item:hover {
-  background-color: var(--color-background-hover);
+.reward-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
 }
 
-.kebab-menu-item.delete {
-  color: var(--error-color);
+.reward-icon {
+  font-size: 1.2rem;
+}
+
+.reward-text {
+  font-size: 0.9rem;
+  color: var(--gray-700);
+}
+
+.reward-cost {
+  font-size: 0.9rem;
+  color: var(--primary-500);
+  font-weight: 500;
+}
+
+/* 플로팅 버튼 */
+.floating-button {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.button-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.button-text {
+  font-size: 1rem;
+}
+
+.floating-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.floating-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@media (hover: none) {
+  .floating-button:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .floating-button:active {
+    background-color: var(--primary-color-dark);
+  }
+}
+
+/* 모바일에서 플로팅 버튼 */
+@media (max-width: 640px) {
+  .floating-button {
+    width: 3.5rem;
+    height: 3.5rem;
+    padding: 0;
+    border-radius: 50%;
+    justify-content: center;
+  }
+
+  .button-text {
+    display: none;
+  }
+
+  .button-icon {
+    font-size: 1.5rem;
+  }
 }
 
 /* 모달 스타일 */
-.modal-overlay {
+.modal {
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal.show {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  display: none;
-}
-
-.modal-overlay.active {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
 }
 
 .modal-content {
-  background-color: #fff;
-  border-radius: 16px;
-  padding: 24px;
+  position: relative;
+  background-color: white;
+  padding: 2rem;
   width: 90%;
-  max-width: 400px;
+  max-width: 500px;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: modalSlideIn 0.3s ease-out;
+  margin: 0;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
 }
 
 .modal-header h2 {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 1.5rem;
+  color: var(--text-color);
   margin: 0;
 }
 
-.modal-close {
+.close-button {
   background: none;
   border: none;
+  font-size: 1.5rem;
+  color: var(--text-color);
   cursor: pointer;
-  padding: 4px;
-  opacity: 0.6;
-  transition: opacity 0.2s;
+  padding: 0.5rem;
+  line-height: 1;
 }
 
-.modal-close:hover {
-  opacity: 1;
+.form-group {
+  margin-bottom: 1.5rem;
 }
 
-.modal-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+  font-weight: 500;
 }
 
-.modal-form input {
-  padding: 12px 16px;
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.2s;
 }
 
-.modal-form input:focus {
+.form-group input:focus,
+.form-group textarea:focus {
   outline: none;
   border-color: var(--primary-color);
 }
 
-.modal-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 24px;
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
 }
 
-.modal-actions button {
+.submit-button {
   flex: 1;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+  padding: 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-.modal-actions .cancel {
-  background-color: var(--color-background);
+.submit-button:hover {
+  background-color: var(--primary-color-dark);
+}
+
+@media (max-width: 640px) {
+  .modal-content {
+    margin: 1rem;
+    padding: 1.5rem;
+    width: calc(100% - 2rem);
+  }
+
+  .step-buttons {
+    flex-direction: column;
+  }
+
+  .reward-button,
+  .submit-button {
+    width: 100%;
+  }
+}
+
+/* 할 일 추가 UI */
+.add-todo-item {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.todo-input {
+  flex: 1;
+  padding: 0.5rem;
   border: 1px solid var(--border-color);
-  color: var(--color-text);
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+  background-color: var(--background-color);
 }
 
-.modal-actions .confirm {
-  background-color: var(--primary-color);
+.todo-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.add-todo-button {
+  width: 2rem;
+  height: 2rem;
   border: none;
+  border-radius: 0.25rem;
+  background-color: var(--primary-color);
   color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
 }
 
-.modal-actions .confirm:hover {
-  background-color: var(--primary-hover);
+.add-todo-button:hover {
+  background-color: var(--primary-color-dark);
 }
 
-/* 보상함 스타일 */
-.reward-box {
+/* 단계 버튼 스타일 */
+.step-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.reward-button {
+  flex: 1;
+  padding: 1rem;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
   text-align: center;
-}
-.reward-history-title {
-  margin-bottom: var(--spacing-lg);
-}
-.reward-box h3 {
-  font-size: var(--font-size-lg);
-  margin-bottom: var(--spacing-md);
+  text-decoration: none;
+  transition: background-color 0.2s;
 }
 
-.reward-date {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
+.reward-button:hover {
+  background-color: var(--border-color);
 }
 
-/* 상태 뱃지 */
-.status-badge {
+/* 보상 컨테이너 스타일 */
+.rewards-container {
+  margin-bottom: 1.5rem;
+}
+
+.rewards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.reward-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem;
+  background-color: var(--background-color);
+  border-radius: 0.5rem;
+  position: relative;
+}
+
+.reward-inputs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reward-inputs input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.reward-inputs input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.remove-reward {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  opacity: 0.5;
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: opacity 0.2s;
+}
+
+.remove-reward:hover {
+  opacity: 1;
+}
+
+.add-reward-button {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--background-color);
+  border: 2px dashed var(--border-color);
+  border-radius: 0.5rem;
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.add-reward-button:hover {
+  background-color: var(--border-color);
+  border-color: var(--text-color);
+}
+
+.add-reward-button .button-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+/* 더보기 버튼 스타일 */
+.view-more-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  background-color: var(--secondary-color);
-  border-radius: var(--border-radius-sm);
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  width: 70px;
 }
 
-.status-badge.success {
+.view-more-button {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.view-more-button:hover {
+  background-color: var(--background-color);
+  color: var(--primary-color-dark);
+}
+
+/* 추가 할 일 목록 스타일 */
+.additional-todos {
+  margin-top: 0;
+  animation: slideDown 0.3s ease-out;
+}
+
+.additional-todos .todo-item {
+  border-top: none;
+}
+
+.additional-todos .view-more-container {
+  border-top: 1px solid var(--border-color);
+  margin-top: 0.5rem;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 모달 스타일 */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  position: relative;
+  background-color: white;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: modalSlideIn 0.3s ease-out;
+  margin: 0;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.modal-body {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.modal-body .todo-item {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-body .todo-item:last-child {
+  border-bottom: none;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* PWA 설치 유도 모달 스타일 */
+.install-pwa-modal {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 1rem 1rem 0 0;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 2000;
+  transform: translateY(100%);
+  transition: transform 0.3s ease-out;
+}
+
+.install-pwa-modal.show {
+  display: block;
+  transform: translateY(0);
+}
+
+.install-pwa-content {
+  padding: 1.5rem;
+}
+
+.install-pwa-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.install-pwa-header h3 {
+  font-size: 1.2rem;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.close-install-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+.install-pwa-body {
+  margin-bottom: 1.5rem;
+}
+
+.install-pwa-body p {
+  color: var(--text-color);
+  margin-bottom: 1rem;
+}
+
+.install-pwa-body ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.install-pwa-body li {
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.install-pwa-body li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--primary-color);
+}
+
+.install-pwa-footer {
+  display: flex;
+  gap: 1rem;
+}
+
+.install-button {
+  flex: 1;
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.install-button:hover {
+  background-color: var(--primary-color-dark);
+}
+
+.later-button {
+  flex: 1;
+  padding: 0.75rem;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.later-button:hover {
+  background-color: var(--border-color);
+}
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  padding: 0.5rem;
+  transition: transform 0.2s ease;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+}
+
+.calendar-day.other-month {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.calendar-day.other-month .day-number {
+  color: #999;
+}
+
+.day-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.day-number {
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.day-status {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.status-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+.status-todo.empty {
+  background-color: var(--gray-200);
+  color: var(--gray-400);
+  border: 1px dashed var(--gray-300);
+}
+
+.status-todo.completed {
   background-color: var(--success-color);
   color: white;
 }
 
-.status-badge.progress {
-  /* background-color: var(--primary-color); */
-  /* color: white; */
-}
-
-/* 리워드 히스토리 */
-.reward-history {
-  margin-top: var(--spacing-lg);
-}
-
-.reward-history h3 {
-  margin-bottom: var(--spacing-md);
-}
-
-.reward-history .list-item {
-  display: flex;
-  justify-content: space-between;
-  padding: var(--spacing-md);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.reward-history .list-item:last-child {
-  border-bottom: none;
-}
-
-.reward-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.reward-title {
-  font-weight: bold;
-}
-
-/* 빈 메시지 */
-.empty-message {
-  text-align: center;
-  color: var(--text-secondary);
-  padding: var(--spacing-lg);
-  font-style: italic;
-}
-
-/* 통계 섹션 스타일 */
-.stats-container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-md);
-  padding: var(--spacing-md);
-}
-
-.stat-item {
-  text-align: center;
-  padding: var(--spacing-md);
-  background-color: var(--color-background-secondary);
-  border-radius: var(--border-radius-md);
-  transition: transform var(--transition-fast);
-}
-
-.stat-title {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-md);
-}
-
-.stat-value {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--primary-color);
-}
-
-/* 완료 현황 사각형 스타일 */
-.weekly-completion {
-  display: flex;
-  gap: 4px;
-  justify-content: center;
-  margin-top: var(--spacing-sm);
-}
-
-.completion-box {
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  background-color: var(--border-color);
-  transition: background-color var(--transition-fast);
-}
-
-.completion-box.completed {
+.status-todo.incomplete {
   background-color: var(--primary-color);
+  color: white;
 }
 
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-  .stats-container {
-    /* grid-template-columns: 1fr; */
-    gap: var(--spacing-sm);
-  }
-
-  .stat-item {
-    padding: var(--spacing-sm);
-  }
-
-  .completion-box {
-    width: 20px;
-    height: 20px;
-  }
+.status-reward {
+  background-color: var(--secondary-color);
+  color: white;
+}
+.calendar-content {
+  margin-bottom: 1.5rem;
 }
 
-#rewardHistoryList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* PWA 설치 프롬프트 스타일 */
-.install-prompt {
-  position: fixed;
-  bottom: 80px;
-  left: 0;
-  right: 0;
-  background-color: white;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  padding: 16px;
-  border-radius: 8px;
-  margin: 0 16px;
-}
-
-.install-prompt-content {
+.goal-title-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.install-prompt-icon {
-  margin-right: 16px;
-}
-
-.install-prompt-text {
-  flex: 1;
-}
-
-.install-prompt-text h3 {
-  margin: 0 0 4px 0;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.install-prompt-text p {
-  margin: 0;
-  font-size: 14px;
-  color: #666;
-}
-
-.install-prompt-buttons {
-  display: flex;
   gap: 8px;
 }
 
-.button-primary {
-  background-color: #4a6cf7;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
+.goal-coin-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #f8f9fa;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #495057;
 }
 
-.button-secondary {
-  background-color: #f0f0f0;
-  color: #333;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
+.goal-coin-count .coin-icon {
+  font-size: 14px;
+}
+
+.goal-coin-count .coin-amount {
+  font-weight: 600;
 }

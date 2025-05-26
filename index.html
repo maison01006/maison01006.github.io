@@ -2,207 +2,146 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>리워드 앱</title>
-    <link rel="manifest" href="manifest.json" />
-    <link rel="stylesheet" href="css/global_style.css" />
-    <link rel="stylesheet" href="css/index.css" />
-    <link rel="apple-touch-icon" href="assets/icons/icon128.png" />
-    <meta name="theme-color" content="#4a6cf7" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>자주 - 자기관리 도구</title>
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/index.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
   </head>
   <body>
-    <header class="header">
-      <div class="header-actions">
-        <h1>자주</h1>
-        <button class="button-icon" onclick="location.href='calendar.html'">
-          <img
-            src="assets/icons/calendar.svg"
-            alt="달력"
-            width="24"
-            height="24"
-          />
-        </button>
-      </div>
-    </header>
+    <div class="dashboard">
+      <!-- TodaySummary -->
+      <div class="today-summary card">
+        <div class="summary-content">
+          <div class="summary-text">
+            <h2>오늘의 자주</h2>
+            <p class="coin-count">
+              <span id="todayCoinCount">0</span>
+              <span class="coin-icon">🪙</span>
+            </p>
+          </div>
+          <div class="summary-progress">
+            <!-- 전체 진행률 -->
+            <div class="total-progress">
+              <div class="progress-header">
+                <span class="progress-title">전체 진행률</span>
+                <span class="progress-percentage">0%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+            </div>
 
-    <main>
-      <!-- 통계 섹션 -->
-      <div class="card">
-        <h3>📊 나의 통계</h3>
-        <div class="stats-container">
-          <div class="stat-item">
-            <div class="stat-title">🔥 연속 완료</div>
-            <div class="stat-value" id="streakCount">0일</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-title">💥 꽝 확률</div>
-            <div class="stat-value" id="failProbability">0%</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-title">✨ 총 달성</div>
-            <div class="stat-value" id="totalCompleted">0개</div>
+            <!-- 목표별 진행률 -->
+            <div class="goal-progress-list">
+              <!-- 목표별 진행률이 여기에 동적으로 추가됩니다 -->
+            </div>
           </div>
         </div>
       </div>
-      <div class="card">
-        <div class="stat-item">
-          <div class="stat-title"><h2>📅 최근 7일 완료</h2></div>
-          <div class="weekly-completion" id="weeklyCompletion">
-            <!-- 동적으로 추가될 완료 현황 사각형들 -->
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <h2>📝 오늘의 할 일</h2>
-          <span class="status-badge" id="statusBadge">0/0 완료</span>
-        </div>
-        <div class="todo-input">
-          <input
-            type="text"
-            class="input"
-            id="todoInput"
-            placeholder="할 일을 입력하세요"
-          />
-          <button class="button" id="addTodoBtn">추가</button>
-        </div>
-        <ul class="todo-list" id="todoList">
-          <!-- 동적으로 추가될 할 일 목록 -->
-        </ul>
-      </div>
 
-      <!-- 리워드 섹션 -->
-      <div class="card reward-box" id="rewardBox" style="display: none">
-        <h3>🎉 오늘도 수고하셨습니다!</h3>
-        <div class="reward-amount">오늘의 🎁 보상을 받아가세요</div>
-        <button class="button" id="getRewardButton">보상 받기</button>
-      </div>
+      <main class="calendar-content">
+        <h3 class="calendar-title">주간 달력</h3>
+        <!-- 캘린더 카드 -->
+        <div class="calendar-card card">
+          <section class="calendar-grid" id="calendarGrid">
+            <!-- 날짜 셀이 동적으로 추가됩니다 -->
+          </section>
+        </div>
+      </main>
 
-      <!-- 리워드 히스토리 -->
-      <div class="card">
-        <h3>📜 최근 받은 보상</h3>
-        <div id="rewardHistoryList">
-          <!-- 동적으로 추가될 보상 히스토리 목록 -->
+      <!-- GoalCardList -->
+      <div class="goal-list">
+        <h2 class="section-title">나의 목표</h2>
+        <div class="goal-cards" id="goalCards">
+          <!-- Goal cards will be inserted here -->
         </div>
       </div>
 
-      <!-- PWA 설치 프롬프트 -->
-      <div id="installPrompt" class="install-prompt">
-        <div class="install-prompt-content">
-          <div class="install-prompt-icon">
-            <img
-              src="assets/icons/app-logo.svg"
-              alt="앱 아이콘"
-              width="48"
-              height="48"
+      <!-- AddGoalButton -->
+      <button id="addGoalButton" class="floating-button">
+        <span class="button-icon">+</span>
+        <span class="button-text">새 목표 만들기</span>
+      </button>
+    </div>
+
+    <!-- 목표 생성 모달 -->
+    <div id="createGoalModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>새 목표 만들기</h2>
+          <button class="close-button">&times;</button>
+        </div>
+        <form id="createGoalForm">
+          <div class="form-group">
+            <label for="goalTitle">목표 제목</label>
+            <input
+              type="text"
+              id="goalTitle"
+              required
+              placeholder="목표를 입력하세요"
             />
           </div>
-          <div class="install-prompt-text">
-            <h3>자주 앱 설치</h3>
-            <p>홈 화면에 추가하여 더 빠르게 접근하세요</p>
+          <div class="form-group">
+            <label for="goalDescription">설명 (선택사항)</label>
+            <textarea
+              id="goalDescription"
+              placeholder="목표에 대한 설명을 입력하세요"
+            ></textarea>
           </div>
-          <div class="install-prompt-buttons">
-            <button id="installButton" class="button-primary">설치</button>
-            <button id="cancelInstallButton" class="button-secondary">
-              나중에
-            </button>
+          <div class="step-buttons">
+            <a href="store-setting.html" class="reward-button"
+              >보상 정하러가기</a
+            >
+            <button type="submit" class="submit-button">목표 생성하기</button>
           </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- PWA 설치 유도 모달 -->
+    <div id="installPwaModal" class="install-pwa-modal">
+      <div class="install-pwa-content">
+        <div class="install-pwa-header">
+          <h3>앱 설치하기</h3>
+          <button class="close-install-button">&times;</button>
+        </div>
+        <div class="install-pwa-body">
+          <p>자주를 앱으로 설치하면 더 편리하게 이용할 수 있어요!</p>
+          <ul>
+            <li>홈 화면에서 바로 실행</li>
+            <li>더 빠른 실행 속도</li>
+          </ul>
+        </div>
+        <div class="install-pwa-footer">
+          <button id="installPwaButton" class="install-button">
+            앱 설치하기
+          </button>
+          <button class="later-button">나중에 하기</button>
         </div>
       </div>
-    </main>
+    </div>
 
-    <!-- 네비게이션 바 -->
-    <nav class="nav-bar">
-      <a href="index.html" class="nav-item active">
-        <img src="assets/icons/home.svg" alt="할일" width="24" height="24" />
-        <span>할일</span>
-      </a>
-      <a href="rewardBox.html" class="nav-item">
-        <img src="assets/icons/gift.svg" alt="보상함" width="24" height="24" />
-        <span>보상함</span>
-      </a>
-      <a href="settings.html" class="nav-item">
-        <img
-          src="assets/icons/settings.svg"
-          alt="설정"
-          width="24"
-          height="24"
-        />
-        <span>설정</span>
-      </a>
-    </nav>
+    <script type="module">
+      import { BottomTabNav, Toast, PageWrapper } from "./js/components.js";
 
-    <script type="module" src="js/storage.js"></script>
-    <script type="module" src="js/utils.js"></script>
-    <script type="module" src="js/todo.js"></script>
-    <script type="module" src="js/reward.js"></script>
-    <script type="module" src="js/index.js"></script>
+      // 페이지 래퍼 적용
+      const pageWrapper = new PageWrapper();
+      pageWrapper.mount(document.body);
 
-    <!-- PWA 설치 프롬프트 관련 코드 -->
-    <script>
-      // PWA 설치 프롬프트 관련 코드
-      let deferredPrompt;
-      const installPrompt = document.getElementById("installPrompt");
-      const installButton = document.getElementById("installButton");
-      const cancelInstallButton = document.getElementById(
-        "cancelInstallButton"
-      );
+      // 하단 탭 네비게이션 적용
+      const bottomNav = new BottomTabNav("home");
+      bottomNav.mount(document.body);
 
-      // 설치 프롬프트 이벤트 처리
-      window.addEventListener("beforeinstallprompt", (e) => {
-        console.log("beforeinstallprompt 이벤트 발생");
-        // 기본 프롬프트 방지
-        e.preventDefault();
-        // 이벤트 저장
-        deferredPrompt = e;
-        // 설치 프롬프트 표시
-        installPrompt.style.display = "block";
-      });
-
-      // 설치 버튼 클릭 이벤트
-      installButton.addEventListener("click", async () => {
-        console.log("설치 버튼 클릭됨");
-        if (deferredPrompt) {
-          console.log("설치 프롬프트 표시");
-          // 설치 프롬프트 표시
-          deferredPrompt.prompt();
-          // 사용자 응답 대기
-          const { outcome } = await deferredPrompt.userChoice;
-          console.log(`사용자 선택: ${outcome}`);
-          // 프롬프트 초기화
-          deferredPrompt = null;
-          // 설치 프롬프트 숨김
-          installPrompt.style.display = "none";
-        } else {
-          console.log("설치 프롬프트가 없음");
-        }
-      });
-
-      // 취소 버튼 클릭 이벤트
-      cancelInstallButton.addEventListener("click", () => {
-        installPrompt.style.display = "none";
-      });
-
-      // 앱이 설치된 경우
-      window.addEventListener("appinstalled", (e) => {
-        console.log("앱이 설치되었습니다.");
-        installPrompt.style.display = "none";
-      });
-
-      // 페이지 로드 시 설치 가능 여부 확인
-      window.addEventListener("load", () => {
-        console.log("페이지 로드 완료");
-        // 이미 설치된 경우 확인
-        if (window.matchMedia("(display-mode: standalone)").matches) {
-          console.log("이미 앱이 설치되어 있습니다.");
-          installPrompt.style.display = "none";
-        }
-      });
+      // Toast 인스턴스 생성
+      window.toast = new Toast();
     </script>
+    <script type="module" src="js/index.js"></script>
   </body>
 </html>

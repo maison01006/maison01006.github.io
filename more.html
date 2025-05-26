@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>더보기 - 자주</title>
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/more.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="settings-container">
+      <header class="settings-header">
+        <h1>더보기</h1>
+      </header>
+
+      <section class="settings-section">
+        <div class="app-info">
+          <h2>자주에 대하여</h2>
+          <p>
+            자주는 당신의 일상을 기록하고 성장을 돕는 도구입니다. 매일의 감정과
+            생각을 기록하며, 스스로를 돌아보고 성장하는 시간을 가져보세요.
+          </p>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2>알림 설정</h2>
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>일일 알림</h3>
+            <p>매일 저녁 9시에 회고 알림을 받습니다</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="notificationToggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2>데이터 관리</h2>
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>데이터 내보내기</h3>
+            <p>모든 기록을 JSON 또는 PDF로 내보냅니다</p>
+          </div>
+          <div class="export-buttons">
+            <button id="exportJson" class="btn-export">
+              <i class="fas fa-file-code"></i>
+              JSON
+            </button>
+            <button id="exportPdf" class="btn-export">
+              <i class="fas fa-file-pdf"></i>
+              PDF
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2>앱 정보</h2>
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>버전</h3>
+            <p>1.0.0</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script type="module">
+      import { BottomTabNav, Toast, PageWrapper } from "./js/components.js";
+
+      // 페이지 래퍼 적용
+      const pageWrapper = new PageWrapper();
+      pageWrapper.mount(document.body);
+
+      // 하단 탭 네비게이션 적용
+      const bottomNav = new BottomTabNav("more");
+      bottomNav.mount(document.body);
+
+      // Toast 인스턴스 생성
+      window.toast = new Toast();
+    </script>
+    <script type="module" src="js/more.js"></script>
+  </body>
+</html>

@@ -1,503 +1,730 @@
-import storage from "./storage.js";
-import { formatDate, getKoreanDateString } from "./utils.js";
+import {
+  addItem,
+  initDB,
+  getItemsByDate,
+  getItemsByTitle,
+  getItemsByAll,
+  checkTodayProgress,
+  updateItem,
+  STORES,
+  getDB,
+  deleteItem,
+} from "./db.js";
 
-// 할일 관련 함수들
-async function addTodo() {
-  const todoInput = document.getElementById("todoInput");
-  const text = todoInput.value.trim();
+let db = null;
+// DOM 요소
+const coinCount = document.getElementById("coinCount");
+const goalCards = document.getElementById("goalCards");
+const todayCoinCount = document.getElementById("todayCoinCount");
+const addGoalButton = document.getElementById("addGoalButton");
 
-  console.log(text);
+// 모달 관련 요소
+const modal = document.getElementById("createGoalModal");
+const closeButton = modal.querySelector(".close-button");
+const createGoalForm = document.getElementById("createGoalForm");
 
-  if (!text) return;
+// 모달 열기
+addGoalButton.addEventListener("click", () => {
+  console.log("모달 열기");
+  modal.classList.add("show");
+});
 
-  const todo = {
-    text,
-    date: getKoreanDateString(),
-    completed: false,
+// 모달 닫기
+closeButton.addEventListener("click", () => {
+  modal.classList.remove("show");
+  createGoalForm.reset();
+});
+
+// 모달 외부 클릭 시 닫기
+window.addEventListener("click", (e) => {
+  if (e.target === modal) {
+    modal.classList.remove("show");
+    createGoalForm.reset();
+  }
+});
+
+// 폼 제출 처리
+createGoalForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const goalData = {
+    id: Date.now().toString(),
+    title: document.getElementById("goalTitle").value,
+    description: document.getElementById("goalDescription").value,
+    date: new Date().toISOString().split("T")[0],
   };
 
-  await storage.addTodo(todo);
-  todoInput.value = "";
-  loadTodos();
-}
-
-// 할 일 삭제 함수
-async function deleteTodo(id) {
   try {
-    await storage.deleteTodo(id);
-    loadTodos();
+    // 목표 저장
+    await addItem(STORES.GOALS, goalData);
+
+    // 모달 닫기 및 폼 초기화
+    modal.classList.remove("show");
+    createGoalForm.reset();
+
+    // 목표 카드 목록 새로고침
+    await renderGoalCards();
+
+    window.toast.show("목표가 생성되었습니다!", "success");
   } catch (error) {
-    console.error("할 일 삭제 중 오류 발생:", error);
-    alert("할 일 삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
+    window.toast.show("목표 생성에 실패했습니다.", "error");
   }
+});
+
+// 오늘 날짜 가져오기
+const getToday = () => new Date().toISOString().split("T")[0];
+
+// 코인 애니메이션 생성
+function createCoinAnimation(x, y) {
+  const coin = document.createElement("div");
+  coin.className = "coin-animation";
+  coin.textContent = "🪙";
+  coin.style.left = `${x}px`;
+  coin.style.top = `${y}px`;
+  document.body.appendChild(coin);
+
+  // 애니메이션 종료 후 요소 제거
+  coin.addEventListener("animationend", () => {
+    coin.remove();
+  });
 }
 
-// 보상 관련 함수들
-function updateRewardDisplay() {
-  // 보상 표시 로직 구현
-  // 예: 최근 보상 내역 표시, 보상 상자 표시 여부 결정 등
-  console.log("보상 표시 업데이트");
-  loadRewardHistory();
+// 축하 모달 표시 함수
+function showCongratsModal() {
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+
+  const modal = document.createElement("div");
+  modal.className = "congrats-modal";
+  modal.innerHTML = `
+    <h2>🎉 축하합니다! 🎉</h2>
+    <p>모든 할 일을 완료하여 자주 1개를 획득했습니다!</p>
+    <button>확인</button>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  // 확인 버튼 클릭 시 모달 닫기
+  modal.querySelector("button").addEventListener("click", () => {
+    overlay.remove();
+  });
 }
 
-// 보상 히스토리 로드 및 표시
-async function loadRewardHistory() {
-  const rewardHistoryList = document.getElementById("rewardHistoryList");
+// 모든 todo가 완료되었는지 확인하는 함수
+async function areAllTodosCompleted(today, goalId) {
+  const todos = await getItemsByDate(STORES.TODOS, today);
+  const goalTodos = todos.filter((todo) => todo.goalId === goalId);
+  return goalTodos.length > 0 && goalTodos.every((todo) => todo.completed);
+}
 
-  try {
-    // 획득한 보상 목록 가져오기
-    const earnedRewards = await storage.getEarnedRewards();
-    console.log("획득한 보상:", earnedRewards);
-
-    // 최근 5개의 보상만 선택 (최신순 정렬)
-    const recentRewards = earnedRewards
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .slice(0, 5);
-
-    rewardHistoryList.innerHTML = "";
-
-    if (recentRewards.length === 0) {
-      rewardHistoryList.innerHTML =
-        '<div class="empty-message">아직 받은 보상이 없습니다.</div>';
-      return;
-    }
-
-    recentRewards.forEach((reward) => {
-      const historyItem = document.createElement("div");
-      historyItem.className = "list-item";
-
-      // 날짜 문자열을 Date 객체로 변환
-      const rewardDate = new Date(reward.date);
-
-      historyItem.innerHTML = `
-        <div class="reward-info">
-          <div class="reward-title">${reward.rewardName}</div>
-          <div class="reward-date">${formatDate(rewardDate)}</div>
-        </div>
-      `;
-      rewardHistoryList.appendChild(historyItem);
+// 코인 획득 처리 함수
+async function handleCoinEarned(goalId) {
+  const today = new Date().toISOString().split("T")[0];
+  // 오늘 이미 코인을 획득했는지 확인
+  const hasProgress = await checkTodayProgress(goalId);
+  if (!hasProgress) {
+    // 코인 획득
+    await addItem(STORES.PROGRESS, {
+      date: today,
+      amount: 1,
+      goalId: goalId,
     });
-  } catch (error) {
-    console.error("보상 히스토리 로드 중 오류 발생:", error);
-    rewardHistoryList.innerHTML =
-      '<div class="empty-message">보상 내역을 불러오는 중 오류가 발생했습니다.</div>';
+
+    // UI 업데이트
+    await updateCoinCount();
+
+    // 축하 모달과 폭죽 효과 표시
+    showCongratsModal();
   }
 }
 
-// 통계 관련 함수들
-async function updateStats() {
-  try {
-    // 연속 완료 일수 계산
-    const streakCount = await calculateStreak();
-    document.getElementById("streakCount").textContent = `${streakCount}일`;
+// 진행률 업데이트
+async function updateProgress() {
+  const todos = await getItemsByDate(STORES.TODOS, getToday());
+  const goals = await getItemsByAll(STORES.GOALS);
+  await updateCoinCount();
+  // 전체 진행률 계산
+  const totalTodos = todos.length;
+  const completedTodos = todos.filter((todo) => todo.completed).length;
+  const totalProgress =
+    totalTodos > 0 ? (completedTodos / totalTodos) * 100 : 0;
 
-    // 꽝 확률 계산
-    const failProbability = await calculateFailProbability();
-    document.getElementById(
-      "failProbability"
-    ).textContent = `${failProbability}%`;
+  // 전체 진행률 업데이트
+  document.querySelector(".progress-percentage").textContent = `${Math.round(
+    totalProgress
+  )}%`;
+  document.querySelector(
+    ".total-progress .progress-fill"
+  ).style.width = `${totalProgress}%`;
 
-    // 총 달성한 todo 수 계산
-    const totalCompleted = await calculateTotalCompleted();
-    document.getElementById(
-      "totalCompleted"
-    ).textContent = `${totalCompleted}개`;
+  // 목표별 진행률 업데이트
+  const goalProgressList = document.querySelector(".goal-progress-list");
+  goalProgressList.innerHTML = "";
 
-    // 최근 7일 완료 일수 계산 및 사각형 표시
-    await calculateWeeklyCompletion();
-  } catch (error) {
-    console.error("통계 업데이트 중 오류 발생:", error);
-  }
-}
+  goals.forEach((goal) => {
+    const goalTodos = todos.filter((todo) => todo.goalId === goal.id);
+    const goalCompletedTodos = goalTodos.filter(
+      (todo) => todo.completed
+    ).length;
+    const goalProgress =
+      goalTodos.length > 0 ? (goalCompletedTodos / goalTodos.length) * 100 : 0;
 
-// 연속 완료 일수 계산
-async function calculateStreak() {
-  const earnedRewards = await storage.getEarnedRewards();
-  if (earnedRewards.length === 0) return 0;
+    const goalProgressItem = document.createElement("div");
+    goalProgressItem.className = "goal-progress-item";
 
-  // 날짜순으로 정렬
-  const sortedRewards = earnedRewards.sort(
-    (a, b) => new Date(b.date) - new Date(a.date)
-  );
-
-  let streak = 0;
-  let currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0);
-
-  // 오늘 보상을 받았는지 확인
-  const todayStr = getKoreanDateString();
-  const hasTodayReward = sortedRewards.some(
-    (reward) => reward.date === todayStr
-  );
-
-  if (!hasTodayReward) {
-    // 어제 날짜로 설정
-    currentDate.setDate(currentDate.getDate() - 1);
-  }
-
-  // 연속된 날짜 확인
-  for (let i = 0; i < sortedRewards.length; i++) {
-    const rewardDate = new Date(sortedRewards[i].date);
-    rewardDate.setHours(0, 0, 0, 0);
-
-    if (i === 0 && !hasTodayReward) {
-      // 첫 번째 보상이 어제가 아니면 연속 완료가 아님
-      if (rewardDate.getTime() !== currentDate.getTime()) {
-        return 0;
-      }
-    }
-
-    if (i > 0) {
-      const prevDate = new Date(sortedRewards[i - 1].date);
-      prevDate.setHours(0, 0, 0, 0);
-
-      // 이전 날짜와 현재 날짜의 차이가 1일이 아니면 연속 완료가 아님
-      const diffDays = Math.floor(
-        (prevDate - rewardDate) / (1000 * 60 * 60 * 24)
-      );
-      if (diffDays !== 1) {
-        break;
-      }
-    }
-
-    streak++;
-  }
-
-  return streak;
-}
-
-// 꽝 확률 계산
-async function calculateFailProbability() {
-  const rewards = await storage.getRewards();
-  const failReward = rewards.find((reward) => reward.name === "꽝");
-  return failReward ? failReward.probability : 0;
-}
-
-// 주간 완료 현황 계산 및 표시
-async function calculateWeeklyCompletion() {
-  const weeklyCompletion = document.getElementById("weeklyCompletion");
-  if (!weeklyCompletion) return;
-
-  try {
-    // 최근 7일 날짜 배열 생성
-    const dates = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      dates.push(getKoreanDateString(date));
-    }
-
-    // 각 날짜별 완료 상태 확인
-    const completionStatus = await Promise.all(
-      dates.map(async (date) => {
-        const done = await storage.getRewardHistory(date);
-        // 모든 할 일이 완료되었는지 확인
-        return done.length > 0;
-      })
-    );
-
-    // 완료 현황 표시
-    weeklyCompletion.innerHTML = "";
-    completionStatus.forEach((completed, index) => {
-      const box = document.createElement("div");
-      box.className = `completion-box ${completed ? "completed" : ""}`;
-
-      // 툴팁 추가
-      const date = new Date();
-      date.setDate(date.getDate() - (6 - index));
-      const formattedDate = `${date.getMonth() + 1}월 ${date.getDate()}일`;
-      box.title = `${formattedDate}: ${completed ? "완료" : "미완료"}`;
-
-      weeklyCompletion.appendChild(box);
-    });
-  } catch (error) {
-    console.error("주간 완료 현황 계산 중 오류 발생:", error);
-    weeklyCompletion.innerHTML =
-      '<div class="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>';
-  }
-}
-
-// 총 달성한 todo 수 계산
-async function calculateTotalCompleted() {
-  const todos = await storage.getAll("todos");
-  return todos.filter((todo) => todo.completed).length;
-}
-
-// 할일 목록 로드 및 상태 업데이트
-async function loadTodos() {
-  const todoList = document.getElementById("todoList");
-  const statusBadge = document.getElementById("statusBadge");
-  const todayStr = getKoreanDateString();
-  const todos = await storage.getTodos(todayStr);
-
-  todoList.innerHTML = "";
-
-  if (todos.length === 0) {
-    todoList.innerHTML =
-      '<li class="empty-message">등록된 할 일이 없습니다.</li>';
-    statusBadge.textContent = "0/0 완료";
-    statusBadge.className = "status-badge";
-    return;
-  }
-
-  let completedCount = 0;
-  todos.forEach((todo) => {
-    if (todo.completed) completedCount++;
-    const li = document.createElement("li");
-    li.className = "todo-item";
-    li.innerHTML = `
-      <div class="todo-checkbox ${
-        todo.completed ? "checked" : ""
-      }" data-index="${todo.id}"></div>
-      <div class="todo-content ${
-        todo.completed ? "checked" : ""
-      }" data-index="${todo.id}">${todo.text}</div>
-      <div class="kebab-menu" data-index="${todo.id}">
-        <img src="../assets/icons/more.svg" alt="더보기" />
-        <div class="kebab-menu-content">
-          <div class="kebab-menu-item edit">
-            <img src="../assets/icons/edit.svg" alt="수정" width="16" height="16" />
-            수정
-          </div>
-          <div class="kebab-menu-item delete">
-            <img src="../assets/icons/delete.svg" alt="삭제" width="16" height="16" />
-            삭제
-          </div>
-        </div>
+    goalProgressItem.innerHTML = `
+      <div class="goal-progress-header">
+        <span class="goal-progress-name">${goal.title}</span>
+        <span class="goal-progress-count">${goalCompletedTodos}/${goalTodos.length}</span>
+      </div>
+      <div class="goal-progress-bar">
+        <div class="goal-progress-fill" style="width: ${goalProgress}%"></div>
       </div>
     `;
 
-    todoList.appendChild(li);
+    goalProgressList.appendChild(goalProgressItem);
   });
+}
 
-  // 체크박스 이벤트 리스너
-  document.querySelectorAll(".todo-checkbox").forEach((checkbox) => {
-    checkbox.addEventListener("click", async () => {
-      const index = parseInt(checkbox.dataset.index);
-      const todo = todos.find((t) => t.id === index);
-      if (todo) {
-        todo.completed = !todo.completed;
-        await storage.updateTodo(todo.id, todo);
-        loadTodos();
-      }
-    });
-  });
+// 코인 수 업데이트
+async function updateCoinCount() {
+  const today = new Date().toISOString().split("T")[0];
+  const progress = await getItemsByDate(STORES.PROGRESS, today);
+  const goals = await getItemsByAll(STORES.GOALS);
+  const totalCoins = progress.reduce((sum, p) => sum + p.amount, 0);
+  todayCoinCount.textContent = `${totalCoins} / ${goals.length}`;
+}
 
-  // todo 텍스트 수정 관련 이벤트 리스너
-  document.querySelectorAll(".todo-content").forEach((content) => {
-    content.addEventListener("blur", async () => {
-      if (!content.isContentEditable) return;
+// 목표 카드 목록 렌더링
+async function renderGoalCards() {
+  const today = new Date().toISOString().split("T")[0];
+  const goals = await getItemsByAll(STORES.GOALS);
+  const todos = await getItemsByDate(STORES.TODOS, today);
+  const rewards = await getItemsByDate(STORES.REWARDS, today);
+  const progress = await getItemsByDate(STORES.PROGRESS, today);
 
-      content.contentEditable = false;
-      content.classList.remove("editing");
-      const index = parseInt(content.dataset.index);
-      const todo = todos.find((t) => t.id === index);
-      const newText = content.textContent.trim();
+  goalCards.innerHTML = "";
 
-      if (todo && newText !== "" && newText !== todo.text) {
-        todo.text = newText;
-        await storage.updateTodo(todo.id, todo);
-        loadTodos();
-      } else if (newText === "") {
-        loadTodos(); // 빈 텍스트인 경우 원래 텍스트로 복원
-      }
-    });
-
-    content.addEventListener("keydown", (e) => {
-      if (!content.isContentEditable) return;
-
-      if (e.key === "Enter") {
-        e.preventDefault();
-        content.blur();
-      }
-    });
-  });
-
-  // 케밥 메뉴 이벤트 리스너
-  const kebabMenus = document.querySelectorAll(".kebab-menu");
-  kebabMenus.forEach((kebabMenu) => {
-    kebabMenu.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const allMenus = document.querySelectorAll(".kebab-menu");
-      allMenus.forEach((menu) => {
-        if (menu !== kebabMenu) menu.classList.remove("active");
+  for (const goal of goals) {
+    const goalTodos = todos
+      .filter((todo) => todo.goalId === goal.id)
+      .sort((a, b) => {
+        if (a.completed !== b.completed) {
+          return a.completed ? 1 : -1;
+        }
+        return new Date(a.date) - new Date(b.date);
       });
-      kebabMenu.classList.toggle("active");
-    });
 
-    // 수정 및 삭제 버튼 이벤트 리스너
-    const editButton = kebabMenu.querySelector(".edit");
-    const deleteButton = kebabMenu.querySelector(".delete");
-    const index = parseInt(kebabMenu.dataset.index);
-    const todo = todos.find((t) => t.id === index);
+    const goalReward = rewards.find((reward) => reward.goalId === goal.id);
+    const goalProgress = progress.filter((p) => p.goalId === goal.id);
+    const totalCoins = goalProgress.reduce((sum, p) => sum + p.amount, 0);
 
-    editButton.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const content = document.querySelector(
-        `.todo-content[data-index="${index}"]`
-      );
-      content.contentEditable = true;
-      content.classList.add("editing");
-      content.focus();
-      // 커서를 텍스트 끝으로 이동
-      const range = document.createRange();
-      const selection = window.getSelection();
-      range.selectNodeContents(content);
-      range.collapse(false);
-      selection.removeAllRanges();
-      selection.addRange(range);
-      // 케밥 메뉴 닫기
-      kebabMenu.classList.remove("active");
-    });
+    const card = document.createElement("div");
+    card.className = "goal-card";
+    card.dataset.goalId = goal.id;
 
-    deleteButton.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      await storage.deleteTodo(todo.id);
-      loadTodos();
-    });
-  });
-
-  // 문서 클릭 시 케밥 메뉴 닫기
-  document.addEventListener("click", () => {
-    document.querySelectorAll(".kebab-menu").forEach((menu) => {
-      menu.classList.remove("active");
-    });
-  });
-
-  // 완료 상태 업데이트
-  statusBadge.textContent = `${completedCount}/${todos.length} 완료`;
-
-  // 완료 상태에 따라 배지 스타일 변경
-  if (completedCount === todos.length) {
-    statusBadge.className = "status-badge success";
-  } else if (completedCount > 0) {
-    statusBadge.className = "status-badge progress";
-  } else {
-    statusBadge.className = "status-badge";
-  }
-
-  // 모든 할일이 완료되었는지 확인
-  const rewardBox = document.getElementById("rewardBox");
-
-  // 오늘 이미 보상을 획득했는지 확인
-  const earnedRewards = await storage.getRewardHistory(todayStr);
-  const todayEarnedRewards = earnedRewards.filter(
-    (reward) => reward.date === todayStr
-  );
-  // 모든 할일이 완료되었고, 오늘 보상을 획득하지 않았을 때만 보상 상자 표시
-  if (
-    completedCount === todos.length &&
-    todos.length > 0 &&
-    todayEarnedRewards.length === 0
-  ) {
-    rewardBox.style.display = "block";
-  } else {
-    rewardBox.style.display = "none";
-  }
-}
-
-// 보상 받기 버튼 이벤트 리스너
-function setupRewardButton() {
-  const getRewardButton = document.getElementById("getRewardButton");
-  if (getRewardButton) {
-    getRewardButton.addEventListener("click", async () => {
-      try {
-        // 보상 목록 가져오기
-        const rewards = await storage.getRewards();
-
-        if (rewards.length === 0) {
-          alert("등록된 보상이 없습니다. 설정에서 보상을 등록해주세요.");
-          return;
-        }
-
-        // 확률에 따라 보상 선택
-        const random = Math.random() * 100;
-        let cumulativeProbability = 0;
-        let selectedReward = null;
-
-        console.log("보상 선택 시작 - 랜덤 값:", random);
-        console.log("보상 목록:", rewards);
-
-        // 보상 목록을 확률 순으로 정렬 (낮은 확률부터)
-        const sortedRewards = [...rewards].sort(
-          (a, b) => a.probability - b.probability
-        );
-        console.log("정렬된 보상 목록:", sortedRewards);
-
-        for (const reward of sortedRewards) {
-          cumulativeProbability += reward.probability;
-          console.log(
-            `보상: ${reward.name}, 확률: ${reward.probability}, 누적 확률: ${cumulativeProbability}`
-          );
-
-          if (random <= cumulativeProbability) {
-            selectedReward = reward;
-            console.log(`선택된 보상: ${reward.name}`);
-            break;
+    card.innerHTML = `
+      <div class="goal-card-content">
+        <div class="goal-header">
+          <div class="goal-title-container">
+            <h3 class="goal-title" contenteditable="false">${goal.title}</h3>
+            <span class="goal-coin-count">
+              <span class="coin-icon">🪙</span>
+              <span class="coin-amount">${totalCoins}</span>
+            </span>
+          </div>
+          <p class="goal-progress">${
+            goalTodos.filter((todo) => todo.completed).length
+          }/${goalTodos.length} 완료</p>
+        </div>
+        <div class="add-todo-item">
+          <input type="text" class="todo-input" placeholder="할 일 추가하기">
+          <button class="add-todo-button">+</button>
+        </div>
+        <div class="goal-todos">
+          ${goalTodos
+            .slice(0, 2)
+            .map(
+              (todo) => `
+            <div class="todo-item" data-todo-id="${todo.goalId}">
+              <div class="todo-checkbox ${
+                todo.completed ? "checked" : ""
+              }"></div>
+              <span class="todo-text ${todo.completed ? "completed" : ""}">${
+                todo.title
+              }</span>
+            </div>
+          `
+            )
+            .join("")}
+          ${
+            goalTodos.length > 2
+              ? `
+            <div class="view-more-container">
+              <button class="view-more-button" data-goal-id="${goal.id}">더보기</button>
+            </div>
+          `
+              : ""
           }
+        </div>
+      </div>
+      <div class="goal-actions">
+        <button class="edit-goal-button" title="목표 수정">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="delete-goal-button" title="목표 삭제">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    `;
+
+    // 스와이프 기능 구현
+    let startX = 0;
+    let currentX = 0;
+    let isSwiping = false;
+
+    // card.addEventListener("touchstart", (e) => {
+    //   startX = e.touches[0].clientX;
+    //   isSwiping = true;
+    //   card.classList.add("swiping");
+    // });
+
+    // card.addEventListener("touchmove", (e) => {
+    //   if (!isSwiping) return;
+    //   currentX = e.touches[0].clientX;
+    //   const diff = currentX - startX;
+
+    //   if (diff < 0) {
+    //     // 왼쪽으로만 스와이프 가능
+    //     const content = card.querySelector(".goal-card-content");
+    //     content.style.transform = `translateX(${diff}px)`;
+    //   }
+    // });
+
+    // card.addEventListener("touchend", () => {
+    //   isSwiping = false;
+    //   card.classList.remove("swiping");
+
+    //   const content = card.querySelector(".goal-card-content");
+    //   const diff = currentX - startX;
+
+    //   if (diff < -50) {
+    //     // 50px 이상 스와이프하면 버튼 표시
+    //     card.classList.add("swiped");
+    //     content.style.transform = "translateX(-100px)";
+    //   } else {
+    //     // 원위치로 복귀
+    //     card.classList.remove("swiped");
+    //     content.style.transform = "translateX(0)";
+    //   }
+    // });
+
+    // 목표 수정 버튼 클릭 이벤트
+    const editButton = card.querySelector(".edit-goal-button");
+    const titleElement = card.querySelector(".goal-title");
+
+    editButton.addEventListener("click", async () => {
+      const isEditing = titleElement.contentEditable === "true";
+
+      if (isEditing) {
+        titleElement.contentEditable = "false";
+        editButton.innerHTML = '<i class="fas fa-edit"></i>';
+
+        try {
+          goal.title = titleElement.textContent.trim();
+          await updateItem(STORES.GOALS, goal);
+          window.toast.show("목표가 수정되었습니다.", "success");
+
+          // 수정 완료 후 카드 원위치
+          card.classList.remove("swiped");
+          card.querySelector(".goal-card-content").style.transform =
+            "translateX(0)";
+        } catch (error) {
+          window.toast.show("목표 수정에 실패했습니다.", "error");
+          titleElement.textContent = goal.title;
         }
-
-        // 선택된 보상이 없으면 마지막 보상 사용
-        if (!selectedReward) {
-          selectedReward = rewards[rewards.length - 1];
-          console.log(
-            `선택된 보상이 없어 마지막 보상 사용: ${selectedReward.name}`
-          );
-        }
-
-        // 보상 기록 추가
-        await storage.addRewardHistory({
-          rewardName: selectedReward.name,
-          date: getKoreanDateString(),
-          timestamp: new Date().toISOString(),
-        });
-
-        // 결과 페이지로 이동
-        window.location.href = `rewardResult.html?reward=${encodeURIComponent(
-          selectedReward.name
-        )}`;
-      } catch (error) {
-        console.error("보상 선택 중 오류 발생:", error);
-        alert("보상 선택 중 오류가 발생했습니다. 다시 시도해주세요.");
+      } else {
+        titleElement.contentEditable = "true";
+        titleElement.focus();
+        editButton.innerHTML = '<i class="fas fa-check"></i>';
       }
     });
-  }
-}
 
-// 페이지 로드 시 실행될 초기화 코드
-document.addEventListener("DOMContentLoaded", async () => {
-  loadTodos();
-  updateRewardDisplay();
-  updateStats(); // 통계 업데이트 추가
-  setupRewardButton();
+    // 목표 삭제 버튼 클릭 이벤트
+    const deleteButton = card.querySelector(".delete-goal-button");
+    deleteButton.addEventListener("click", async () => {
+      if (
+        confirm(
+          "이 목표를 삭제하시겠습니까? 관련된 모든 할 일도 함께 삭제됩니다."
+        )
+      ) {
+        try {
+          const relatedTodos = todos.filter((todo) => todo.goalId === goal.id);
+          for (const todo of relatedTodos) {
+            await deleteItem(STORES.TODOS, todo.id);
+          }
 
-  // 할 일 추가 버튼 이벤트 리스너 추가
-  const addTodoBtn = document.getElementById("addTodoBtn");
-  if (addTodoBtn) {
-    addTodoBtn.addEventListener("click", addTodo);
-  }
+          await deleteItem(STORES.GOALS, goal.id);
+          await renderGoalCards();
+          await updateTodayProgress();
+          window.toast.show("목표가 삭제되었습니다.", "success");
+        } catch (error) {
+          window.toast.show("목표 삭제에 실패했습니다.", "error");
+        }
+      }
+    });
 
-  // 할 일 입력 필드에서 Enter 키 이벤트 처리
-  const todoInput = document.getElementById("todoInput");
-  if (todoInput) {
+    // 더보기 버튼 클릭 이벤트
+    const viewMoreButton = card.querySelector(".view-more-button");
+    if (viewMoreButton) {
+      viewMoreButton.addEventListener("click", () => {
+        const goalTodosContainer = card.querySelector(".view-more-container");
+        const isExpanded = viewMoreButton.textContent === "접기";
+
+        if (isExpanded) {
+          // 접기: 추가된 할 일들 제거
+          const todoItems = card.querySelectorAll(".todo-item[data-todo-id]");
+          todoItems.forEach((todo, index) => {
+            if (index >= 2) todo.remove();
+          });
+          viewMoreButton.textContent = "더보기";
+        } else {
+          // 더보기: 추가 할 일들 표시
+          const additionalTodos = goalTodos
+            .slice(2)
+            .map(
+              (todo) => `
+            <div class="todo-item" data-todo-id="${todo.goalId}">
+              <div class="todo-checkbox ${
+                todo.completed ? "checked" : ""
+              }"></div>
+              <span class="todo-text ${todo.completed ? "completed" : ""}">${
+                todo.title
+              }</span>
+            </div>
+          `
+            )
+            .join("");
+
+          // 더보기 버튼 앞에 추가 할 일들 삽입
+          goalTodosContainer.insertAdjacentHTML("beforebegin", additionalTodos);
+          viewMoreButton.textContent = "접기";
+
+          // 새로 추가된 할 일들에 대한 클릭 이벤트 추가
+          const newTodoItems = card.querySelectorAll(
+            ".todo-item[data-todo-id]"
+          );
+          newTodoItems.forEach((todoItem) => {
+            if (!todoItem.hasEventListener) {
+              todoItem.hasEventListener = true;
+              todoItem.addEventListener("click", async () => {
+                const todoId = todoItem.dataset.todoId;
+                const todo = todos.find((t) => t.goalId === todoId);
+                if (!todo) return;
+
+                const checkbox = todoItem.querySelector(".todo-checkbox");
+                const text = todoItem.querySelector(".todo-text");
+
+                todoItem.classList.remove("completed");
+                void todoItem.offsetWidth;
+                todoItem.classList.add("completed");
+
+                todo.completed = !todo.completed;
+                checkbox.classList.toggle("checked");
+                text.classList.toggle("completed");
+
+                try {
+                  await updateItem(STORES.TODOS, todo);
+                  await updateTodayProgress();
+                  const progressText = card.querySelector(".goal-progress");
+                  const completedCount = goalTodos.filter(
+                    (t) => t.completed
+                  ).length;
+                  progressText.textContent = `${completedCount}/${goalTodos.length} 완료`;
+                } catch (error) {
+                  window.toast.show(
+                    "할 일 상태 업데이트에 실패했습니다.",
+                    "error"
+                  );
+                }
+
+                const isAllCompleted = await areAllTodosCompleted(
+                  today,
+                  goal.id
+                );
+                if (isAllCompleted) {
+                  await handleCoinEarned(goal.id);
+                }
+                await createCalendarGrid();
+              });
+            }
+          });
+        }
+      });
+    }
+
+    // 초기 할 일 항목 클릭 이벤트 처리
+    const initialTodoItems = card.querySelectorAll(".todo-item[data-todo-id]");
+    initialTodoItems.forEach((todoItem) => {
+      if (!todoItem.hasEventListener) {
+        todoItem.hasEventListener = true;
+        todoItem.addEventListener("click", async () => {
+          const todoId = todoItem.dataset.todoId;
+          const todo = todos.find((t) => t.goalId === todoId);
+          if (!todo) return;
+
+          const checkbox = todoItem.querySelector(".todo-checkbox");
+          const text = todoItem.querySelector(".todo-text");
+
+          todoItem.classList.remove("completed");
+          void todoItem.offsetWidth;
+          todoItem.classList.add("completed");
+
+          todo.completed = !todo.completed;
+          checkbox.classList.toggle("checked");
+          text.classList.toggle("completed");
+
+          try {
+            await updateItem(STORES.TODOS, todo);
+            await updateTodayProgress();
+            const progressText = card.querySelector(".goal-progress");
+            const completedCount = goalTodos.filter((t) => t.completed).length;
+            progressText.textContent = `${completedCount}/${goalTodos.length} 완료`;
+          } catch (error) {
+            window.toast.show("할 일 상태 업데이트에 실패했습니다.", "error");
+          }
+
+          const isAllCompleted = await areAllTodosCompleted(today, goal.id);
+          if (isAllCompleted) {
+            await handleCoinEarned(goal.id);
+          }
+          await createCalendarGrid();
+        });
+      }
+    });
+
+    // 할 일 추가 기능
+    const todoInput = card.querySelector(".todo-input");
+    const addTodoButton = card.querySelector(".add-todo-button");
+
+    const addTodo = async () => {
+      const title = todoInput.value.trim();
+      if (!title) return;
+
+      const todo = {
+        title,
+        goalId: goal.id,
+        date: getToday(),
+        completed: false,
+      };
+
+      try {
+        await addItem(STORES.TODOS, todo);
+        todoInput.value = "";
+        await renderGoalCards(); // 카드 목록 새로고침
+      } catch (error) {
+        console.error("할 일 추가 실패:", error);
+        window.toast.show("할 일 추가에 실패했습니다.", "error");
+      }
+    };
+
+    addTodoButton.addEventListener("click", addTodo);
     todoInput.addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
         addTodo();
       }
     });
+
+    goalCards.appendChild(card);
+  }
+}
+
+// 오늘의 진행 상황 업데이트
+async function updateTodayProgress() {
+  const today = new Date().toISOString().split("T")[0];
+  const todos = await getItemsByDate(STORES.TODOS, today);
+  const progress = await getItemsByDate(STORES.PROGRESS, today);
+  const goals = await getItemsByAll(STORES.GOALS);
+
+  const completedCount = todos.filter((todo) => todo.completed).length;
+  const totalCount = todos.length;
+  const coinCount = progress.length > 0 ? progress[0].amount : 0;
+
+  // 전체 진행률 업데이트
+  const totalProgress =
+    totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+  document.querySelector(".progress-percentage").textContent = `${Math.round(
+    totalProgress
+  )}%`;
+  document.querySelector(
+    ".total-progress .progress-fill"
+  ).style.width = `${totalProgress}%`;
+
+  // 목표별 진행률 업데이트
+  const goalProgressList = document.querySelector(".goal-progress-list");
+  goalProgressList.innerHTML = "";
+
+  goals.forEach((goal) => {
+    const goalTodos = todos.filter((todo) => todo.goalId === goal.id);
+    const goalCompletedTodos = goalTodos.filter(
+      (todo) => todo.completed
+    ).length;
+    const goalProgress =
+      goalTodos.length > 0 ? (goalCompletedTodos / goalTodos.length) * 100 : 0;
+
+    const goalProgressItem = document.createElement("div");
+    goalProgressItem.className = "goal-progress-item";
+
+    goalProgressItem.innerHTML = `
+      <div class="goal-progress-header">
+        <span class="goal-progress-name">${goal.title}</span>
+        <span class="goal-progress-count">${goalCompletedTodos}/${goalTodos.length}</span>
+      </div>
+      <div class="goal-progress-bar">
+        <div class="goal-progress-fill" style="width: ${goalProgress}%"></div>
+      </div>
+    `;
+
+    goalProgressList.appendChild(goalProgressItem);
+  });
+}
+
+// 캘린더 그리드 생성
+async function createCalendarGrid() {
+  const calendarGrid = document.getElementById("calendarGrid");
+  const dates = getWeekDates(new Date());
+  calendarGrid.innerHTML = "";
+
+  for (const dateInfo of dates) {
+    const dayData = await getDayData(dateInfo);
+    const dayElement = createDayElement(dateInfo, dayData);
+    calendarGrid.appendChild(dayElement);
+  }
+}
+
+// 날짜 셀 생성
+function createDayElement(dateInfo, data) {
+  const date = dateInfo.date || dateInfo;
+  const day = document.createElement("div");
+  day.className = "calendar-day";
+  const dateObj = new Date(date);
+  day.innerHTML = `
+    <div class="day-header">
+      <span class="day-number">${dateObj.getDate()}</span>
+    </div>
+    <div class="day-status">
+      ${
+        data.todos.length > 0
+          ? data.todos.every((todo) => todo.completed)
+            ? '<span class="status-icon status-todo completed"><i class="fas fa-check"></i></span>'
+            : '<span class="status-icon status-todo incomplete"><i class="fas fa-clock"></i></span>'
+          : '<span class="status-icon status-todo empty"></span>'
+      }
+    </div>
+  `;
+  return day;
+}
+
+// 초기화 함수
+async function init() {
+  try {
+    // DB 초기화
+    await initDB();
+    db = await getDB();
+
+    // DB 초기화 후에 다른 작업 실행
+    const onboarding = await getItemsByTitle(STORES.SETTINGS, "isOnboarding");
+    if (!onboarding.enabled) {
+      window.location.href = "/onboarding.html";
+      return; // 온보딩 페이지로 이동하면 여기서 종료
+    }
+
+    const install = await getItemsByTitle(STORES.SETTINGS, "isInstall");
+    if (!install.enabled) {
+      showInstallPwaModal();
+    }
+
+    // UI 초기화
+    await renderGoalCards();
+    await updateTodayProgress();
+    await updateProgress();
+    await createCalendarGrid(); // 캘린더 그리드 초기화 추가
+  } catch (error) {
+    console.error("초기화 중 오류 발생:", error);
+    window.toast.show("초기화 중 오류가 발생했습니다.", "error");
+  }
+}
+
+// PWA 설치 관련 변수
+let deferredPrompt;
+const installPwaModal = document.getElementById("installPwaModal");
+const installPwaButton = document.getElementById("installPwaButton");
+const closeInstallButton = installPwaModal.querySelector(
+  ".close-install-button"
+);
+const laterButton = installPwaModal.querySelector(".later-button");
+
+// PWA 설치 모달 표시
+function showInstallPwaModal() {
+  installPwaModal.classList.add("show");
+}
+
+// PWA 설치 모달 닫기
+function hideInstallPwaModal() {
+  installPwaModal.classList.remove("show");
+}
+
+// PWA 설치 버튼 클릭 이벤트
+installPwaButton.addEventListener("click", async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === "accepted") {
+      await updateItem(STORES.SETTINGS, { id: "isInstall", enabled: true });
+    }
+    deferredPrompt = null;
+    hideInstallPwaModal();
   }
 });
 
-// 서비스 워커 등록
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
-    navigator.serviceWorker
-      .register("/service-worker.js")
-      .then(function (registration) {
-        console.log("ServiceWorker 등록 성공:", registration.scope);
-      })
-      .catch(function (error) {
-        console.log("ServiceWorker 등록 실패:", error);
-      });
-  });
+// 닫기 버튼 클릭 이벤트
+closeInstallButton.addEventListener("click", hideInstallPwaModal);
+
+// 나중에 하기 버튼 클릭 이벤트
+laterButton.addEventListener("click", hideInstallPwaModal);
+
+// 주간 날짜 배열 생성
+function getWeekDates(date) {
+  const dates = [];
+  for (let i = 6; i >= 0; i--) {
+    const current = new Date(date);
+    current.setDate(date.getDate() - i);
+    dates.push(formatDate(current));
+  }
+  return dates;
 }
+
+// 날짜 포맷
+function formatDate(date) {
+  return date.toISOString().split("T")[0];
+}
+
+// 일별 데이터 가져오기
+async function getDayData(dateInfo) {
+  const date = dateInfo.date || dateInfo;
+  const dateStr = typeof date === "string" ? date : formatDate(date);
+  const [todos, progress, usage] = await Promise.all([
+    getItemsByDate(STORES.TODOS, dateStr),
+    getItemsByDate(STORES.PROGRESS, dateStr),
+    getItemsByDate(STORES.USAGE, dateStr),
+  ]);
+  return {
+    todos: todos || [],
+    progress: progress[0] || null,
+    usage: usage || [],
+  };
+}
+
+// 페이지 로드 시 실행
+document.addEventListener("DOMContentLoaded", init);

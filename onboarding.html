@@ -2,213 +2,113 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>리워드 앱 - 온보딩</title>
-    <link rel="stylesheet" href="css/global_style.css" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>자주 - 온보딩</title>
+    <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/onboarding.css" />
   </head>
   <body>
     <div class="onboarding-container">
-      <div class="onboarding-slides">
-        <!-- 슬라이드 1: 앱 소개 -->
-        <div class="slide active" id="slide1">
-          <div class="slide-content">
-            <img
-              src="assets/icons/app-logo.svg"
-              alt="앱 로고"
-              class="slide-image"
-            />
-            <h1>자주 - 당신의 일상을 더 특별하게</h1>
-            <p>할 일을 완료하고 보상을 받아보세요!</p>
-          </div>
-        </div>
-
-        <!-- 슬라이드 2: 보상 등록 -->
-        <div class="slide" id="slide2">
-          <div class="slide-content">
-            <img
-              src="assets/icons/gift.svg"
-              alt="보상 등록"
-              class="slide-image"
-            />
-            <h2>보상 등록하기</h2>
-            <p>받고 싶은 보상을 확률과 함께 등록하세요.</p>
-          </div>
-        </div>
-
-        <!-- 슬라이드 3: 할 일 작성 -->
-        <div class="slide" id="slide3">
-          <div class="slide-content">
-            <img
-              src="assets/icons/todo.svg"
-              alt="할 일 작성"
-              class="slide-image"
-            />
-            <h2>할 일 작성하기</h2>
-            <p>오늘 해야 할 일을 작성하고 완료해보세요.</p>
-          </div>
-        </div>
-
-        <!-- 슬라이드 4: 보상 받기 -->
-        <div class="slide" id="slide4">
-          <div class="slide-content">
-            <img
-              src="assets/icons/reward.svg"
-              alt="보상 받기"
-              class="slide-image"
-            />
-            <h2>보상 받기</h2>
-            <p>할 일을 모두 완료하면 확률에 따라 보상을 받습니다.</p>
-            <p class="small-text">
-              5번 꽝에 걸리면 다음에는 꽝 확률이 0%가 됩니다!
+      <!-- Step 1: Hero Intro -->
+      <div class="step active" data-step="1">
+        <div class="hero-content">
+          <div class="logo">자주</div>
+          <h1 class="tagline">하고 싶은 유혹을 나중으로</h1>
+          <p class="explanation">할 일을 마쳐야만 보상을 받을 수 있어요.</p>
+          <div class="card">
+            <p class="card-text">
+              자주는 목표를 이루고자 할때 방해가되는 유혹들을 스스로에게 주는
+              보상이라는 컨셉으로 만들어진 자기주도 관리 앱입니다.
             </p>
           </div>
         </div>
+      </div>
 
-        <!-- 슬라이드 5: 보상 사용 -->
-        <div class="slide" id="slide5">
-          <div class="slide-content">
-            <img
-              src="assets/icons/use-reward.svg"
-              alt="보상 사용"
-              class="slide-image"
+      <!-- Step 2: User Goal Input -->
+      <div class="step" data-step="2">
+        <div class="goal-input">
+          <h3>당신의 자기관리 목표는 무엇인가요?</h3>
+          <div class="input-group">
+            <input
+              type="text"
+              id="userGoal"
+              placeholder="예: 매일 책 읽기 20분"
+              required
             />
-            <h2>보상 사용하기</h2>
-            <p>받은 보상을 클릭하여 사용할 수 있습니다.</p>
-          </div>
-        </div>
-
-        <!-- 슬라이드 6: 캘린더 확인 -->
-        <div class="slide" id="slide6">
-          <div class="slide-content">
-            <img
-              src="assets/icons/calendar.svg"
-              alt="캘린더"
-              class="slide-image"
-            />
-            <h2>캘린더로 확인하기</h2>
-            <p>지금까지 작성한 할 일과 받은 보상을 캘린더에서 확인하세요.</p>
           </div>
         </div>
       </div>
 
-      <!-- 페이지 인디케이터 -->
-      <div class="page-indicator">
-        <span class="dot active" data-slide="0"></span>
-        <span class="dot" data-slide="1"></span>
-        <span class="dot" data-slide="2"></span>
-        <span class="dot" data-slide="3"></span>
-        <span class="dot" data-slide="4"></span>
-        <span class="dot" data-slide="5"></span>
+      <!-- Step 3: First Reward Setup -->
+      <div class="step" data-step="3">
+        <div class="reward-setup">
+          <h3>당신의 가장 큰 유혹은?</h3>
+          <div class="input-group">
+            <input
+              type="text"
+              id="rewardName"
+              placeholder="예: 유튜브 보기"
+              required
+            />
+          </div>
+          <div class="input-group">
+            <label for="rewardCost"
+              >이 보상을 위해 필요한 자주는 몇 개인가요?</label
+            >
+            <input type="number" id="rewardCost" min="1" value="1" required />
+          </div>
+
+          <div class="card">
+            <h3>자주는 무엇인가요?</h3>
+            “자주”는 단순한 점수가 아닙니다. 오늘의 인내, 결심, 자기 통제의
+            흔적을 ‘자주’라는 단위로 저장합니다.
+          </div>
+        </div>
       </div>
 
-      <!-- 네비게이션 버튼 -->
-      <div class="navigation-buttons">
-        <button id="prevBtn" class="nav-button" disabled>이전</button>
-        <button id="nextBtn" class="nav-button">다음</button>
-        <button id="startBtn" class="nav-button primary" style="display: none">
+      <!-- Step 4: First TODO -->
+      <div class="step" data-step="4">
+        <div class="todo-setup">
+          <h3>오늘 바로 실천해볼 일을 입력하세요</h3>
+          <div class="input-group">
+            <input
+              type="text"
+              id="todo1"
+              placeholder="첫 번째 할 일"
+              required
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: CTA -->
+      <div class="step" data-step="5">
+        <div class="cta-content">
+          <h2>준비가 완료되었어요!</h2>
+          <p>이제 자기관리의 여정을 시작해볼까요?</p>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="step-navigation">
+        <button id="prevButton" class="btn btn-secondary" disabled>이전</button>
+        <div class="step-indicators">
+          <span class="step-dot active"></span>
+          <span class="step-dot"></span>
+          <span class="step-dot"></span>
+          <span class="step-dot"></span>
+          <span class="step-dot"></span>
+        </div>
+        <button id="nextButton" class="btn btn-primary">다음</button>
+        <button id="startButton" class="btn btn-primary" style="display: none">
           시작하기
         </button>
       </div>
     </div>
 
-    <script type="module">
-      import storage from "js/storage.js";
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const slides = document.querySelectorAll(".slide");
-        const dots = document.querySelectorAll(".dot");
-        const prevBtn = document.getElementById("prevBtn");
-        const nextBtn = document.getElementById("nextBtn");
-        const startBtn = document.getElementById("startBtn");
-
-        let currentSlide = 0;
-        const totalSlides = slides.length;
-
-        // 슬라이드 변경 함수
-        function goToSlide(index) {
-          // 범위 제한
-          if (index < 0) index = 0;
-          if (index >= totalSlides) index = totalSlides - 1;
-
-          // 현재 슬라이드 업데이트
-          currentSlide = index;
-
-          // 모든 슬라이드 숨기기
-          slides.forEach((slide) => slide.classList.remove("active"));
-          dots.forEach((dot) => dot.classList.remove("active"));
-
-          // 현재 슬라이드와 도트 표시
-          slides[currentSlide].classList.add("active");
-          dots[currentSlide].classList.add("active");
-
-          // 버튼 상태 업데이트
-          prevBtn.disabled = currentSlide === 0;
-
-          // 마지막 슬라이드에서는 '다음' 대신 '시작하기' 표시
-          if (currentSlide === totalSlides - 1) {
-            nextBtn.style.display = "none";
-            startBtn.style.display = "block";
-          } else {
-            nextBtn.style.display = "block";
-            startBtn.style.display = "none";
-          }
-        }
-
-        // 이전 버튼 클릭 이벤트
-        prevBtn.addEventListener("click", () => {
-          goToSlide(currentSlide - 1);
-        });
-
-        // 다음 버튼 클릭 이벤트
-        nextBtn.addEventListener("click", () => {
-          goToSlide(currentSlide + 1);
-        });
-
-        // 시작하기 버튼 클릭 이벤트
-        startBtn.addEventListener("click", async () => {
-          // 온보딩 완료 상태 저장
-          await storage.setItem("onboardingCompleted", true);
-
-          // 메인 페이지로 이동
-          window.location.href = "index.html";
-        });
-
-        // 도트 클릭 이벤트
-        dots.forEach((dot, index) => {
-          dot.addEventListener("click", () => {
-            goToSlide(index);
-          });
-        });
-
-        // 스와이프 기능 추가
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        document.addEventListener("touchstart", (e) => {
-          touchStartX = e.changedTouches[0].screenX;
-        });
-
-        document.addEventListener("touchend", (e) => {
-          touchEndX = e.changedTouches[0].screenX;
-          handleSwipe();
-        });
-
-        function handleSwipe() {
-          const swipeThreshold = 50;
-          const diff = touchStartX - touchEndX;
-
-          if (Math.abs(diff) > swipeThreshold) {
-            if (diff > 0) {
-              // 왼쪽으로 스와이프 (다음 슬라이드)
-              goToSlide(currentSlide + 1);
-            } else {
-              // 오른쪽으로 스와이프 (이전 슬라이드)
-              goToSlide(currentSlide - 1);
-            }
-          }
-        }
-      });
-    </script>
+    <script type="module" src="js/onboarding.js"></script>
   </body>
 </html>

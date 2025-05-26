@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>리워드 설정</title>
+    <link rel="stylesheet" href="css/store-setting.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="settings-container">
+      <header class="settings-header">
+        <div class="header-left">
+          <a href="store.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+          </a>
+          <h1>리워드 설정</h1>
+        </div>
+      </header>
+
+      <!-- 리워드 추가/수정 폼 -->
+      <div id="rewardForm" class="reward-form">
+        <div class="form-header">
+          <h2 id="formTitle">새 리워드 추가</h2>
+          <button id="closeFormBtn" class="btn-icon">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <form id="rewardFormElement">
+          <input type="hidden" id="rewardId" />
+          <div class="form-group">
+            <label for="rewardName">리워드 이름</label>
+            <input
+              type="text"
+              id="rewardName"
+              required
+              placeholder="예: 아이스크림"
+            />
+          </div>
+          <div class="form-group">
+            <label for="rewardCost">필요 자주</label>
+            <input
+              type="number"
+              id="rewardCost"
+              required
+              min="1"
+              placeholder="예: 10"
+            />
+          </div>
+          <div class="form-group">
+            <label for="rewardIcon">아이콘 (선택)</label>
+            <div class="icon-selector">
+              <button type="button" class="icon-preview" id="iconPreview">
+                <i class="fas fa-gift"></i>
+              </button>
+              <input
+                type="text"
+                id="rewardIcon"
+                placeholder="Font Awesome 클래스 (예: fa-gift)"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="rewardColor">색상 (선택)</label>
+            <input type="color" id="rewardColor" value="#4A90E2" />
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">저장</button>
+            <button type="button" id="cancelBtn" class="btn-secondary">
+              취소
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- 리워드 목록 -->
+      <div class="reward-list" id="rewardList">
+        <!-- 리워드 항목들이 여기에 동적으로 추가됩니다 -->
+      </div>
+
+      <!-- 플로팅 버튼 -->
+      <button id="addRewardBtn" class="floating-button">
+        <i class="fas fa-plus"></i>
+        <span class="button-text">새 리워드</span>
+      </button>
+
+      <!-- 삭제 확인 모달 -->
+      <div id="deleteModal" class="modal">
+        <div class="modal-content">
+          <h2>리워드 삭제</h2>
+          <p>이 리워드를 삭제하시겠습니까?</p>
+          <div class="modal-actions">
+            <button id="confirmDelete" class="btn-danger">삭제</button>
+            <button id="cancelDelete" class="btn-secondary">취소</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="js/store-setting.js"></script>
+  </body>
+</html>

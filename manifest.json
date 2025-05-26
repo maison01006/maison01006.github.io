@@ -2,20 +2,32 @@
   "name": "자주",
   "short_name": "자주APP",
   "description": "할 일을 완료하고 보상을 받는 앱",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#4a6cf7",
+  "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "/assets/icons/icon128.png",
+      "src": "./assets/icons/icon128.png",
       "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/icons/icon192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/icons/icon512.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
   "orientation": "portrait",
-  "scope": "/",
+  "scope": "./",
   "prefer_related_applications": false,
   "id": "JAJU",
   "categories": ["education"]

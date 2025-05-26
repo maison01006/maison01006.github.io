@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>자주 스토어</title>
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/store.css" />
+  </head>
+  <body>
+    <div class="store-container">
+      <header class="store-header">
+        <h1>자주 스토어</h1>
+      </header>
+
+      <div class="goal-tabs-container">
+        <div class="goal-tabs" id="goalTabs">
+          <!-- 목표 탭이 동적으로 추가됩니다 -->
+        </div>
+      </div>
+
+      <main class="reward-list" id="rewardList">
+        <!-- Rewards will be dynamically inserted here -->
+      </main>
+
+      <!-- Claim Reward Modal -->
+      <div id="claimModal" class="modal">
+        <div class="modal-content">
+          <h2>리워드 사용</h2>
+          <p id="modalMessage"></p>
+          <div class="modal-actions">
+            <button id="confirmClaim" class="btn-primary">사용하기</button>
+            <button id="cancelClaim" class="btn-secondary">취소</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 설정 버튼 -->
+    <a href="store-setting.html" class="floating-btn" id="settingBtn">
+      <i class="fas fa-cog"></i>
+    </a>
+
+    <script type="module" src="js/store.js"></script>
+  </body>
+</html>

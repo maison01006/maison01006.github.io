@@ -3,341 +3,88 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>보상 앱 - 달력</title>
-    <link rel="stylesheet" href="../css/global_style.css" />
-    <link rel="stylesheet" href="../css/calendar.css" />
+    <title>성과 캘린더</title>
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/calendar.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
   </head>
   <body>
-    <div class="header">
-      <a href="index.html" class="back-button">
-        <img
-          src="../assets/icons/back.svg"
-          alt="뒤로가기"
-          width="24"
-          height="24"
-        />
-      </a>
-      <h1>달력</h1>
-    </div>
-
-    <div class="container">
-      <div class="card calendar">
-        <div class="calendar-header">
-          <button id="prevMonth" class="button-secondary">◀</button>
-          <h2 id="currentMonth">2024년 1월</h2>
-          <button id="nextMonth" class="button-secondary">▶</button>
-        </div>
-
-        <div class="calendar-grid">
-          <div class="weekdays">
-            <div>일</div>
-            <div>월</div>
-            <div>화</div>
-            <div>수</div>
-            <div>목</div>
-            <div>금</div>
-            <div>토</div>
+    <div class="calendar-container">
+      <header class="calendar-header">
+        <div class="header-top">
+          <h1>성과 캘린더</h1>
+          <div class="date-navigation">
+            <button id="prevMonth" class="btn-icon">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="current-date">
+              <span id="currentYear">2024</span>년
+              <span id="currentMonth">3</span>월
+            </div>
+            <button id="nextMonth" class="btn-icon">
+              <i class="fas fa-chevron-right"></i>
+            </button>
           </div>
-          <div id="calendarDays" class="days"></div>
         </div>
-      </div>
+      </header>
 
-      <div class="card" id="dayDetails">
-        <h3 id="selectedDate">날짜 선택</h3>
-        <div id="dayContent"></div>
-      </div>
+      <main class="calendar-content">
+        <!-- 캘린더 그리드 -->
+        <section class="calendar-grid" id="calendarGrid">
+          <!-- 날짜 셀이 동적으로 추가됩니다 -->
+        </section>
+
+        <!-- 일별 상세 정보 -->
+        <section id="dayDetail" class="day-detail">
+          <div class="detail-header">
+            <h2 id="detail-date"></h2>
+          </div>
+          <div class="detail-body">
+            <!-- TODO 완료 현황 -->
+            <div class="detail-section">
+              <h3>TODO 완료</h3>
+              <div id="detail-todo" class="todo-list">
+                <!-- TODO 항목들이 동적으로 추가됩니다 -->
+              </div>
+            </div>
+
+            <!-- 자주 획득 -->
+            <div class="detail-section">
+              <h3>자주 획득</h3>
+              <div id="detail-jaju" class="jaju-record">
+                <!-- 자주 기록이 동적으로 추가됩니다 -->
+              </div>
+            </div>
+
+            <!-- 보상 사용 -->
+            <div class="detail-section">
+              <h3>보상 사용</h3>
+              <div id="detail-reward" class="reward-usage">
+                <!-- 보상 사용 기록이 동적으로 추가됩니다 -->
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
 
-    <script>
-      // Storage 클래스 정의
-      class Storage {
-        constructor() {
-          this.dbName = "RewardAppDB";
-          this.dbVersion = 2;
-          this.db = null;
-          this.initialized = false;
-          this.initPromise = this.init();
-        }
+    <script type="module">
+      import { BottomTabNav, Toast, PageWrapper } from "./js/components.js";
 
-        async init() {
-          return new Promise((resolve, reject) => {
-            const request = indexedDB.open(this.dbName, this.dbVersion);
+      // 페이지 래퍼 적용
+      const pageWrapper = new PageWrapper();
+      pageWrapper.mount(document.body);
 
-            request.onerror = () => reject(request.error);
-            request.onsuccess = () => {
-              this.db = request.result;
-              this.initialized = true;
-              resolve();
-            };
+      // 하단 탭 네비게이션 적용
+      const bottomNav = new BottomTabNav("calendar");
+      bottomNav.mount(document.body);
 
-            request.onupgradeneeded = (event) => {
-              const db = event.target.result;
-
-              // Todo 저장소
-              if (!db.objectStoreNames.contains("todos")) {
-                const todoStore = db.createObjectStore("todos", {
-                  keyPath: "id",
-                  autoIncrement: true,
-                });
-                todoStore.createIndex("date", "date", { unique: false });
-              }
-
-              // 보상 저장소
-              if (!db.objectStoreNames.contains("rewards")) {
-                const rewardStore = db.createObjectStore("rewards", {
-                  keyPath: "id",
-                  autoIncrement: true,
-                });
-                rewardStore.createIndex("name", "name", { unique: true });
-              }
-
-              // 보상 사용 기록 저장소
-              if (!db.objectStoreNames.contains("rewardHistory")) {
-                const historyStore = db.createObjectStore("rewardHistory", {
-                  keyPath: "id",
-                  autoIncrement: true,
-                });
-                historyStore.createIndex("date", "date", { unique: false });
-              }
-
-              // 획득한 보상 저장소
-              if (!db.objectStoreNames.contains("earnedRewards")) {
-                const earnedRewardsStore = db.createObjectStore(
-                  "earnedRewards",
-                  {
-                    keyPath: "id",
-                    autoIncrement: true,
-                  }
-                );
-                earnedRewardsStore.createIndex("date", "date", {
-                  unique: false,
-                });
-              }
-            };
-          });
-        }
-
-        async ensureInitialized() {
-          if (!this.initialized) {
-            await this.initPromise;
-          }
-        }
-
-        async getTodos(date) {
-          await this.ensureInitialized();
-          return this.getAll("todos", "date", date);
-        }
-
-        async getRewardHistory(date) {
-          await this.ensureInitialized();
-          return this.getAll("rewardHistory", "date", date);
-        }
-
-        async getAll(storeName, indexName = null, value = null) {
-          await this.ensureInitialized();
-          return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(storeName, "readonly");
-            const store = transaction.objectStore(storeName);
-            let request;
-
-            if (indexName && value) {
-              const index = store.index(indexName);
-              request = index.getAll(value);
-            } else {
-              request = store.getAll();
-            }
-
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
-          });
-        }
-      }
-
-      // Storage 인스턴스 생성
-      const storage = new Storage();
+      // Toast 인스턴스 생성
+      window.toast = new Toast();
     </script>
-    <script>
-      document.addEventListener("DOMContentLoaded", async () => {
-        const calendarDays = document.getElementById("calendarDays");
-        const currentMonth = document.getElementById("currentMonth");
-        const prevMonthBtn = document.getElementById("prevMonth");
-        const nextMonthBtn = document.getElementById("nextMonth");
-        const dayDetails = document.getElementById("dayDetails");
-        const selectedDate = document.getElementById("selectedDate");
-        const dayContent = document.getElementById("dayContent");
-
-        let currentDate = new Date();
-        let selectedDay = null;
-
-        // 한국 시간으로 날짜 문자열 생성 함수
-        function getKoreanDateString(date) {
-          const year = date.getFullYear();
-          const month = String(date.getMonth() + 1).padStart(2, "0");
-          const day = String(date.getDate()).padStart(2, "0");
-          return `${year}-${month}-${day}`;
-        }
-
-        // 달력 초기화
-        function initCalendar() {
-          updateCalendar();
-          loadDayDetails(currentDate);
-        }
-
-        // 달력 업데이트
-        async function updateCalendar() {
-          const year = currentDate.getFullYear();
-          const month = currentDate.getMonth();
-
-          currentMonth.textContent = `${year}년 ${month + 1}월`;
-
-          const firstDay = new Date(year, month, 1);
-          const lastDay = new Date(year, month + 1, 0);
-          const startingDay = firstDay.getDay();
-          const totalDays = lastDay.getDate();
-
-          calendarDays.innerHTML = "";
-
-          // 이전 달의 날짜들
-          for (let i = 0; i < startingDay; i++) {
-            const day = document.createElement("div");
-            day.className = "calendar-day other-month";
-            calendarDays.appendChild(day);
-          }
-
-          // 현재 달의 날짜들
-          for (let i = 1; i <= totalDays; i++) {
-            const day = document.createElement("div");
-            day.className = "calendar-day";
-
-            const date = new Date(year, month, i);
-            const dateStr = getKoreanDateString(date);
-
-            // 날짜 컨테이너 생성
-            const dateContainer = document.createElement("div");
-            dateContainer.className = "date-container";
-            dateContainer.textContent = i;
-
-            // 상태 표시 컨테이너 생성
-            const statusContainer = document.createElement("div");
-            statusContainer.className = "status-container";
-
-            day.appendChild(dateContainer);
-            day.appendChild(statusContainer);
-
-            // Todo와 보상 데이터 로드
-            const todos = await storage.getTodos(dateStr);
-            const history = await storage.getRewardHistory(dateStr);
-            const hasReward = history.some((h) => h.rewardName !== "꽝");
-
-            if (hasReward) {
-              statusContainer.className = "status-container reward";
-            } else if (todos.length > 0) {
-              statusContainer.className = "status-container todo";
-            }
-
-            day.addEventListener("click", () => {
-              document
-                .querySelectorAll(".calendar-day.selected")
-                .forEach((el) => el.classList.remove("selected"));
-              day.classList.add("selected");
-              selectedDay = date;
-              loadDayDetails(date);
-            });
-
-            if (isToday(date)) {
-              day.classList.add("today");
-            }
-            if (
-              selectedDay &&
-              getKoreanDateString(date) === getKoreanDateString(selectedDay)
-            ) {
-              day.classList.add("selected");
-            }
-
-            calendarDays.appendChild(day);
-          }
-        }
-
-        // 날짜 상세 정보 로드
-        async function loadDayDetails(date) {
-          const dateStr = getKoreanDateString(date);
-          selectedDate.textContent = `${date.getFullYear()}년 ${
-            date.getMonth() + 1
-          }월 ${date.getDate()}일`;
-
-          try {
-            // Todo 목록 로드
-            const todos = await storage.getTodos(dateStr);
-
-            // 보상 내역 로드
-            const history = await storage.getRewardHistory(dateStr);
-
-            const reward = history.find((h) => h.rewardName !== "꽝");
-
-            // 상세 정보 표시
-            dayContent.innerHTML = `
-              ${
-                reward
-                  ? `
-                <div class="reward-container">
-                  <span class="icon">⭐</span>
-                  <span class="text">보상: ${reward.rewardName}</span>
-                </div>
-              `
-                  : ""
-              }
-              <div class="todo-list">
-                ${
-                  todos.length === 0
-                    ? '<div class="empty-message">작성된 TODO가 없습니다</div>'
-                    : todos
-                        .map(
-                          (todo) => `
-                    <div class="todo-item">
-                      <div class="todo-text">${todo.text || ""}</div>
-                      <div class="todo-status ${
-                        todo.completed ? "completed" : "incomplete"
-                      }">
-                        ${todo.completed ? "완료" : "미완료"}
-                      </div>
-                    </div>
-                  `
-                        )
-                        .join("")
-                }
-              </div>
-            `;
-          } catch (error) {
-            console.error("날짜 상세 정보 로드 중 오류 발생:", error);
-            dayContent.innerHTML =
-              '<div class="empty-message">데이터를 불러오는 중 오류가 발생했습니다.</div>';
-          }
-        }
-
-        // 오늘 날짜 확인
-        function isToday(date) {
-          const today = new Date();
-          return (
-            date.getDate() === today.getDate() &&
-            date.getMonth() === today.getMonth() &&
-            date.getFullYear() === today.getFullYear()
-          );
-        }
-
-        // 이벤트 리스너
-        prevMonthBtn.addEventListener("click", () => {
-          currentDate.setMonth(currentDate.getMonth() - 1);
-          updateCalendar();
-        });
-
-        nextMonthBtn.addEventListener("click", () => {
-          currentDate.setMonth(currentDate.getMonth() + 1);
-          updateCalendar();
-        });
-
-        // 초기화
-        initCalendar();
-      });
-    </script>
+    <script type="module" src="js/calendar.js"></script>
   </body>
 </html>

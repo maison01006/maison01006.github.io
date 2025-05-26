@@ -1,0 +1,428 @@
+/* Goal Page Layout */
+.goal-page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--spacing-4);
+  min-height: 100vh;
+  background: var(--gray-50);
+}
+
+/* GoalHeader */
+.goal-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+}
+
+.back-button {
+  background: none;
+  border: none;
+  padding: var(--spacing-2);
+  cursor: pointer;
+  color: var(--gray-600);
+  font-size: 1.5rem;
+  transition: color 0.2s;
+}
+
+.back-button:hover {
+  color: var(--gray-800);
+}
+
+.goal-info {
+  flex: 1;
+}
+
+.goal-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--gray-800);
+  margin-bottom: var(--spacing-2);
+}
+
+.goal-description {
+  color: var(--gray-600);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* JajuProgress */
+.jaju-progress {
+  background: white;
+  border-radius: 1rem;
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.progress-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
+}
+
+.current-jaju {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-500);
+}
+
+.separator {
+  color: var(--gray-400);
+}
+
+.required-jaju {
+  color: var(--gray-600);
+}
+
+.jaju-icon {
+  font-size: 1.2rem;
+}
+
+.progress-dots {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.progress-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--gray-200);
+  transition: background-color 0.3s;
+}
+
+.progress-dot.earned {
+  background: var(--primary-500);
+}
+
+/* TodoList */
+.todo-section {
+  background: white;
+  border-radius: 1rem;
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-4);
+}
+
+.section-header h2 {
+  font-size: 1.2rem;
+  color: var(--gray-800);
+}
+
+.add-todo-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  background: var(--primary-500);
+  color: white;
+  border: none;
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-todo-button:hover {
+  background: var(--primary-600);
+}
+
+.todo-list {
+  list-style: none;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.todo-item:last-child {
+  border-bottom: none;
+}
+
+.todo-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gray-300);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.todo-checkbox.checked {
+  background: var(--primary-500);
+  border-color: var(--primary-500);
+}
+
+.todo-text {
+  flex: 1;
+  color: var(--gray-800);
+  transition: color 0.2s;
+}
+
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: var(--gray-500);
+}
+
+.todo-actions {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.todo-action-button {
+  background: none;
+  border: none;
+  padding: var(--spacing-1);
+  cursor: pointer;
+  color: var(--gray-400);
+  transition: color 0.2s;
+}
+
+.todo-action-button:hover {
+  color: var(--gray-600);
+}
+
+/* RewardStatus */
+.reward-section {
+  background: white;
+  border-radius: 1rem;
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.reward-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-2);
+}
+
+.reward-icon {
+  font-size: 1.5rem;
+}
+
+.reward-title {
+  font-size: 1.2rem;
+  color: var(--gray-800);
+}
+
+.reward-description {
+  color: var(--gray-600);
+  margin-bottom: var(--spacing-4);
+}
+
+.reward-button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--primary-500);
+  color: white;
+  border: none;
+  padding: var(--spacing-3);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.reward-button:disabled {
+  background: var(--gray-300);
+  cursor: not-allowed;
+}
+
+.reward-button:not(:disabled):hover {
+  background: var(--primary-600);
+}
+
+/* EmotionReflection */
+.reflection-section {
+  background: white;
+  border-radius: 1rem;
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.emotion-selector {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+.emotion-button {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: var(--spacing-2);
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.emotion-button:hover {
+  background: var(--gray-100);
+}
+
+.emotion-button.selected {
+  background: var(--primary-100);
+}
+
+.reflection-input {
+  position: relative;
+  margin-bottom: var(--spacing-4);
+}
+
+.reflection-input textarea {
+  width: 100%;
+  height: 120px;
+  padding: var(--spacing-3);
+  border: 1px solid var(--gray-200);
+  border-radius: 0.5rem;
+  resize: none;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.reflection-input textarea:focus {
+  outline: none;
+  border-color: var(--primary-500);
+}
+
+.character-count {
+  position: absolute;
+  bottom: var(--spacing-2);
+  right: var(--spacing-2);
+  color: var(--gray-400);
+  font-size: 0.9rem;
+}
+
+.save-reflection-button {
+  width: 100%;
+  background: var(--primary-500);
+  color: white;
+  border: none;
+  padding: var(--spacing-3);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.save-reflection-button:hover {
+  background: var(--primary-600);
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  padding: var(--spacing-4);
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 400px;
+}
+
+.modal-content h3 {
+  margin-bottom: var(--spacing-4);
+  color: var(--gray-800);
+}
+
+.modal-content input {
+  width: 100%;
+  padding: var(--spacing-3);
+  border: 1px solid var(--gray-200);
+  border-radius: 0.5rem;
+  margin-bottom: var(--spacing-4);
+  font-size: 1rem;
+}
+
+.modal-content input:focus {
+  outline: none;
+  border-color: var(--primary-500);
+}
+
+.modal-buttons {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: var(--spacing-2);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.cancel-button {
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border: none;
+}
+
+.cancel-button:hover {
+  background: var(--gray-200);
+}
+
+.submit-button {
+  background: var(--primary-500);
+  color: white;
+  border: none;
+}
+
+.submit-button:hover {
+  background: var(--primary-600);
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .goal-page {
+    padding: var(--spacing-3);
+  }
+
+  .goal-title {
+    font-size: 1.5rem;
+  }
+
+  .add-todo-button .text {
+    display: none;
+  }
+
+  .add-todo-button {
+    padding: var(--spacing-2);
+  }
+
+  .emotion-button {
+    font-size: 1.8rem;
+  }
+}

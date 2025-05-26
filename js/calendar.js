@@ -1,147 +1,241 @@
-import storage from "./storage.js";
-import { formatDate, getKoreanDateString, isToday } from "./utils.js";
+import { STORES, initDB, getItemsByDate, getDB } from "./db.js";
 
-class CalendarManager {
-  constructor() {
-    this.currentDate = new Date();
-    this.selectedDate = new Date();
-    this.init();
-  }
+// DOM 요소
+const calendarGrid = document.getElementById("calendarGrid");
+const dayDetail = document.getElementById("dayDetail");
+const detailDate = document.getElementById("detail-date");
 
-  async init() {
-    this.renderCalendar();
-    this.setupEventListeners();
-    await this.loadSelectedDateData();
-  }
+let currentDate = new Date();
+let db = null;
 
-  renderCalendar() {
-    const year = this.currentDate.getFullYear();
-    const month = this.currentDate.getMonth();
+// DB 초기화
+async function initializeDB() {
+  await initDB();
+  db = await getDB();
+}
 
-    // 달력 헤더 업데이트
-    document.querySelector(".calendar-header h2").textContent = `${year}년 ${
-      month + 1
-    }월`;
+// 날짜 유틸리티 함수
+function formatDate(date) {
+  return date.toISOString().split("T")[0];
+}
 
-    // 요일 헤더 렌더링
-    const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
-    const weekdaysContainer = document.querySelector(".calendar-weekdays");
-    weekdaysContainer.innerHTML = weekdays
-      .map((day) => `<div class="weekday">${day}</div>`)
-      .join("");
+function getMonthDates(date) {
+  const start = new Date(date.getFullYear(), date.getMonth(), 1);
+  const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  const dates = [];
 
-    // 날짜 그리드 렌더링
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysContainer = document.querySelector(".calendar-days");
-    daysContainer.innerHTML = "";
-
-    // 첫 번째 날의 요일만큼 빈 칸 추가
-    for (let i = 0; i < firstDay.getDay(); i++) {
-      daysContainer.appendChild(document.createElement("div"));
-    }
-
-    // 날짜 채우기
-    for (let day = 1; day <= lastDay.getDate(); day++) {
-      const date = new Date(year, month, day);
-      const dayElement = document.createElement("div");
-      dayElement.className = "calendar-day";
-      dayElement.textContent = day;
-
-      if (isToday(date)) {
-        dayElement.classList.add("today");
-      }
-
-      if (this.isSameDate(date, this.selectedDate)) {
-        dayElement.classList.add("selected");
-      }
-
-      dayElement.addEventListener("click", () => this.selectDate(date));
-      daysContainer.appendChild(dayElement);
+  // 이전 달의 날짜들
+  const firstDayOfMonth = start.getDay();
+  if (firstDayOfMonth > 0) {
+    const prevMonthEnd = new Date(date.getFullYear(), date.getMonth(), 0);
+    for (let i = firstDayOfMonth - 1; i >= 0; i--) {
+      const prevDate = new Date(prevMonthEnd);
+      prevDate.setDate(prevMonthEnd.getDate() - i);
+      dates.push({ date: formatDate(prevDate), isCurrentMonth: false });
     }
   }
 
-  setupEventListeners() {
-    // 이전/다음 달 버튼
-    document.getElementById("prevMonth").addEventListener("click", () => {
-      this.currentDate.setMonth(this.currentDate.getMonth() - 1);
-      this.renderCalendar();
-    });
-
-    document.getElementById("nextMonth").addEventListener("click", () => {
-      this.currentDate.setMonth(this.currentDate.getMonth() + 1);
-      this.renderCalendar();
-    });
+  // 현재 달의 날짜들
+  for (let i = 1; i <= end.getDate(); i++) {
+    const current = new Date(date.getFullYear(), date.getMonth(), i);
+    dates.push({ date: formatDate(current), isCurrentMonth: true });
   }
 
-  async loadSelectedDateData() {
-    const dateStr = getKoreanDateString(this.selectedDate);
-
-    // 선택된 날짜 표시 업데이트
-    document.getElementById("selectedDate").textContent = formatDate(
-      this.selectedDate
-    );
-
-    // dayContent 요소 가져오기
-    const dayContent = document.getElementById("dayContent");
-
-    // 할 일 목록과 보상 목록을 표시할 요소 생성
-    dayContent.innerHTML = `
-      <div class="todo-list"></div>
-      <div class="reward-list"></div>
-    `;
-
-    // 할 일 목록 로드
-    const todos = await storage.getTodos(dateStr);
-    this.renderTodos(todos);
-
-    // 보상 목록 로드
-    const rewards = await storage.getRewardHistory(dateStr);
-    this.renderRewards(rewards);
+  // 다음 달의 날짜들
+  const remainingDays = 42 - dates.length;
+  if (remainingDays > 0) {
+    const nextMonthStart = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+    for (let i = 1; i <= remainingDays; i++) {
+      const nextDate = new Date(nextMonthStart);
+      nextDate.setDate(nextMonthStart.getDate() + i - 1);
+      dates.push({ date: formatDate(nextDate), isCurrentMonth: false });
+    }
   }
 
-  renderTodos(todos) {
-    const todoList = document.querySelector(".todo-list");
-    todoList.innerHTML = todos
-      .map(
-        (todo) => `
-          <div class="todo-item ${todo.completed ? "completed" : ""}">
-            <input type="checkbox" ${todo.completed ? "checked" : ""} disabled>
-            <span>${todo.text}</span>
-          </div>
-        `
-      )
-      .join("");
+  // 첫 행과 마지막 행이 모두 이전/다음 달인 경우 해당 행 제거
+  const rows = [];
+  for (let i = 0; i < dates.length; i += 7) {
+    const row = dates.slice(i, i + 7);
+    const isFirstRow = i === 0;
+    const isLastRow = i + 7 >= dates.length;
+
+    const isAllOtherMonth = row.every((item) => !item.isCurrentMonth);
+
+    if (!(isFirstRow || isLastRow) || !isAllOtherMonth) {
+      rows.push(...row);
+    }
   }
 
-  renderRewards(rewards) {
-    const rewardList = document.querySelector(".reward-list");
-    rewardList.innerHTML = rewards
-      .map(
-        (reward) => `
-          <div class="reward-item">
-            <img src="${reward.image}" alt="${reward.name}">
-            <span>${reward.name}</span>
-          </div>
-        `
-      )
-      .join("");
-  }
+  return rows;
+}
 
-  selectDate(date) {
-    this.selectedDate = date;
-    this.renderCalendar();
-    this.loadSelectedDateData();
-  }
+// 캘린더 그리드 생성
+async function createCalendarGrid() {
+  const dates = getMonthDates(currentDate);
+  calendarGrid.innerHTML = "";
 
-  isSameDate(date1, date2) {
-    return (
-      date1.getDate() === date2.getDate() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getFullYear() === date2.getFullYear()
-    );
+  for (const dateInfo of dates) {
+    const dayData = await getDayData(dateInfo);
+    const dayElement = createDayElement(dateInfo, dayData);
+    calendarGrid.appendChild(dayElement);
   }
 }
 
-// 달력 매니저 초기화
-const calendarManager = new CalendarManager();
+// 일별 데이터 가져오기
+async function getDayData(dateInfo) {
+  const date = dateInfo.date || dateInfo;
+  const dateStr = typeof date === "string" ? date : formatDate(date);
+  const [todos, progress, usage] = await Promise.all([
+    getItemsByDate(STORES.TODOS, dateStr),
+    getItemsByDate(STORES.PROGRESS, dateStr),
+    getItemsByDate(STORES.USAGE, dateStr),
+  ]);
+
+  return {
+    todos: todos || [],
+    progress: progress[0] || null,
+    usage: usage || [],
+  };
+}
+
+// 날짜 셀 생성
+function createDayElement(dateInfo, data) {
+  const date = dateInfo.date || dateInfo;
+  const isCurrentMonth =
+    dateInfo.isCurrentMonth !== undefined ? dateInfo.isCurrentMonth : true;
+
+  const day = document.createElement("div");
+  day.className = `calendar-day${!isCurrentMonth ? " other-month" : ""}`;
+
+  const dateObj = new Date(date);
+  day.innerHTML = `
+    <div class="day-header">
+      <span class="day-number">${dateObj.getDate()}</span>
+      ${
+        isCurrentMonth
+          ? `
+        <div class="day-status">
+          ${
+            data.todos.length > 0
+              ? data.todos.every((todo) => todo.completed)
+                ? '<span class="status-icon status-todo completed"><i class="fas fa-check"></i></span>'
+                : '<span class="status-icon status-todo incomplete"><i class="fas fa-clock"></i></span>'
+              : ""
+          }
+          ${
+            data.usage.length > 0
+              ? '<span class="status-icon status-reward"><i class="fas fa-star"></i></span>'
+              : ""
+          }
+        </div>
+      `
+          : ""
+      }
+    </div>
+  `;
+
+  if (isCurrentMonth) {
+    day.addEventListener("click", () => showDayDetail(dateObj, data));
+  }
+
+  return day;
+}
+
+// 일별 상세 정보 표시
+function showDayDetail(date, data) {
+  const detailDate = document.getElementById("detail-date");
+  const detailTodo = document.getElementById("detail-todo");
+  const detailJaju = document.getElementById("detail-jaju");
+  const detailReward = document.getElementById("detail-reward");
+
+  detailDate.textContent = formatDate(date);
+
+  // TODO 표시
+  if (data.todos && data.todos.length > 0) {
+    detailTodo.innerHTML = data.todos
+      .map(
+        (todo) => `
+      <div class="todo-item ${todo.completed ? "completed" : ""}">
+        <span>${todo.title}</span>
+      </div>
+    `
+      )
+      .join("");
+  } else {
+    detailTodo.innerHTML =
+      '<div class="empty-message">기록된 TODO가 없습니다.</div>';
+  }
+
+  // 자주 기록 표시
+  console.log(data);
+  if (data.progress) {
+    detailJaju.innerHTML = `
+      
+        <span>1자주 획득</span>
+    `;
+  } else {
+    detailJaju.innerHTML =
+      '<div class="empty-message">기록된 자주 기록이 없습니다.</div>';
+  }
+
+  // 보상 사용 표시
+  if (data.rewardUsage && data.rewardUsage.length > 0) {
+    detailReward.innerHTML = data.rewardUsage
+      .map(
+        (reward) => `
+      <div class="reward-item">
+        <span>${reward}</span>
+      </div>
+    `
+      )
+      .join("");
+  } else {
+    detailReward.innerHTML =
+      '<div class="empty-message">사용된 보상이 없습니다.</div>';
+  }
+
+  dayDetail.classList.add("active");
+}
+
+// 날짜 네비게이션 업데이트
+function updateDateNavigation() {
+  const yearElement = document.getElementById("currentYear");
+  const monthElement = document.getElementById("currentMonth");
+
+  yearElement.textContent = currentDate.getFullYear();
+  monthElement.textContent = currentDate.getMonth() + 1;
+
+  // 캘린더 그리드 업데이트
+  refreshCalendar();
+}
+
+// 캘린더 새로고침
+async function refreshCalendar() {
+  if (!db) {
+    await initializeDB();
+  }
+  await createCalendarGrid();
+}
+
+// 페이지 로드 시 초기화
+document.addEventListener("DOMContentLoaded", async () => {
+  await initializeDB();
+  updateDateNavigation();
+
+  // 현재 날짜의 상세 정보 표시
+  const today = new Date();
+  const todayData = await getDayData(formatDate(today));
+  showDayDetail(today, todayData);
+});
+
+// 이전 달로 이동
+document.getElementById("prevMonth").addEventListener("click", () => {
+  currentDate.setMonth(currentDate.getMonth() - 1);
+  updateDateNavigation();
+});
+
+// 다음 달로 이동
+document.getElementById("nextMonth").addEventListener("click", () => {
+  currentDate.setMonth(currentDate.getMonth() + 1);
+  updateDateNavigation();
+});
