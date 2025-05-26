@@ -48,10 +48,9 @@ createGoalForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const goalData = {
-    id: Date.now().toString(),
     title: document.getElementById("goalTitle").value,
     description: document.getElementById("goalDescription").value,
-    date: new Date().toISOString().split("T")[0],
+    date: getToday(),
   };
 
   try {
@@ -72,7 +71,11 @@ createGoalForm.addEventListener("submit", async (e) => {
 });
 
 // 오늘 날짜 가져오기
-const getToday = () => new Date().toISOString().split("T")[0];
+const getToday = () => {
+  const now = new Date();
+  const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000)); // UTC+9
+  return koreaTime.toISOString().split('T')[0];
+};
 
 // 코인 애니메이션 생성
 function createCoinAnimation(x, y) {
@@ -163,7 +166,7 @@ async function updateProgress() {
   goalProgressList.innerHTML = "";
 
   goals.forEach((goal) => {
-    const goalTodos = todos.filter((todo) => todo.goalId === goal.id);
+    const goalTodos = todos.filter((todo) => todo.goalId === String(goal.id));
     const goalCompletedTodos = goalTodos.filter(
       (todo) => todo.completed
     ).length;
@@ -208,7 +211,7 @@ async function renderGoalCards() {
 
   for (const goal of goals) {
     const goalTodos = todos
-      .filter((todo) => todo.goalId === goal.id)
+      .filter((todo) => todo.goalId === String(goal.id))
       .sort((a, b) => {
         if (a.completed !== b.completed) {
           return a.completed ? 1 : -1;
@@ -216,7 +219,6 @@ async function renderGoalCards() {
         return new Date(a.date) - new Date(b.date);
       });
 
-    const goalReward = rewards.find((reward) => reward.goalId === goal.id);
     const goalProgress = progress.filter((p) => p.goalId === goal.id);
     const totalCoins = goalProgress.reduce((sum, p) => sum + p.amount, 0);
 
@@ -247,7 +249,7 @@ async function renderGoalCards() {
             .slice(0, 2)
             .map(
               (todo) => `
-            <div class="todo-item" data-todo-id="${todo.goalId}">
+            <div class="todo-item" data-todo-id="${todo.id}">
               <div class="todo-checkbox ${
                 todo.completed ? "checked" : ""
               }"></div>
@@ -395,7 +397,7 @@ async function renderGoalCards() {
             .slice(2)
             .map(
               (todo) => `
-            <div class="todo-item" data-todo-id="${todo.goalId}">
+            <div class="todo-item" data-todo-id="${todo.id}">
               <div class="todo-checkbox ${
                 todo.completed ? "checked" : ""
               }"></div>
@@ -420,7 +422,7 @@ async function renderGoalCards() {
               todoItem.hasEventListener = true;
               todoItem.addEventListener("click", async () => {
                 const todoId = todoItem.dataset.todoId;
-                const todo = todos.find((t) => t.goalId === todoId);
+                const todo = todos.find((t) => t.id === parseInt(todoId));
                 if (!todo) return;
 
                 const checkbox = todoItem.querySelector(".todo-checkbox");
@@ -435,24 +437,17 @@ async function renderGoalCards() {
                 text.classList.toggle("completed");
 
                 try {
+                  console.log(todo);
                   await updateItem(STORES.TODOS, todo);
                   await updateTodayProgress();
                   const progressText = card.querySelector(".goal-progress");
-                  const completedCount = goalTodos.filter(
-                    (t) => t.completed
-                  ).length;
+                  const completedCount = goalTodos.filter((t) => t.completed).length;
                   progressText.textContent = `${completedCount}/${goalTodos.length} 완료`;
                 } catch (error) {
-                  window.toast.show(
-                    "할 일 상태 업데이트에 실패했습니다.",
-                    "error"
-                  );
+                  window.toast.show("할 일 상태 업데이트에 실패했습니다.", "error");
                 }
 
-                const isAllCompleted = await areAllTodosCompleted(
-                  today,
-                  goal.id
-                );
+                const isAllCompleted = await areAllTodosCompleted(today, goal.id);
                 if (isAllCompleted) {
                   await handleCoinEarned(goal.id);
                 }
@@ -471,7 +466,9 @@ async function renderGoalCards() {
         todoItem.hasEventListener = true;
         todoItem.addEventListener("click", async () => {
           const todoId = todoItem.dataset.todoId;
-          const todo = todos.find((t) => t.goalId === todoId);
+          console.log(todoId);
+          console.log(todos);
+          const todo = todos.find((t) => t.id === parseInt(todoId));
           if (!todo) return;
 
           const checkbox = todoItem.querySelector(".todo-checkbox");
@@ -514,7 +511,7 @@ async function renderGoalCards() {
 
       const todo = {
         title,
-        goalId: goal.id,
+        goalId: String(goal.id),
         date: getToday(),
         completed: false,
       };
@@ -566,7 +563,7 @@ async function updateTodayProgress() {
   goalProgressList.innerHTML = "";
 
   goals.forEach((goal) => {
-    const goalTodos = todos.filter((todo) => todo.goalId === goal.id);
+    const goalTodos = todos.filter((todo) => todo.goalId === String(goal.id));
     const goalCompletedTodos = goalTodos.filter(
       (todo) => todo.completed
     ).length;
@@ -697,9 +694,10 @@ laterButton.addEventListener("click", hideInstallPwaModal);
 // 주간 날짜 배열 생성
 function getWeekDates(date) {
   const dates = [];
+  const koreaDate = new Date(date.getTime() + (9 * 60 * 60 * 1000)); // UTC+9
   for (let i = 6; i >= 0; i--) {
-    const current = new Date(date);
-    current.setDate(date.getDate() - i);
+    const current = new Date(koreaDate);
+    current.setDate(koreaDate.getDate() - i);
     dates.push(formatDate(current));
   }
   return dates;
@@ -707,7 +705,8 @@ function getWeekDates(date) {
 
 // 날짜 포맷
 function formatDate(date) {
-  return date.toISOString().split("T")[0];
+  const koreaTime = new Date(date.getTime() + (9 * 60 * 60 * 1000)); // UTC+9
+  return koreaTime.toISOString().split('T')[0];
 }
 
 // 일별 데이터 가져오기

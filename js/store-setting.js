@@ -27,7 +27,6 @@ const rewardIconInput = document.getElementById("rewardIcon");
 const rewardColorInput = document.getElementById("rewardColor");
 const iconPreview = document.getElementById("iconPreview");
 
-let currentRewardId = null;
 let currentGoalId = null;
 let db = null;
 
@@ -45,14 +44,14 @@ function showForm(isEdit = false) {
     : "새 리워드 추가";
   if (!isEdit) {
     rewardFormElement.reset();
-    currentRewardId = null;
+    currentGoalId = null;
   }
 }
 
 function hideForm() {
   rewardForm.style.display = "none";
   rewardFormElement.reset();
-  currentRewardId = null;
+  currentGoalId = null;
 }
 
 // 아이콘 미리보기 업데이트
@@ -102,36 +101,37 @@ function createRewardItem(reward) {
 
 // 리워드 수정
 async function editReward(reward) {
-  currentRewardId = reward.goalId;
+  currentGoalId = reward.id;
   rewardNameInput.value = reward.title;
   rewardCostInput.value = reward.cost;
+  rewardIconInput.value = reward.icon || '';
+  rewardColorInput.value = reward.color || '#4A90E2';
   updateIconPreview();
   showForm(true);
 }
 
 // 삭제 모달 표시
 function showDeleteModal(rewardId) {
-  currentRewardId = rewardId;
+  currentGoalId = rewardId;
   deleteModal.classList.add("active");
 }
 
 // 리워드 목록 새로고침
-async function refreshRewardList() {
+async function refreshRewardList(goalId) {
   try {
     const transaction = db.transaction([STORES.REWARDS], "readonly");
     const store = transaction.objectStore(STORES.REWARDS);
-    const request = store.getAll();
+    const index = store.index("goalId");
+    const request = index.getAll(parseInt(goalId));
 
     request.onsuccess = () => {
       rewardList.innerHTML = "";
       const rewards = request.result;
 
-      // 현재 목표의 리워드만 필터링
-      const filteredRewards = rewards.filter(
-        (reward) => String(reward.goalId) === String(currentGoalId)
-      );
+      console.log('리워드 목록:', rewards);
+      console.log('현재 목표 ID:', goalId);
 
-      if (filteredRewards.length === 0) {
+      if (rewards.length === 0) {
         const emptyMessage = document.createElement("div");
         emptyMessage.className = "empty-message";
         emptyMessage.textContent = "등록된 리워드가 없습니다.";
@@ -139,7 +139,7 @@ async function refreshRewardList() {
         return;
       }
 
-      filteredRewards.forEach((reward) => {
+      rewards.forEach((reward) => {
         rewardList.appendChild(createRewardItem(reward));
       });
     };
@@ -154,21 +154,23 @@ async function handleFormSubmit(event) {
   event.preventDefault();
 
   const reward = {
-    id: currentGoalId, // 목표 ID를 보상의 ID로 사용
     title: rewardNameInput.value.trim(),
     cost: parseInt(rewardCostInput.value),
+    goalId: parseInt(getGoalIdFromUrl()),
+    icon: rewardIconInput.value.trim() || 'fa-gift',
+    color: rewardColorInput.value || '#4A90E2'
   };
 
   try {
-    if (currentRewardId) {
-      reward.goalId = currentRewardId;
+    if (currentGoalId) {
+      reward.id = parseInt(currentGoalId);
       await updateItem(STORES.REWARDS, reward);
     } else {
       await addItem(STORES.REWARDS, reward);
     }
 
     hideForm();
-    refreshRewardList();
+    refreshRewardList(getGoalIdFromUrl());
   } catch (error) {
     console.error("리워드 저장 실패:", error);
     alert("리워드 저장에 실패했습니다.");
@@ -177,10 +179,10 @@ async function handleFormSubmit(event) {
 
 // 삭제 처리
 async function handleDelete() {
-  if (!currentRewardId) return;
+  if (!currentGoalId) return;
 
   try {
-    await deleteItem(STORES.REWARDS, currentRewardId);
+    await deleteItem(STORES.REWARDS, currentGoalId);
     deleteModal.classList.remove("active");
     refreshRewardList();
   } catch (error) {
@@ -198,7 +200,7 @@ rewardIconInput.addEventListener("input", updateIconPreview);
 confirmDelete.addEventListener("click", handleDelete);
 cancelDelete.addEventListener("click", () => {
   deleteModal.classList.remove("active");
-  currentRewardId = null;
+  currentGoalId = null;
 });
 
 // 초기화
@@ -217,7 +219,7 @@ async function initialize() {
       return;
     }
 
-    refreshRewardList();
+    refreshRewardList(currentGoalId);
     hideForm();
   } catch (error) {
     console.error("초기화 실패:", error);

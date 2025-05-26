@@ -28,9 +28,10 @@ export async function initDB() {
 
       // 할 일 스토어
       const todosStore = db.createObjectStore(STORES.TODOS, {
-        keyPath: "goalId",
-        autoIncrement: false,
+        keyPath: "id",
+        autoIncrement: true,
       });
+      todosStore.createIndex("goalId", "goalId", { unique: false });
       todosStore.createIndex("date", "date", { unique: false });
       todosStore.createIndex("completed", "completed", { unique: false });
 
@@ -44,26 +45,30 @@ export async function initDB() {
 
       // 보상 스토어
       const rewardsStore = db.createObjectStore(STORES.REWARDS, {
-        keyPath: "goalId",
-        autoIncrement: false,
+        keyPath: "id",
+        autoIncrement: true,
       });
+      rewardsStore.createIndex("goalId", "goalId", { unique: false });
       rewardsStore.createIndex("date", "date", { unique: false });
       rewardsStore.createIndex("cost", "cost", { unique: false });
 
       // 보상 사용 기록 스토어
       const usageStore = db.createObjectStore(STORES.USAGE, {
-        keyPath: "goalId",
-        autoIncrement: false,
+        keyPath: "id",
+        autoIncrement: true,
       });
+      usageStore.createIndex("goalId", "goalId", { unique: false });
       usageStore.createIndex("date", "date", { unique: false });
       usageStore.createIndex("rewardId", "rewardId", { unique: false });
 
       // 진행 상황 스토어 (자주 획득 기록)
       const progressStore = db.createObjectStore(STORES.PROGRESS, {
-        keyPath: "goalId",
-        autoIncrement: false,
+        keyPath: "id",
+        autoIncrement: true,
       });
+      progressStore.createIndex("goalId", "goalId", { unique: false });
       progressStore.createIndex("date", "date", { unique: false });
+      
       const settingsStore = db.createObjectStore(STORES.SETTINGS, {
         keyPath: "id",
         autoIncrement: true,
