@@ -119,6 +119,7 @@ body {
   padding: 1.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
+  position: relative;
 }
 
 .reward-card:hover {
@@ -294,4 +295,153 @@ body {
   .floating-btn:active {
     background-color: var(--primary-color-dark);
   }
+}
+
+.reward-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.kebab-button {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s ease;
+}
+
+.kebab-button:hover {
+  color: #333;
+}
+
+.action-modal {
+  position: absolute;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 120px;
+  right: 0;
+  top: 100%;
+}
+
+.action-modal-content {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+}
+
+.action-modal-content button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: #333;
+  transition: background-color 0.2s ease;
+}
+
+.action-modal-content button:hover {
+  background-color: #f5f5f5;
+}
+
+.action-modal-content .edit-reward-button {
+  color: #007bff;
+}
+
+.action-modal-content .delete-reward-button {
+  color: #dc3545;
+}
+
+.action-modal-content button i {
+  width: 16px;
+  text-align: center;
+}
+
+.add-reward-button-container {
+  position: fixed;
+  bottom: 5.5rem; /* 하단 네비게이션 위 20px */
+  width: 100%;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10%; /* 좌우 여백을 10%로 설정하여 버튼이 80% 너비를 차지하도록 함 */
+}
+
+/* 보상 추가 버튼 */
+.add-reward-button {
+  width: 100%; /* 컨테이너 내에서 100% 너비를 차지하도록 설정 */
+  height: 3.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  z-index: 100;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.add-reward-button i {
+  font-size: 1.5rem;
+}
+
+.add-reward-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.add-reward-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@media (hover: none) {
+  .add-reward-button:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .add-reward-button:active {
+    background-color: var(--primary-color-dark);
+  }
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary-color);
 }

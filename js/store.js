@@ -5,6 +5,7 @@ import {
   addItem,
   getItemsByDate,
   getDB,
+  deleteItem,
 } from "./db.js";
 import { BottomTabNav, Toast, PageWrapper } from "./components.js";
 
@@ -57,16 +58,145 @@ async function addRewardHistory(reward) {
   });
 }
 
+// 리워드 수정 함수
+async function editReward(reward) {
+  const modal = document.createElement("div");
+  modal.className = "modal active";
+  modal.innerHTML = `
+    <div class="modal-content">
+      <h2>리워드 수정</h2>
+      <div class="form-group">
+        <label for="rewardName">보상 이름</label>
+        <input type="text" id="rewardName" value="${reward.title}" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="rewardCost">자주 비용</label>
+        <input type="number" id="rewardCost" value="${reward.cost}" class="form-control">
+      </div>
+      <div class="modal-actions">
+        <button id="cancelEdit" class="btn-secondary">취소</button>
+        <button id="saveEdit" class="btn-primary">저장</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const closeModal = () => {
+    modal.remove();
+  };
+
+  const cancelButton = modal.querySelector("#cancelEdit");
+  const saveButton = modal.querySelector("#saveEdit");
+  const nameInput = modal.querySelector("#rewardName");
+  const costInput = modal.querySelector("#rewardCost");
+
+  cancelButton.addEventListener("click", closeModal);
+
+  saveButton.addEventListener("click", async () => {
+    const newTitle = nameInput.value.trim();
+    const newCost = parseInt(costInput.value);
+
+    if (!newTitle) {
+      window.toast.show("보상 이름을 입력해주세요.", "error");
+      return;
+    }
+
+    if (isNaN(newCost) || newCost <= 0) {
+      window.toast.show("유효한 자주 비용을 입력해주세요.", "error");
+      return;
+    }
+
+    try {
+      const updatedReward = {
+        ...reward,
+        title: newTitle,
+        cost: newCost,
+      };
+
+      await updateItem(STORES.REWARDS, updatedReward);
+      await renderRewards();
+      window.toast.show("보상이 수정되었습니다.", "success");
+      closeModal();
+    } catch (error) {
+      window.toast.show("보상 수정에 실패했습니다.", "error");
+    }
+  });
+}
+
 function createRewardCard(reward) {
   const card = document.createElement("div");
   card.className = "reward-card";
   card.innerHTML = `
-        <h3 class="reward-name">${reward.title}</h3>
-        <p class="reward-cost">${reward.cost} 자주</p>
-        <button class="claim-button">
-            사용하기
+    <div class="reward-header">
+      <h3 class="reward-name">${reward.title}</h3>
+      <button class="kebab-button">
+        <i class="fas fa-ellipsis-v"></i>
+      </button>
+    </div>
+    <p class="reward-cost">${reward.cost} 자주</p>
+    <button class="claim-button">
+      사용하기
+    </button>
+  `;
+
+  // 케밥 메뉴 클릭 이벤트
+  const kebabButton = card.querySelector(".kebab-button");
+  kebabButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const modal = document.createElement("div");
+    modal.className = "action-modal";
+    modal.innerHTML = `
+      <div class="action-modal-content">
+        <button class="edit-reward-button">
+          <i class="fas fa-edit"></i>
+          <span>수정</span>
         </button>
+        <button class="delete-reward-button">
+          <i class="fas fa-trash"></i>
+          <span>삭제</span>
+        </button>
+      </div>
     `;
+
+    // 모달 위치 설정
+    const rect = kebabButton.getBoundingClientRect();
+    modal.style.top = `${rect.bottom + window.scrollY}px`;
+    modal.style.right = `${window.innerWidth - rect.right}px`;
+
+    // 모달 닫기 이벤트
+    const closeModal = () => {
+      modal.remove();
+      document.removeEventListener("click", closeModal);
+    };
+    document.addEventListener("click", closeModal);
+
+    // 수정 버튼 클릭 이벤트
+    const editButton = modal.querySelector(".edit-reward-button");
+    editButton.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      closeModal();
+      await editReward(reward);
+    });
+
+    // 삭제 버튼 클릭 이벤트
+    const deleteButton = modal.querySelector(".delete-reward-button");
+    deleteButton.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      if (confirm("이 보상을 삭제하시겠습니까?")) {
+        try {
+          await deleteItem(STORES.REWARDS, reward.id);
+          await renderRewards();
+          window.toast.show("보상이 삭제되었습니다.", "success");
+        } catch (error) {
+          window.toast.show("보상 삭제에 실패했습니다.", "error");
+        }
+      }
+      closeModal();
+    });
+
+    document.body.appendChild(modal);
+  });
 
   const claimButton = card.querySelector(".claim-button");
   claimButton.addEventListener("click", () => showClaimModal(reward));
@@ -195,12 +325,13 @@ async function initialize() {
     // Toast 인스턴스 생성
     window.toast = new Toast();
 
-    // 설정 버튼에 현재 선택된 목표 ID 추가
-    const settingBtn = document.getElementById("settingBtn");
-    settingBtn.addEventListener("click", (e) => {
+    // 보상 추가 버튼 클릭 이벤트
+    const addRewardButton = document.getElementById("addRewardButton");
+    addRewardButton.addEventListener("click", () => {
       if (currentGoalId) {
-        e.preventDefault();
         window.location.href = `store-setting.html?goalId=${currentGoalId}`;
+      } else {
+        window.toast.show("목표를 먼저 선택해주세요.", "error");
       }
     });
 
@@ -217,7 +348,7 @@ async function initialize() {
       const firstTab = goalTabs.querySelector(".goal-tab");
       firstTab.classList.add("active");
       currentGoalId = goals[0].id;
-      window.currentGoalId = goals[0].id; // 전역 변수에도 저장
+      window.currentGoalId = goals[0].id;
     }
 
     // 리워드 목록 렌더링

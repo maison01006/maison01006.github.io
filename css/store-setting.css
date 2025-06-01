@@ -133,6 +133,10 @@ body {
   display: flex;
   gap: 1rem;
   margin-top: 2rem;
+  justify-content: center;
+}
+.form-actions button {
+  width: 100%;
 }
 
 /* 버튼 스타일 */

@@ -250,21 +250,22 @@ body {
 }
 
 .status-icon {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
   flex-shrink: 0;
 }
 
 @media (min-width: 768px) {
   .status-icon {
-    width: 20px;
-    height: 20px;
-    font-size: 0.8rem;
+    width: 24px;
+    height: 24px;
+    font-size: 0.9rem;
   }
 }
 

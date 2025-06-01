@@ -73,8 +73,8 @@ createGoalForm.addEventListener("submit", async (e) => {
 // 오늘 날짜 가져오기
 const getToday = () => {
   const now = new Date();
-  const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000)); // UTC+9
-  return koreaTime.toISOString().split('T')[0];
+  const koreaTime = new Date(now.getTime() + 9 * 60 * 60 * 1000); // UTC+9
+  return koreaTime.toISOString().split("T")[0];
 };
 
 // 코인 애니메이션 생성
@@ -117,7 +117,7 @@ function showCongratsModal() {
 // 모든 todo가 완료되었는지 확인하는 함수
 async function areAllTodosCompleted(today, goalId) {
   const todos = await getItemsByDate(STORES.TODOS, today);
-  const goalTodos = todos.filter((todo) => todo.goalId === goalId);
+  const goalTodos = todos.filter((todo) => todo.goalId === String(goalId));
   return goalTodos.length > 0 && goalTodos.every((todo) => todo.completed);
 }
 
@@ -146,7 +146,6 @@ async function handleCoinEarned(goalId) {
 async function updateProgress() {
   const todos = await getItemsByDate(STORES.TODOS, getToday());
   const goals = await getItemsByAll(STORES.GOALS);
-  await updateCoinCount();
   // 전체 진행률 계산
   const totalTodos = todos.length;
   const completedTodos = todos.filter((todo) => todo.completed).length;
@@ -190,15 +189,6 @@ async function updateProgress() {
   });
 }
 
-// 코인 수 업데이트
-async function updateCoinCount() {
-  const today = new Date().toISOString().split("T")[0];
-  const progress = await getItemsByDate(STORES.PROGRESS, today);
-  const goals = await getItemsByAll(STORES.GOALS);
-  const totalCoins = progress.reduce((sum, p) => sum + p.amount, 0);
-  todayCoinCount.textContent = `${totalCoins} / ${goals.length}`;
-}
-
 // 목표 카드 목록 렌더링
 async function renderGoalCards() {
   const today = new Date().toISOString().split("T")[0];
@@ -236,10 +226,15 @@ async function renderGoalCards() {
               <span class="coin-amount">${totalCoins}</span>
             </span>
           </div>
-          <p class="goal-progress">${
-            goalTodos.filter((todo) => todo.completed).length
-          }/${goalTodos.length} 완료</p>
+          <div class="goal-actions">
+            <button class="kebab-button">
+              <i class="fas fa-ellipsis-v"></i>
+            </button>
+          </div>
         </div>
+        <p class="goal-progress">${
+          goalTodos.filter((todo) => todo.completed).length
+        }/${goalTodos.length} 완료</p>
         <div class="add-todo-item">
           <input type="text" class="todo-input" placeholder="할 일 추가하기">
           <button class="add-todo-button">+</button>
@@ -271,108 +266,91 @@ async function renderGoalCards() {
           }
         </div>
       </div>
-      <div class="goal-actions">
-        <button class="edit-goal-button" title="목표 수정">
-          <i class="fas fa-edit"></i>
-        </button>
-        <button class="delete-goal-button" title="목표 삭제">
-          <i class="fas fa-trash"></i>
-        </button>
-      </div>
     `;
 
-    // 스와이프 기능 구현
-    let startX = 0;
-    let currentX = 0;
-    let isSwiping = false;
+    // 케밥 메뉴 클릭 이벤트
+    const kebabButton = card.querySelector(".kebab-button");
+    kebabButton.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const modal = document.createElement("div");
+      modal.className = "action-modal";
+      modal.innerHTML = `
+        <div class="action-modal-content">
+          <button class="edit-goal-button">
+            <i class="fas fa-edit"></i>
+            <span>수정</span>
+          </button>
+          <button class="delete-goal-button">
+            <i class="fas fa-trash"></i>
+            <span>삭제</span>
+          </button>
+        </div>
+      `;
 
-    // card.addEventListener("touchstart", (e) => {
-    //   startX = e.touches[0].clientX;
-    //   isSwiping = true;
-    //   card.classList.add("swiping");
-    // });
+      // 모달 위치 설정
+      const rect = kebabButton.getBoundingClientRect();
+      modal.style.top = `${rect.bottom + window.scrollY}px`;
+      modal.style.right = `${window.innerWidth - rect.right}px`;
 
-    // card.addEventListener("touchmove", (e) => {
-    //   if (!isSwiping) return;
-    //   currentX = e.touches[0].clientX;
-    //   const diff = currentX - startX;
+      // 모달 닫기 이벤트
+      const closeModal = () => {
+        modal.remove();
+        document.removeEventListener("click", closeModal);
+      };
+      document.addEventListener("click", closeModal);
 
-    //   if (diff < 0) {
-    //     // 왼쪽으로만 스와이프 가능
-    //     const content = card.querySelector(".goal-card-content");
-    //     content.style.transform = `translateX(${diff}px)`;
-    //   }
-    // });
+      // 수정 버튼 클릭 이벤트
+      const editButton = modal.querySelector(".edit-goal-button");
+      editButton.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        const titleElement = card.querySelector(".goal-title");
+        titleElement.contentEditable = "true";
+        titleElement.focus();
+        closeModal();
+      });
 
-    // card.addEventListener("touchend", () => {
-    //   isSwiping = false;
-    //   card.classList.remove("swiping");
+      // 삭제 버튼 클릭 이벤트
+      const deleteButton = modal.querySelector(".delete-goal-button");
+      deleteButton.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        if (
+          confirm(
+            "이 목표를 삭제하시겠습니까? 관련된 모든 할 일도 함께 삭제됩니다."
+          )
+        ) {
+          try {
+            const relatedTodos = todos.filter(
+              (todo) => todo.goalId === goal.id
+            );
+            for (const todo of relatedTodos) {
+              await deleteItem(STORES.TODOS, todo.id);
+            }
+            await deleteItem(STORES.GOALS, goal.id);
+            await renderGoalCards();
+            await updateTodayProgress();
+            window.toast.show("목표가 삭제되었습니다.", "success");
+          } catch (error) {
+            window.toast.show("목표 삭제에 실패했습니다.", "error");
+          }
+        }
+        closeModal();
+      });
 
-    //   const content = card.querySelector(".goal-card-content");
-    //   const diff = currentX - startX;
+      document.body.appendChild(modal);
+    });
 
-    //   if (diff < -50) {
-    //     // 50px 이상 스와이프하면 버튼 표시
-    //     card.classList.add("swiped");
-    //     content.style.transform = "translateX(-100px)";
-    //   } else {
-    //     // 원위치로 복귀
-    //     card.classList.remove("swiped");
-    //     content.style.transform = "translateX(0)";
-    //   }
-    // });
-
-    // 목표 수정 버튼 클릭 이벤트
-    const editButton = card.querySelector(".edit-goal-button");
+    // 목표 수정 이벤트
     const titleElement = card.querySelector(".goal-title");
-
-    editButton.addEventListener("click", async () => {
-      const isEditing = titleElement.contentEditable === "true";
-
-      if (isEditing) {
+    titleElement.addEventListener("blur", async () => {
+      if (titleElement.contentEditable === "true") {
         titleElement.contentEditable = "false";
-        editButton.innerHTML = '<i class="fas fa-edit"></i>';
-
         try {
           goal.title = titleElement.textContent.trim();
           await updateItem(STORES.GOALS, goal);
           window.toast.show("목표가 수정되었습니다.", "success");
-
-          // 수정 완료 후 카드 원위치
-          card.classList.remove("swiped");
-          card.querySelector(".goal-card-content").style.transform =
-            "translateX(0)";
         } catch (error) {
           window.toast.show("목표 수정에 실패했습니다.", "error");
           titleElement.textContent = goal.title;
-        }
-      } else {
-        titleElement.contentEditable = "true";
-        titleElement.focus();
-        editButton.innerHTML = '<i class="fas fa-check"></i>';
-      }
-    });
-
-    // 목표 삭제 버튼 클릭 이벤트
-    const deleteButton = card.querySelector(".delete-goal-button");
-    deleteButton.addEventListener("click", async () => {
-      if (
-        confirm(
-          "이 목표를 삭제하시겠습니까? 관련된 모든 할 일도 함께 삭제됩니다."
-        )
-      ) {
-        try {
-          const relatedTodos = todos.filter((todo) => todo.goalId === goal.id);
-          for (const todo of relatedTodos) {
-            await deleteItem(STORES.TODOS, todo.id);
-          }
-
-          await deleteItem(STORES.GOALS, goal.id);
-          await renderGoalCards();
-          await updateTodayProgress();
-          window.toast.show("목표가 삭제되었습니다.", "success");
-        } catch (error) {
-          window.toast.show("목표 삭제에 실패했습니다.", "error");
         }
       }
     });
@@ -421,8 +399,8 @@ async function renderGoalCards() {
             if (!todoItem.hasEventListener) {
               todoItem.hasEventListener = true;
               todoItem.addEventListener("click", async () => {
-                const todoId = todoItem.dataset.todoId;
-                const todo = todos.find((t) => t.id === parseInt(todoId));
+                const todoId = parseInt(todoItem.dataset.todoId);
+                const todo = todos.find((t) => t.id === todoId);
                 if (!todo) return;
 
                 const checkbox = todoItem.querySelector(".todo-checkbox");
@@ -437,17 +415,26 @@ async function renderGoalCards() {
                 text.classList.toggle("completed");
 
                 try {
-                  console.log(todo);
+                  console.log("Updating todo:", todo);
                   await updateItem(STORES.TODOS, todo);
                   await updateTodayProgress();
                   const progressText = card.querySelector(".goal-progress");
-                  const completedCount = goalTodos.filter((t) => t.completed).length;
+                  const completedCount = goalTodos.filter(
+                    (t) => t.completed
+                  ).length;
                   progressText.textContent = `${completedCount}/${goalTodos.length} 완료`;
                 } catch (error) {
-                  window.toast.show("할 일 상태 업데이트에 실패했습니다.", "error");
+                  console.error("Todo update failed:", error);
+                  window.toast.show(
+                    "할 일 상태 업데이트에 실패했습니다.",
+                    "error"
+                  );
                 }
 
-                const isAllCompleted = await areAllTodosCompleted(today, goal.id);
+                const isAllCompleted = await areAllTodosCompleted(
+                  today,
+                  goal.id
+                );
                 if (isAllCompleted) {
                   await handleCoinEarned(goal.id);
                 }
@@ -465,11 +452,15 @@ async function renderGoalCards() {
       if (!todoItem.hasEventListener) {
         todoItem.hasEventListener = true;
         todoItem.addEventListener("click", async () => {
-          const todoId = todoItem.dataset.todoId;
-          console.log(todoId);
-          console.log(todos);
-          const todo = todos.find((t) => t.id === parseInt(todoId));
-          if (!todo) return;
+          const todoId = parseInt(todoItem.dataset.todoId);
+          const todo = todos.find((t) => {
+            return t.id === todoId;
+          });
+
+          if (!todo) {
+            console.error("Todo not found:", todoId);
+            return;
+          }
 
           const checkbox = todoItem.querySelector(".todo-checkbox");
           const text = todoItem.querySelector(".todo-text");
@@ -489,11 +480,14 @@ async function renderGoalCards() {
             const completedCount = goalTodos.filter((t) => t.completed).length;
             progressText.textContent = `${completedCount}/${goalTodos.length} 완료`;
           } catch (error) {
+            console.error("Todo update failed:", error);
             window.toast.show("할 일 상태 업데이트에 실패했습니다.", "error");
           }
 
+          console.log("All todos completed for goal:", goal.id);
           const isAllCompleted = await areAllTodosCompleted(today, goal.id);
           if (isAllCompleted) {
+            console.log("All todos completed for goal:", goal.id);
             await handleCoinEarned(goal.id);
           }
           await createCalendarGrid();
@@ -517,7 +511,8 @@ async function renderGoalCards() {
       };
 
       try {
-        await addItem(STORES.TODOS, todo);
+        const todoId = await addItem(STORES.TODOS, todo);
+        console.log("New todo created with id:", todoId);
         todoInput.value = "";
         await renderGoalCards(); // 카드 목록 새로고침
       } catch (error) {
@@ -590,7 +585,7 @@ async function updateTodayProgress() {
 // 캘린더 그리드 생성
 async function createCalendarGrid() {
   const calendarGrid = document.getElementById("calendarGrid");
-  const dates = getWeekDates(new Date());
+  const dates = getWeekDates();
   calendarGrid.innerHTML = "";
 
   for (const dateInfo of dates) {
@@ -692,9 +687,13 @@ closeInstallButton.addEventListener("click", hideInstallPwaModal);
 laterButton.addEventListener("click", hideInstallPwaModal);
 
 // 주간 날짜 배열 생성
-function getWeekDates(date) {
+function getWeekDates() {
   const dates = [];
-  const koreaDate = new Date(date.getTime() + (9 * 60 * 60 * 1000)); // UTC+9
+  // 현재 한국 시간 기준으로 설정
+  const now = new Date();
+  const koreaDate = new Date(now.getTime());
+  console.log(koreaDate);
+  // 오늘 날짜부터 6일 전까지의 날짜를 생성
   for (let i = 6; i >= 0; i--) {
     const current = new Date(koreaDate);
     current.setDate(koreaDate.getDate() - i);
@@ -705,8 +704,8 @@ function getWeekDates(date) {
 
 // 날짜 포맷
 function formatDate(date) {
-  const koreaTime = new Date(date.getTime() + (9 * 60 * 60 * 1000)); // UTC+9
-  return koreaTime.toISOString().split('T')[0];
+  const koreaTime = new Date(date.getTime() + 9 * 60 * 60 * 1000); // UTC+9
+  return koreaTime.toISOString().split("T")[0];
 }
 
 // 일별 데이터 가져오기

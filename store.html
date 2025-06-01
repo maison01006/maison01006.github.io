@@ -9,6 +9,10 @@
     <title>자주 스토어</title>
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/store.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
   </head>
   <body>
     <div class="store-container">
@@ -39,10 +43,13 @@
       </div>
     </div>
 
-    <!-- 설정 버튼 -->
-    <a href="store-setting.html" class="floating-btn" id="settingBtn">
-      <i class="fas fa-cog"></i>
-    </a>
+    <!-- 보상 추가 버튼 -->
+    <div class="add-reward-button-container">
+      <button class="add-reward-button" id="addRewardButton">
+        <i class="fas fa-plus"></i>
+        <span class="button-text">보상 추가</span>
+      </button>
+    </div>
 
     <script type="module" src="js/store.js"></script>
   </body>

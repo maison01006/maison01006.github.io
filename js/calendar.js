@@ -108,6 +108,17 @@ function createDayElement(dateInfo, data) {
   day.className = `calendar-day${!isCurrentMonth ? " other-month" : ""}`;
 
   const dateObj = new Date(date);
+
+  // 완료된 목표 수 계산
+  const completedGoals = new Set();
+  if (data.todos && data.todos.length > 0) {
+    data.todos.forEach((todo) => {
+      if (todo.completed) {
+        completedGoals.add(todo.goalId);
+      }
+    });
+  }
+
   day.innerHTML = `
     <div class="day-header">
       <span class="day-number">${dateObj.getDate()}</span>
@@ -116,10 +127,8 @@ function createDayElement(dateInfo, data) {
           ? `
         <div class="day-status">
           ${
-            data.todos.length > 0
-              ? data.todos.every((todo) => todo.completed)
-                ? '<span class="status-icon status-todo completed"><i class="fas fa-check"></i></span>'
-                : '<span class="status-icon status-todo incomplete"><i class="fas fa-clock"></i></span>'
+            completedGoals.size > 0
+              ? `<span class="status-icon status-todo completed">${completedGoals.size}</span>`
               : ""
           }
           ${
@@ -142,10 +151,9 @@ function createDayElement(dateInfo, data) {
 }
 
 // 일별 상세 정보 표시
-function showDayDetail(date, data) {
+async function showDayDetail(date, data) {
   const detailDate = document.getElementById("detail-date");
   const detailTodo = document.getElementById("detail-todo");
-  const detailJaju = document.getElementById("detail-jaju");
   const detailReward = document.getElementById("detail-reward");
 
   detailDate.textContent = formatDate(date);
@@ -166,27 +174,30 @@ function showDayDetail(date, data) {
       '<div class="empty-message">기록된 TODO가 없습니다.</div>';
   }
 
-  // 자주 기록 표시
-  console.log(data);
-  if (data.progress) {
-    detailJaju.innerHTML = `
-      
-        <span>1자주 획득</span>
-    `;
-  } else {
-    detailJaju.innerHTML =
-      '<div class="empty-message">기록된 자주 기록이 없습니다.</div>';
-  }
-
   // 보상 사용 표시
-  if (data.rewardUsage && data.rewardUsage.length > 0) {
-    detailReward.innerHTML = data.rewardUsage
+  if (data.usage && data.usage.length > 0) {
+    // 보상 정보 가져오기
+    const rewards = await Promise.all(
+      data.usage.map(async (usage) => {
+        const transaction = db.transaction([STORES.REWARDS], "readonly");
+        const store = transaction.objectStore(STORES.REWARDS);
+        const reward = await new Promise((resolve, reject) => {
+          const request = store.get(usage.rewardId);
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+        return reward;
+      })
+    );
+
+    detailReward.innerHTML = rewards
+      .filter((reward) => reward) // null 체크
       .map(
         (reward) => `
-      <div class="reward-item">
-        <span>${reward}</span>
-      </div>
-    `
+        <div class="reward-item">
+          <span>${reward.title}</span>
+        </div>
+      `
       )
       .join("");
   } else {

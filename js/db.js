@@ -68,7 +68,7 @@ export async function initDB() {
       });
       progressStore.createIndex("goalId", "goalId", { unique: false });
       progressStore.createIndex("date", "date", { unique: false });
-      
+
       const settingsStore = db.createObjectStore(STORES.SETTINGS, {
         keyPath: "id",
         autoIncrement: true,
@@ -91,7 +91,6 @@ export async function getDB() {
 // CRUD 작업을 위한 기본 함수들
 export async function addItem(storeName, item) {
   return new Promise((resolve, reject) => {
-    console.log(storeName, item);
     const transaction = db.transaction(storeName, "readwrite");
     const store = transaction.objectStore(storeName);
     const request = store.add(item);
