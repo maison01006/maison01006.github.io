@@ -545,7 +545,7 @@ body {
 .floating-button {
   position: fixed;
   right: 1.5rem;
-  bottom: 5rem;
+  bottom: 7.5rem;
   background-color: var(--primary-color);
   color: white;
   border: none;

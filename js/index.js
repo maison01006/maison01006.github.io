@@ -666,6 +666,41 @@ window.addEventListener("beforeinstallprompt", (e) => {
 
 // PWA 설치 모달 표시
 function showInstallPwaModal() {
+  // PWA 환경(standalone)에서는 모달을 띄우지 않음
+  const isStandalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true;
+  if (isStandalone) return;
+
+  // iOS 기기 감지
+  const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+  const installPwaBody = installPwaModal.querySelector(".install-pwa-body");
+  const installPwaFooter = installPwaModal.querySelector(".install-pwa-footer");
+  if (isIOS) {
+    // iOS 안내문구로 내용 교체
+    installPwaBody.innerHTML = `
+      <p>iOS에서는 앱 설치 버튼이 제공되지 않습니다.<br>
+      사파리 브라우저 하단의 <span style='font-weight:bold'>공유</span> 버튼을 누른 후<br>
+      <span style='font-weight:bold'>"홈 화면에 추가"</span>를 선택해 설치할 수 있습니다.</p>
+      <ul>
+        <li>홈 화면에서 바로 실행</li>
+        <li>더 빠른 실행 속도</li>
+      </ul>
+    `;
+    // install-pwa-footer 숨김
+    if (installPwaFooter) installPwaFooter.style.display = "none";
+  } else {
+    // 기본 안내문구로 복원
+    installPwaBody.innerHTML = `
+      <p>자주를 앱으로 설치하면 더 편리하게 이용할 수 있어요!</p>
+      <ul>
+        <li>홈 화면에서 바로 실행</li>
+        <li>더 빠른 실행 속도</li>
+      </ul>
+    `;
+    // install-pwa-footer 보이기
+    if (installPwaFooter) installPwaFooter.style.display = "";
+  }
   installPwaModal.classList.add("show");
 }
 
