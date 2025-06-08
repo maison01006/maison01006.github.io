@@ -657,6 +657,13 @@ const closeInstallButton = installPwaModal.querySelector(
 );
 const laterButton = installPwaModal.querySelector(".later-button");
 
+// [추가] beforeinstallprompt 이벤트 핸들러 등록
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault(); // 기본 동작 방지
+  deferredPrompt = e; // 전역 변수에 저장
+  showInstallPwaModal(); // 설치 모달 표시
+});
+
 // PWA 설치 모달 표시
 function showInstallPwaModal() {
   installPwaModal.classList.add("show");
