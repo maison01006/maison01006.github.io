@@ -236,7 +236,7 @@ body {
 /* Card Styles */
 .card {
   background-color: white;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   padding: var(--spacing-6);
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;

@@ -80,10 +80,15 @@ body {
 }
 
 .jaju-balance {
-  background-color: var(--card-background);
+  /* background-color: var(--card-background);
   padding: 1rem 2rem;
   border-radius: 50px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  margin-left: auto; */
 }
 
 .balance-label {
@@ -98,7 +103,7 @@ body {
 
 .reward-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
   min-height: 200px;
 }
@@ -121,6 +126,12 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 180px;
 }
 
 .reward-card:hover {
@@ -142,7 +153,8 @@ body {
 .reward-cost {
   color: var(--secondary-color);
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-top: auto;
+  margin-bottom: 0.5rem;
 }
 
 .claim-button {
@@ -155,6 +167,8 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  margin-top: 0;
+  align-self: stretch;
 }
 
 .claim-button:disabled {

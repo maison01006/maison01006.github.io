@@ -14,6 +14,10 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js datalabels 플러그인 -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   </head>
   <body>
     <div class="dashboard">
@@ -50,12 +54,23 @@
           <section class="calendar-grid" id="calendarGrid">
             <!-- 날짜 셀이 동적으로 추가됩니다 -->
           </section>
+          <div class="calendar-progress-graph" id="calendarProgressGraph"></div>
         </div>
+        <button id="bonus7daysButton" class="bonus-7days-button" disabled>
+          7일 연속 달성 후 보상을 받아보세요
+        </button>
       </main>
+
+      <!-- 오늘의 칭찬 메시지 -->
+      <!-- <div class="daily-message-card">
+        <div class="daily-message-title">오늘의 메시지</div>
+        <div class="daily-message-content" id="dailyMessage">화이팅</div>
+      </div> -->
 
       <!-- GoalCardList -->
       <div class="goal-list">
         <h2 class="section-title">나의 목표</h2>
+        <div class="goal-tags" id="goalTags"></div>
         <div class="goal-cards" id="goalCards">
           <!-- Goal cards will be inserted here -->
         </div>

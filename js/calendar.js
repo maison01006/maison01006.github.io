@@ -164,7 +164,7 @@ async function showDayDetail(date, data) {
       .map(
         (todo) => `
       <div class="todo-item ${todo.completed ? "completed" : ""}">
-        <span>${todo.title}</span>
+        <span>${todo.completed ? "✅ " : ""}${todo.title}</span>
       </div>
     `
       )

@@ -48,7 +48,6 @@ export async function initDB() {
         keyPath: "id",
         autoIncrement: true,
       });
-      rewardsStore.createIndex("goalId", "goalId", { unique: false });
       rewardsStore.createIndex("date", "date", { unique: false });
       rewardsStore.createIndex("cost", "cost", { unique: false });
 
@@ -57,7 +56,6 @@ export async function initDB() {
         keyPath: "id",
         autoIncrement: true,
       });
-      usageStore.createIndex("goalId", "goalId", { unique: false });
       usageStore.createIndex("date", "date", { unique: false });
       usageStore.createIndex("rewardId", "rewardId", { unique: false });
 
@@ -66,7 +64,6 @@ export async function initDB() {
         keyPath: "id",
         autoIncrement: true,
       });
-      progressStore.createIndex("goalId", "goalId", { unique: false });
       progressStore.createIndex("date", "date", { unique: false });
 
       const settingsStore = db.createObjectStore(STORES.SETTINGS, {
@@ -183,10 +180,10 @@ export async function getItemsByAll(storeName) {
 }
 
 // 오늘의 자주 획득 여부 확인
-export async function checkTodayProgress(goalId) {
+export async function checkTodayProgress() {
   const today = new Date().toISOString().split("T")[0];
   const progress = await getItemsByDate(STORES.PROGRESS, today);
-  return progress.some((p) => p.goalId === goalId);
+  return progress.length > 0;
 }
 
 // 보상 구매 시 자주 차감
@@ -199,22 +196,62 @@ export async function purchaseReward(rewardId) {
 
   if (progress.length === 0) throw new Error("오늘 획득한 자주가 없습니다.");
 
-  // 해당 목표의 자주 확인
-  const goalProgress = progress.find((p) => p.goalId === reward.goalId);
-  if (!goalProgress) throw new Error("해당 목표의 자주가 없습니다.");
-  if (goalProgress.amount < reward.cost) throw new Error("자주가 부족합니다.");
+  // 전체 자주 합산
+  const totalJaju = progress.reduce((sum, p) => sum + (p.amount || 0), 0);
+  if (totalJaju < reward.cost) throw new Error("자주가 부족합니다.");
 
-  // 자주 차감
-  goalProgress.amount -= reward.cost;
-  await updateItem(STORES.PROGRESS, goalProgress);
+  // 자주 차감 (여러 progress에서 차감)
+  let remainingCost = reward.cost;
+  for (const p of progress) {
+    if (remainingCost === 0) break;
+    const deduct = Math.min(p.amount, remainingCost);
+    p.amount -= deduct;
+    remainingCost -= deduct;
+    await updateItem(STORES.PROGRESS, p);
+  }
 
   // 사용 기록 추가
   await addItem(STORES.USAGE, {
     rewardId,
     date: today,
     cost: reward.cost,
-    goalId: reward.goalId,
   });
 
   return true;
+}
+
+// 목표와 관련된 모든 데이터 삭제 함수
+export async function deleteGoalAndRelatedData(goalId) {
+  // goalId는 숫자 또는 문자열일 수 있으므로 모두 문자열로 비교
+  const goalIdStr = String(goalId);
+  // todos
+  const todos = await getItemsByAll(STORES.TODOS);
+  for (const todo of todos) {
+    if (String(todo.goalId) === goalIdStr) {
+      await deleteItem(STORES.TODOS, todo.id);
+    }
+  }
+  // rewards
+  const rewards = await getItemsByAll(STORES.REWARDS);
+  for (const reward of rewards) {
+    if (String(reward.goalId) === goalIdStr) {
+      await deleteItem(STORES.REWARDS, reward.id);
+    }
+  }
+  // usage
+  const usage = await getItemsByAll(STORES.USAGE);
+  for (const use of usage) {
+    if (String(use.goalId) === goalIdStr) {
+      await deleteItem(STORES.USAGE, use.id);
+    }
+  }
+  // progress
+  const progresses = await getItemsByAll(STORES.PROGRESS);
+  for (const progress of progresses) {
+    if (String(progress.goalId) === goalIdStr) {
+      await deleteItem(STORES.PROGRESS, progress.id);
+    }
+  }
+  // 마지막으로 목표 자체 삭제
+  await deleteItem(STORES.GOALS, goalId);
 }

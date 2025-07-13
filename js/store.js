@@ -6,6 +6,7 @@ import {
   getItemsByDate,
   getDB,
   deleteItem,
+  getItemsByAll,
 } from "./db.js";
 import { BottomTabNav, Toast, PageWrapper } from "./components.js";
 
@@ -25,24 +26,12 @@ async function getGoals() {
 }
 
 // 리워드 목록 가져오기
-async function getRewards(goalId = null) {
+async function getRewards() {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([STORES.REWARDS], "readonly");
     const store = transaction.objectStore(STORES.REWARDS);
     const request = store.getAll();
-
-    request.onsuccess = () => {
-      let rewards = request.result;
-
-      if (goalId) {
-        rewards = rewards.filter(
-          (reward) => String(reward.goalId) === String(goalId)
-        );
-      }
-
-      resolve(rewards);
-    };
-
+    request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
   });
 }
@@ -51,10 +40,9 @@ async function getRewards(goalId = null) {
 async function addRewardHistory(reward) {
   const today = new Date().toISOString().split("T")[0];
   await addItem(STORES.USAGE, {
-    rewardId: reward.goalId,
+    rewardId: reward.id,
     date: today,
     cost: reward.cost,
-    goalId: reward.goalId,
   });
 }
 
@@ -203,35 +191,12 @@ function createRewardCard(reward) {
   return card;
 }
 
-// 목표 탭 생성
-function createGoalTab(goal) {
-  const tab = document.createElement("div");
-  tab.className = "goal-tab";
-  tab.textContent = goal.title;
-  tab.dataset.goalId = goal.id;
-
-  tab.addEventListener("click", async () => {
-    // 활성화된 탭 스타일 변경
-    document
-      .querySelectorAll(".goal-tab")
-      .forEach((t) => t.classList.remove("active"));
-    tab.classList.add("active");
-
-    // 해당 목표의 리워드만 표시
-    currentGoalId = goal.id;
-    window.currentGoalId = goal.id; // 전역 변수에도 저장
-    await renderRewards();
-  });
-
-  return tab;
-}
-
 // 리워드 목록 렌더링
 async function renderRewards() {
   const rewardList = document.getElementById("rewardList");
   rewardList.innerHTML = ""; // 기존 리워드 제거
 
-  const rewards = await getRewards(currentGoalId);
+  const rewards = await getRewards();
   if (rewards.length === 0) {
     const emptyMessage = document.createElement("div");
     emptyMessage.className = "empty-message";
@@ -242,9 +207,26 @@ async function renderRewards() {
 
   rewards.forEach((reward) => {
     const card = createRewardCard(reward);
-    card.setAttribute("data-reward-id", reward.goalId);
+    card.setAttribute("data-reward-id", reward.id);
     rewardList.appendChild(card);
   });
+}
+
+// 자주 총 개수 렌더링 함수
+async function renderTotalJaju() {
+  const today = new Date().toISOString().split("T")[0];
+  // 전체 progress에서 amount 합산
+  const progresses = await getItemsByAll(STORES.PROGRESS);
+  const totalJaju = progresses.reduce((sum, p) => sum + (p.amount || 0), 0);
+  let jajuBalance = document.getElementById("jajuBalance");
+  if (!jajuBalance) {
+    jajuBalance = document.createElement("div");
+    jajuBalance.id = "jajuBalance";
+    jajuBalance.className = "jaju-balance";
+    const storeHeader = document.querySelector(".store-header");
+    storeHeader.appendChild(jajuBalance);
+  }
+  jajuBalance.innerHTML = `<span class="balance-amount">🪙 ${totalJaju}</span>`;
 }
 
 // 모달 관련 함수들
@@ -284,24 +266,27 @@ async function claimReward(reward) {
   const today = new Date().toISOString().split("T")[0];
   const progress = await getItemsByDate(STORES.PROGRESS, today);
 
-  // 해당 목표의 자주 확인
-  const goalProgress = progress.find((p) => p.goalId === reward.goalId);
-  if (!goalProgress) {
-    throw new Error("해당 목표의 자주가 없습니다.");
-  }
-  if (goalProgress.amount < reward.cost) {
+  // 전체 자주 합산
+  const totalJaju = progress.reduce((sum, p) => sum + (p.amount || 0), 0);
+  if (totalJaju < reward.cost) {
     throw new Error("자주가 부족합니다.");
   }
 
-  // 자주 차감
-  goalProgress.amount -= reward.cost;
-  await updateItem(STORES.PROGRESS, goalProgress);
+  // 자주 차감 (여러 progress에서 차감)
+  let remainingCost = reward.cost;
+  for (const p of progress) {
+    if (remainingCost === 0) break;
+    const deduct = Math.min(p.amount, remainingCost);
+    p.amount -= deduct;
+    remainingCost -= deduct;
+    await updateItem(STORES.PROGRESS, p);
+  }
 
   // 사용 기록 추가
   await addRewardHistory(reward);
 
   // 축하 애니메이션
-  const card = document.querySelector(`[data-reward-id="${reward.goalId}"]`);
+  const card = document.querySelector(`[data-reward-id="${reward.id}"]`);
   if (card) {
     card.classList.add("celebrate");
     setTimeout(() => card.classList.remove("celebrate"), 500);
@@ -328,25 +313,15 @@ async function initialize() {
     // 보상 추가 버튼 클릭 이벤트
     const addRewardButton = document.getElementById("addRewardButton");
     addRewardButton.addEventListener("click", () => {
-      if (currentGoalId) {
-        window.location.href = `store-setting.html?goalId=${currentGoalId}`;
-      } else {
-        window.toast.show("목표를 먼저 선택해주세요.", "error");
-      }
+      showRewardModal();
     });
 
-    // 목표 탭 생성
+    // 자주 총 개수 렌더링
+    await renderTotalJaju();
+
+    // 첫 번째 목표의 id만 currentGoalId로 세팅
     const goals = await getGoals();
-    const goalTabs = document.getElementById("goalTabs");
-    goals.forEach((goal) => {
-      const tab = createGoalTab(goal);
-      goalTabs.appendChild(tab);
-    });
-
-    // 첫 번째 탭 활성화
     if (goals.length > 0) {
-      const firstTab = goalTabs.querySelector(".goal-tab");
-      firstTab.classList.add("active");
       currentGoalId = goals[0].id;
       window.currentGoalId = goals[0].id;
     }
@@ -359,5 +334,68 @@ async function initialize() {
   }
 }
 
+// 보상 추가 모달 생성 및 표시
+function showRewardModal() {
+  const modal = document.createElement("div");
+  modal.className = "modal active";
+  modal.innerHTML = `
+    <div class="modal-content" style="background: var(--card-background); border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 400px; width: 90%;">
+      <h2 style="margin-bottom: 1.5rem;">리워드 추가</h2>
+      <form id="rewardFormElement">
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label for="rewardName" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">리워드 이름</label>
+          <input type="text" id="rewardName" required placeholder="예: 아이스크림" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1rem; background: #f2f2f2;" />
+        </div>
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label for="rewardCost" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">필요 자주</label>
+          <input type="number" id="rewardCost" required min="1" placeholder="예: 10" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1rem; background: #f2f2f2;" />
+        </div>
+        <div class="form-actions" style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: center;">
+          <button type="button" id="cancelBtn" class="btn-secondary" style="width: 100%; background: #e0e0e0; color: var(--text-color); border-radius: 6px; padding: 0.8rem 1.5rem; font-weight: 600;">취소</button>
+          <button type="submit" class="btn-primary" style="width: 100%; background: var(--primary-color); color: white; border-radius: 6px; padding: 0.8rem 1.5rem; font-weight: 600;">저장</button>
+        </div>
+      </form>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  const form = modal.querySelector("#rewardFormElement");
+  const cancelBtn = modal.querySelector("#cancelBtn");
+
+  cancelBtn.addEventListener("click", () => {
+    modal.remove();
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const title = form.querySelector("#rewardName").value.trim();
+    const cost = parseInt(form.querySelector("#rewardCost").value);
+    if (!title) {
+      window.toast.show("리워드 이름을 입력하세요.", "error");
+      return;
+    }
+    if (isNaN(cost) || cost <= 0) {
+      window.toast.show("유효한 자주 비용을 입력하세요.", "error");
+      return;
+    }
+    try {
+      await addItem(STORES.REWARDS, { title, cost });
+      window.toast.show("리워드가 추가되었습니다.", "success");
+      modal.remove();
+      await renderRewards();
+    } catch (error) {
+      window.toast.show("리워드 저장에 실패했습니다.", "error");
+    }
+  });
+}
+
 // 페이지 로드 시 초기화
 document.addEventListener("DOMContentLoaded", initialize);
+
+// 보상 사용, 추가, 삭제, 구매 등 이후에도 자주 총 개수 갱신
+// renderRewards, claimReward, addRewardHistory 등에서 await renderTotalJaju() 호출 추가
+const _origRenderRewards = renderRewards;
+renderRewards = async function () {
+  await _origRenderRewards.apply(this, arguments);
+  await renderTotalJaju();
+};

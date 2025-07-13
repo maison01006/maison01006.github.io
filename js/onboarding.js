@@ -90,7 +90,6 @@ async function saveOnboardingData() {
     title: rewardName,
     cost: rewardCost,
     date: today,
-    goalId: "1",
   });
 
   // 할 일 저장

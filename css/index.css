@@ -162,17 +162,14 @@ body {
 
 /* 축하 모달 스타일 */
 .congrats-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 80%;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  padding: 32px 24px 24px 24px;
   text-align: center;
-  z-index: 10000;
-  animation: modalPop 0.5s ease-out;
+  margin: 0 auto;
 }
 
 .congrats-modal h2 {
@@ -186,17 +183,21 @@ body {
 }
 
 .congrats-modal button {
-  background: var(--primary-500);
-  color: white;
+  width: 100%;
+  height: 40px;
+  margin-top: 24px;
+  background: #1976d2;
+  color: #fff;
   border: none;
-  padding: 0.5rem 1.5rem;
-  border-radius: 0.5rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background 0.2s;
 }
 
 .congrats-modal button:hover {
-  background: var(--primary-600);
+  background: #1565c0;
 }
 
 @keyframes modalPop {
@@ -218,11 +219,13 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 9999;
-  animation: fadeIn 0.3s ease-out;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.32);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @keyframes fadeIn {
@@ -367,10 +370,47 @@ body {
   margin-bottom: var(--spacing-4);
 }
 
+.goal-list {
+  /* 기존 스타일 유지 */
+}
+.goal-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.goal-tag {
+  background: #eaf2fb;
+  color: var(--primary-color);
+  border: none;
+  border-radius: 16px;
+  padding: 4px 14px;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.goal-tag.active {
+  background: var(--primary-color);
+  color: #fff;
+}
 .goal-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--spacing-4);
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 16px;
+  padding: 16px 0 16px 8px;
+}
+.goal-card {
+  min-width: 92%;
+  max-width: 92%;
+  flex: 0 0 92%;
+  margin-right: 0;
+  scroll-snap-align: center;
+  transition: box-shadow 0.2s;
+  height: 290px;
+}
+.goal-card:last-child {
+  margin-right: 0;
 }
 
 .goal-card {
@@ -1233,4 +1273,70 @@ body {
 
 .goal-coin-count .coin-amount {
   font-weight: 600;
+}
+
+.delete-todo-button {
+  background: none;
+  border: none;
+  color: #d32f2f;
+  font-size: 1.1em;
+  margin-left: 8px;
+  cursor: pointer;
+  vertical-align: middle;
+  padding: 0 4px;
+  border-radius: 4px;
+  transition: background 0.15s;
+  /* 항상 보이도록 opacity, display 등 제한 없음 */
+}
+.delete-todo-button:hover {
+  background: #ffeaea;
+}
+
+.bonus-7days-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 40px;
+  margin: 24px 0 0 0;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  background: #f5f6fa;
+  color: #222;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.bonus-7days-button:disabled {
+  background: #e0e0e0;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.calendar-progress-graph {
+  width: 100%;
+  height: 48px;
+  margin: 8px 0 0 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.daily-message-card {
+  margin: 24px 0 24px 0;
+  padding: 16px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+.daily-message-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+.daily-message-content {
+  font-size: 1rem;
+  color: #333;
 }
