@@ -14,16 +14,21 @@ const currentJaju = document.querySelector(".current-jaju");
 const requiredJaju = document.querySelector(".required-jaju");
 const progressDots = document.querySelector(".progress-dots");
 const todoList = document.getElementById("todoList");
-const addTodoButton = document.querySelector(".add-todo-button");
-const addTodoModal = document.getElementById("addTodoModal");
-const addTodoForm = document.getElementById("addTodoForm");
 const rewardTitle = document.querySelector(".reward-title");
 const rewardDescription = document.querySelector(".reward-description");
 const rewardButton = document.querySelector(".reward-button");
-const emotionButtons = document.querySelectorAll(".emotion-button");
 const reflectionTextarea = document.querySelector(".reflection-input textarea");
 const characterCount = document.querySelector(".character-count");
 const saveReflectionButton = document.querySelector(".save-reflection-button");
+// 추가: 축하 영역 동적 요소
+const rewardTitleLarge = document.querySelector(".reward-title-large");
+const rewardHighlightIcon = document.querySelector(
+  ".reward-highlight .reward-icon"
+);
+
+// 쿼리스트링에서 rewardTitle 가져오기
+const urlParams = new URLSearchParams(window.location.search);
+const rewardTitleFromQuery = urlParams.get("rewardTitle");
 
 // URL에서 목표 ID 가져오기
 const goalId = new URLSearchParams(window.location.search).get("id");
@@ -88,74 +93,24 @@ function createTodoItem(todo) {
 
 // UI 업데이트
 async function updateUI() {
-  const today = getToday();
-  const goal = await getItem(STORES.GOALS, goalId);
-  const todos = await getItemsByDate(STORES.TODOS, today);
-  const progress = await getItemsByDate(STORES.PROGRESS, today);
-  const reward = await getItem(STORES.REWARDS, goal.rewardId);
-
-  // 목표 정보 업데이트
-  goalTitle.textContent = goal.title;
-  goalDescription.textContent = goal.description;
-
-  // 자주 진행 상황 업데이트
-  const earnedJaju = progress.length > 0 ? progress[0].amount : 0;
-  currentJaju.textContent = earnedJaju;
-  requiredJaju.textContent = reward.cost;
-  createProgressDots(earnedJaju, reward.cost);
-
-  // 보상 정보 업데이트
-  rewardTitle.textContent = reward.title;
-  rewardDescription.textContent = reward.description;
-  rewardButton.querySelector(".jaju-cost").textContent = `${reward.cost} 🪙`;
-  rewardButton.disabled = earnedJaju < reward.cost;
-
-  // 할 일 목록 업데이트
-  todoList.innerHTML = "";
-  const goalTodos = todos.filter(
-    (todo) => todo.goalId === goalId && !todo.deleted
-  );
-  goalTodos.forEach((todo) => {
-    todoList.appendChild(createTodoItem(todo));
-  });
+  // [추가] 축하 영역 보상명, 아이콘 동기화 (쿼리스트링 우선)
+  if (rewardTitleLarge) rewardTitleLarge.textContent = rewardTitleFromQuery;
+  if (rewardHighlightIcon) rewardHighlightIcon.textContent = "🎁";
 }
 
-// 할 일 추가 모달
-addTodoButton.addEventListener("click", () => {
-  addTodoModal.classList.add("show");
-});
-
-addTodoModal.querySelector(".cancel-button").addEventListener("click", () => {
-  addTodoModal.classList.remove("show");
-  addTodoForm.reset();
-});
-
-addTodoForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const input = addTodoForm.querySelector("input");
-  const title = input.value.trim();
-
-  if (title) {
-    const todo = {
-      title,
-      goalId,
-      date: getToday(),
-      completed: false,
-      deleted: false,
-    };
-
-    await addItem(STORES.TODOS, todo);
-    addTodoModal.classList.remove("show");
-    addTodoForm.reset();
-    await updateUI();
-  }
-});
-
-// 감정 선택
-emotionButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    emotionButtons.forEach((btn) => btn.classList.remove("selected"));
-    button.classList.add("selected");
+// 감정 선택 (DOMContentLoaded 이후에 바인딩)
+document.addEventListener("DOMContentLoaded", () => {
+  const emotionButtons = document.querySelectorAll(".emotion-button");
+  emotionButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      console.log("click");
+      emotionButtons.forEach((btn) => {
+        btn.classList.remove("selected");
+        btn.classList.remove("emotion-active");
+      });
+      button.classList.add("selected");
+      button.classList.add("emotion-active");
+    });
   });
 });
 
@@ -181,7 +136,8 @@ saveReflectionButton.addEventListener("click", async () => {
   };
 
   await addItem(STORES.REFLECTIONS, reflection);
-  alert("회고가 저장되었습니다.");
+  // alert("회고가 저장되었습니다.");
+  window.location.replace("index.html");
 });
 
 // 초기화

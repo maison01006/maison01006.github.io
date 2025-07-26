@@ -60,7 +60,66 @@
 
 /* 입력 폼 스타일 */
 .input-group {
-  margin-bottom: var(--spacing-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.input-group input[type="date"] {
+  width: 100%;
+  max-width: 320px;
+  min-width: 200px;
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 6px;
+  text-align: center;
+  box-sizing: border-box;
+  margin: 0 auto;
+  display: block;
+}
+.goal-end-date-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.date-selector {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+.date-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+.date-group label {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #666);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.date-select {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 6px;
+  text-align: center;
+  background-color: white;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.date-select:focus {
+  outline: none;
+  border-color: var(--primary-color, #007bff);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
 .input-group label {
@@ -185,4 +244,11 @@
   line-height: 1.6;
   word-break: keep-all;
   margin: 0px;
+}
+.reward-setup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 20px;
 }

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>자주 - 목표 관리</title>
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/goals.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  </head>
+  <body>
+    <div class="dashboard">
+      <div class="goal-list">
+        <h2 class="section-title">나의 목표</h2>
+        <div class="goal-filter-tags">
+          <button id="tag-all" class="goal-filter-tag tag-all active">전체</button>
+          <button id="tag-doing" class="goal-filter-tag tag-doing">진행중</button>
+          <button id="tag-fail" class="goal-filter-tag tag-fail">실패</button>
+          <button id="tag-success" class="goal-filter-tag tag-success">성공</button>
+        </div>
+        <div class="goal-cards" id="goalCards">
+          <!-- Goal cards will be inserted here -->
+        </div>
+      </div>
+      <button id="addGoalButton" class="floating-button">
+        <span class="button-icon">+</span>
+        <span class="button-text">새 목표 만들기</span>
+      </button>
+    <!-- 목표 생성 모달 -->
+    <div id="createGoalModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>새 목표 만들기</h2>
+          <button class="close-button">&times;</button>
+        </div>
+        <form id="createGoalForm">
+          <div class="form-group">
+            <label for="goalTitle">목표 제목</label>
+            <input
+              type="text"
+              id="goalTitle"
+              required
+              placeholder="목표를 입력하세요"
+            />
+          </div>
+          <div class="form-group">
+            <label for="goalEndDate">목표 종료일</label>
+            <div class="date-selector">
+              <div class="date-group">
+                <label for="yearSelect">연도</label>
+                <select id="yearSelect" class="date-select"></select>
+              </div>
+              <div class="date-group">
+                <label for="monthSelect">월</label>
+                <select id="monthSelect" class="date-select"></select>
+              </div>
+              <div class="date-group">
+                <label for="daySelect">일</label>
+                <select id="daySelect" class="date-select"></select>
+              </div>
+            </div>
+          </div>
+          <div class="step-buttons">
+            <button type="submit" class="submit-button">목표 생성하기</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- 목표 생성 모달, PWA 설치 모달 등은 필요시 추가 -->
+    <script type="module">
+      import { BottomTabNav, Toast, PageWrapper } from "./js/components.js";
+      const pageWrapper = new PageWrapper();
+      pageWrapper.mount(document.body);
+      const bottomNav = new BottomTabNav("goals");
+      bottomNav.mount(document.body);
+      window.toast = new Toast();
+    </script>
+    <script type="module" src="js/goals.js"></script>
+  </body>
+</html>

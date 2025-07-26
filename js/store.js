@@ -240,12 +240,22 @@ function showClaimModal(reward) {
   const confirmButton = document.getElementById("confirmClaim");
   const cancelButton = document.getElementById("cancelClaim");
 
+  // 기존 이벤트 리스너 제거 (중복 방지)
+  confirmButton.replaceWith(confirmButton.cloneNode(true));
+  cancelButton.replaceWith(cancelButton.cloneNode(true));
+  const newConfirmButton = document.getElementById("confirmClaim");
+  const newCancelButton = document.getElementById("cancelClaim");
+
   const handleConfirm = async () => {
     try {
       await claimReward(reward);
       modal.classList.remove("active");
-      confirmButton.removeEventListener("click", handleConfirm);
-      cancelButton.removeEventListener("click", handleCancel);
+      newConfirmButton.removeEventListener("click", handleConfirm);
+      newCancelButton.removeEventListener("click", handleCancel);
+
+      window.location.replace(
+        `use-store.html?rewardTitle=${encodeURIComponent(reward.title)}`
+      );
     } catch (error) {
       console.error("리워드 사용 실패:", error);
       alert(error.message || "리워드 사용에 실패했습니다. 다시 시도해주세요.");
@@ -254,12 +264,12 @@ function showClaimModal(reward) {
 
   const handleCancel = () => {
     modal.classList.remove("active");
-    confirmButton.removeEventListener("click", handleConfirm);
-    cancelButton.removeEventListener("click", handleCancel);
+    newConfirmButton.removeEventListener("click", handleConfirm);
+    newCancelButton.removeEventListener("click", handleCancel);
   };
 
-  confirmButton.addEventListener("click", handleConfirm);
-  cancelButton.addEventListener("click", handleCancel);
+  newConfirmButton.addEventListener("click", handleConfirm);
+  newCancelButton.addEventListener("click", handleCancel);
 }
 
 async function claimReward(reward) {

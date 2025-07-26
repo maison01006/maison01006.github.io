@@ -221,10 +221,12 @@ body {
   display: flex;
   gap: 1rem;
   margin-top: 1.5rem;
+  justify-content: center;
 }
 
 .btn-primary,
 .btn-secondary {
+  width: 80%;
   padding: 0.8rem 1.5rem;
   border: none;
   border-radius: 6px;

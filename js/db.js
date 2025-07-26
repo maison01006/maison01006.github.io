@@ -8,6 +8,7 @@ export const STORES = {
   PROGRESS: "progress",
   GOALS: "goals",
   SETTINGS: "settings",
+  REFLECTIONS: "reflections",
 };
 
 let db = null;
@@ -42,6 +43,8 @@ export async function initDB() {
       });
       goalsStore.createIndex("date", "date", { unique: false });
       goalsStore.createIndex("completed", "completed", { unique: false });
+      goalsStore.createIndex("startDate", "startDate", { unique: false });
+      goalsStore.createIndex("endDate", "endDate", { unique: false });
 
       // 보상 스토어
       const rewardsStore = db.createObjectStore(STORES.REWARDS, {
@@ -65,6 +68,14 @@ export async function initDB() {
         autoIncrement: true,
       });
       progressStore.createIndex("date", "date", { unique: false });
+
+      const reflectionsStore = db.createObjectStore(STORES.REFLECTIONS, {
+        keyPath: "id",
+        autoIncrement: true,
+      });
+      reflectionsStore.createIndex("date", "date", { unique: false });
+      reflectionsStore.createIndex("emotion", "emotion", { unique: false });
+      reflectionsStore.createIndex("text", "text", { unique: false });
 
       const settingsStore = db.createObjectStore(STORES.SETTINGS, {
         keyPath: "id",

@@ -88,6 +88,7 @@ export class BottomTabNav {
 
     const tabs = [
       { id: "home", icon: "🏠", label: "홈", path: "index.html" },
+      { id: "goals", icon: "🎯", label: "목표", path: "goals.html" },
       { id: "store", icon: "🎁", label: "스토어", path: "store.html" },
       { id: "calendar", icon: "📅", label: "캘린더", path: "calendar.html" },
       { id: "more", icon: "⚙️", label: "더보기", path: "more.html" },

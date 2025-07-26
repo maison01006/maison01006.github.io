@@ -24,9 +24,15 @@ const modal = document.getElementById("createGoalModal");
 const closeButton = modal.querySelector(".close-button");
 const createGoalForm = document.getElementById("createGoalForm");
 
+// 날짜 선택기 요소들
+const yearSelect = document.getElementById("yearSelect");
+const monthSelect = document.getElementById("monthSelect");
+const daySelect = document.getElementById("daySelect");
+
 // 모달 열기
 addGoalButton.addEventListener("click", () => {
   console.log("모달 열기");
+  initializeDateSelectors(); // 날짜 선택기 초기화
   modal.classList.add("show");
 });
 
@@ -50,8 +56,9 @@ createGoalForm.addEventListener("submit", async (e) => {
 
   const goalData = {
     title: document.getElementById("goalTitle").value,
-    description: document.getElementById("goalDescription").value,
+    endDate: getSelectedDate(),
     date: getToday(),
+    startDate: getToday(),
   };
 
   try {
@@ -77,6 +84,117 @@ const getToday = () => {
   const koreaTime = new Date(now.getTime() + 9 * 60 * 60 * 1000); // UTC+9
   return koreaTime.toISOString().split("T")[0];
 };
+
+// 날짜 선택기 초기화
+function initializeDateSelectors() {
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth() + 1;
+  const currentDay = today.getDate();
+
+  // 기존 옵션 제거
+  yearSelect.innerHTML = "";
+  monthSelect.innerHTML = "";
+  daySelect.innerHTML = "";
+
+  // 연도 옵션 생성 (현재 연도부터 10년 후까지)
+  for (let year = currentYear; year <= currentYear + 10; year++) {
+    const option = document.createElement("option");
+    option.value = year;
+    option.textContent = year + "년";
+    yearSelect.appendChild(option);
+  }
+
+  // 월 옵션 생성
+  for (let month = 1; month <= 12; month++) {
+    const option = document.createElement("option");
+    option.value = month;
+    option.textContent = month + "월";
+    monthSelect.appendChild(option);
+  }
+
+  // 일 옵션 생성 (기본적으로 31일까지)
+  updateDayOptions(currentYear, currentMonth);
+
+  // 오늘 날짜로 초기 설정
+  yearSelect.value = currentYear;
+  monthSelect.value = currentMonth;
+  daySelect.value = currentDay;
+
+  // 월 변경 시 일 옵션 업데이트
+  monthSelect.addEventListener("change", () => {
+    const selectedYear = parseInt(yearSelect.value);
+    const selectedMonth = parseInt(monthSelect.value);
+    updateDayOptions(selectedYear, selectedMonth);
+  });
+
+  // 연도 변경 시 일 옵션 업데이트 (윤년 고려)
+  yearSelect.addEventListener("change", () => {
+    const selectedYear = parseInt(yearSelect.value);
+    const selectedMonth = parseInt(monthSelect.value);
+    updateDayOptions(selectedYear, selectedMonth);
+  });
+}
+
+// 일 옵션 업데이트 (윤년, 월별 일수 고려)
+function updateDayOptions(year, month) {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const currentDay = new Date().getDate();
+
+  // 기존 옵션 제거
+  daySelect.innerHTML = "";
+
+  // 일 옵션 생성
+  for (let day = 1; day <= daysInMonth; day++) {
+    const option = document.createElement("option");
+    option.value = day;
+    option.textContent = day + "일";
+    daySelect.appendChild(option);
+  }
+
+  // 현재 월이면 현재 일까지만 선택 가능하도록 설정
+  const today = new Date();
+  if (year === today.getFullYear() && month === today.getMonth() + 1) {
+    daySelect.value = Math.min(currentDay, daysInMonth);
+  } else {
+    daySelect.value = 1;
+  }
+}
+
+// 선택된 날짜를 ISO 형식으로 반환
+function getSelectedDate() {
+  const year = parseInt(yearSelect.value);
+  const month = parseInt(monthSelect.value);
+  const day = parseInt(daySelect.value);
+
+  // 월과 일을 2자리로 포맷팅
+  const formattedMonth = month.toString().padStart(2, "0");
+  const formattedDay = day.toString().padStart(2, "0");
+
+  return `${year}-${formattedMonth}-${formattedDay}`;
+}
+
+// 디데이 계산 함수
+function calculateDday(endDate) {
+  if (!endDate) return null;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 설정
+
+  const end = new Date(endDate);
+  end.setHours(0, 0, 0, 0);
+
+  const diffTime = end - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays > 0) {
+    return `D-${diffDays}`;
+  } else if (diffDays === 0) {
+    return "D-Day";
+  } else {
+    return `D+${Math.abs(diffDays)}`;
+  }
+}
 
 // 코인 애니메이션 생성
 function createCoinAnimation(x, y) {
@@ -212,7 +330,7 @@ async function updateProgress() {
 
 // 목표 카드 목록 렌더링
 async function renderGoalCards(selectedGoalId = null) {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getToday();
   const goals = await getItemsByAll(STORES.GOALS);
   const todos = await getItemsByDate(STORES.TODOS, today);
   const rewards = await getItemsByDate(STORES.REWARDS, today);
@@ -265,10 +383,14 @@ async function renderGoalCards(selectedGoalId = null) {
     card.className = "goal-card";
     card.dataset.goalId = goal.id;
 
+    // 디데이 계산
+    const dday = calculateDday(goal.endDate);
+
     card.innerHTML = `
       <div class="goal-card-content">
         <div class="goal-header">
           <div class="goal-title-container">
+            ${dday ? `<div class="goal-dday">${dday}</div>` : ""}
             <h3 class="goal-title" contenteditable="false">${goal.title}</h3>
           </div>
           <div class="goal-actions">
@@ -364,6 +486,7 @@ async function renderGoalCards(selectedGoalId = null) {
           window.toast.show("목표가 수정되었습니다.", "success");
         } catch (error) {
           window.toast.show("목표 수정에 실패했습니다.", "error");
+
           titleElement.textContent = goal.title;
         }
       }
@@ -582,24 +705,24 @@ async function renderGoalCards(selectedGoalId = null) {
   document.head.appendChild(style);
 
   // 선택된 목표가 있으면 해당 카드로 스크롤
-  if (selectedGoalId) {
-    const card = goalCards.querySelector(`[data-goal-id='${selectedGoalId}']`);
-    if (card)
-      card.scrollIntoView({
-        behavior: "smooth",
-        inline: "center",
-        block: "nearest",
-      });
-  } else {
-    // 기본 첫 번째 카드로 스크롤
-    const firstCard = goalCards.querySelector(".goal-card");
-    if (firstCard)
-      firstCard.scrollIntoView({
-        behavior: "auto",
-        inline: "center",
-        block: "nearest",
-      });
-  }
+  // if (selectedGoalId) {
+  //   const card = goalCards.querySelector(`[data-goal-id='${selectedGoalId}']`);
+  //   if (card)
+  //     card.scrollIntoView({
+  //       behavior: "smooth",
+  //       inline: "center",
+  //       block: "nearest",
+  //     });
+  // } else {
+  //   // 기본 첫 번째 카드로 스크롤
+  //   const firstCard = goalCards.querySelector(".goal-card");
+  //   if (firstCard)
+  //     firstCard.scrollIntoView({
+  //       behavior: "auto",
+  //       inline: "center",
+  //       block: "nearest",
+  //     });
+  // }
 }
 
 // 오늘의 진행 상황 업데이트
@@ -745,19 +868,15 @@ async function renderCustomBarGraph() {
       completed += goalTodos.filter((t) => t.completed).length;
     }
     const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+    // 막대 전체 높이(px)
+    const BAR_HEIGHT = 40;
+    // 파란색 채워진 부분 높이(px)
+    const fillHeight = (percent / 100) * BAR_HEIGHT;
     barsHtml += `
       <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
-        <div style="height:${
-          percent * 0.4
-        }px;width:18px;background:#3b82f6;border-radius:6px 6px 0 0;position:relative;transition:height 0.3s;">
-          <span style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:11px;color:#3b82f6;font-weight:bold;">${
-            percent + "%"
-          }</span>
-        </div>
-        
-        <div style="height:${
-          40 - percent * 0.4
-        }px;width:18px;background:#e5e7eb;border-radius:6px 6px 0 0;">
+        <span style="display:block;margin-bottom:2px;font-size:11px;color:#3b82f6;font-weight:bold;">${percent}%</span>
+        <div style="position:relative;width:18px;height:${BAR_HEIGHT}px;background:#e5e7eb;border-radius:6px 6px 0 0;overflow:hidden;display:flex;align-items:flex-end;">
+          <div style="position:absolute;bottom:0;left:0;width:100%;height:${fillHeight}px;background:#3b82f6;border-radius:6px 6px 0 0;transition:height 0.3s;"></div>
         </div>
       </div>
     `;
@@ -806,6 +925,92 @@ function createDayElement(dateInfo, data) {
   return day;
 }
 
+// 오늘의 TODO 섹션 렌더링
+async function renderTodayTodos() {
+  const section = document.getElementById("todayTodosSection");
+  section.innerHTML = "";
+
+  // 데이터 준비
+  const today = getToday();
+  const todos = await getItemsByDate(STORES.TODOS, today);
+  const goals = await getItemsByAll(STORES.GOALS);
+  const goalMap = {};
+  goals.forEach((g) => (goalMap[g.id] = g));
+  const sortedTodos = [...todos].sort((a, b) => {
+    // 1. 미완료 우선
+    if (a.completed !== b.completed) return a.completed ? 1 : -1;
+    // 2. endDate 가까운 목표 우선
+    const goalA = goalMap[a.goalId];
+    const goalB = goalMap[b.goalId];
+    if (goalA && goalB) {
+      const endA = new Date(goalA.endDate);
+      const endB = new Date(goalB.endDate);
+      return endA - endB;
+    }
+    return 0;
+  });
+
+  // TODO가 없을 때 안내 메시지 표시
+  if (sortedTodos.length === 0) {
+    const emptyMessage = document.createElement("div");
+    emptyMessage.className = "today-todos-empty";
+    emptyMessage.innerHTML = `
+      <div class="empty-message">
+        <p>오늘의 TODO가 없어요</p>
+        <p>목표 카드에서 할 일을 입력해주세요</p>
+      </div>
+    `;
+    section.appendChild(emptyMessage);
+    return;
+  }
+
+  // TODO 목록
+  let showAll = false;
+  const todosWrapper = document.createElement("div");
+  todosWrapper.className = "goal-todos";
+  function renderList() {
+    todosWrapper.innerHTML = "";
+    const displayTodos = showAll ? sortedTodos : sortedTodos.slice(0, 5);
+    displayTodos.forEach((todo) => {
+      const todoDiv = document.createElement("div");
+      todoDiv.className = "todo-item" + (todo.completed ? " completed" : "");
+      todoDiv.innerHTML = `
+        <input type="checkbox" ${todo.completed ? "checked" : ""} />
+        <span class="todo-text">${todo.title}</span>
+        <span class="todo-goal">(${goalMap[todo.goalId]?.title || "-"})</span>
+      `;
+      // 체크박스 클릭 이벤트
+      const checkbox = todoDiv.querySelector("input[type=checkbox]");
+      checkbox.addEventListener("change", async () => {
+        todo.completed = checkbox.checked;
+        await updateItem(STORES.TODOS, todo);
+        await renderTodayTodos();
+        await updateTodayProgress();
+        await updateProgress();
+        await createCalendarGrid();
+      });
+      todosWrapper.appendChild(todoDiv);
+    });
+    // 더보기/접기 버튼
+    let moreBtn = todosWrapper.querySelector(".today-todo-more");
+    if (moreBtn) moreBtn.remove();
+    if (sortedTodos.length > 5) {
+      moreBtn = document.createElement("button");
+      moreBtn.className = "today-todo-more";
+      moreBtn.textContent = showAll
+        ? "접기"
+        : `더보기 (${sortedTodos.length - 5}개 더)`;
+      moreBtn.onclick = () => {
+        showAll = !showAll;
+        renderList();
+      };
+      todosWrapper.appendChild(moreBtn);
+    }
+  }
+  renderList();
+  section.appendChild(todosWrapper);
+}
+
 // 초기화 함수
 async function init() {
   try {
@@ -826,6 +1031,7 @@ async function init() {
     }
 
     // UI 초기화
+    await renderTodayTodos();
     await renderGoalCards();
     await updateTodayProgress();
     await updateProgress();
@@ -1004,6 +1210,8 @@ async function updateGoalTodos(card, goalId) {
   // [추가] 새로 그려진 todo-item에 클릭 이벤트 바인딩 (삭제 버튼 포함)
   bindTodoItemEvents(card, goalId, todos, goalTodos);
   bindViewMoreButtonEvents(card, goalId, todos, goalTodos);
+  await renderTodayTodos(); // 오늘의 TODO 목록 갱신
+  // await renderGoalCards(); // 무한루프 방지: 여기서 호출하지 않음
 }
 
 // [추가] todo-item 이벤트 바인딩 함수 추출
@@ -1025,6 +1233,9 @@ function bindTodoItemEvents(card, goalId, todos, goalTodos) {
           await updateTodayProgress();
           await updateProgress();
           await createCalendarGrid();
+          // 동기화: 삭제 후 한 번만 전체 카드/오늘의 todo 갱신
+          await renderGoalCards();
+          await renderTodayTodos();
         }
       });
     }
@@ -1051,6 +1262,9 @@ function bindTodoItemEvents(card, goalId, todos, goalTodos) {
           const progressText = card.querySelector(".goal-progress");
           const completedCount = goalTodos.filter((t) => t.completed).length;
           progressText.textContent = `${completedCount}/${goalTodos.length} 완료`;
+          // 동기화: 체크 후 한 번만 전체 카드/오늘의 todo 갱신
+          await renderGoalCards();
+          await renderTodayTodos();
         } catch (error) {
           window.toast.show("할 일 상태 업데이트에 실패했습니다.", "error");
         }

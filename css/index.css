@@ -395,22 +395,14 @@ body {
 }
 .goal-cards {
   display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
+  flex-direction: column;
   gap: 16px;
-  padding: 16px 0 16px 8px;
+  padding: 16px 0;
 }
 .goal-card {
-  min-width: 92%;
-  max-width: 92%;
-  flex: 0 0 92%;
-  margin-right: 0;
-  scroll-snap-align: center;
+  width: 100%;
   transition: box-shadow 0.2s;
-  height: 290px;
-}
-.goal-card:last-child {
-  margin-right: 0;
+  height: 70px;
 }
 
 .goal-card {
@@ -418,7 +410,6 @@ body {
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 16px;
   padding: var(--spacing-4);
 }
 
@@ -427,19 +418,6 @@ body {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: var(--spacing-2);
-}
-
-.kebab-button {
-  background: none;
-  border: none;
-  padding: 8px;
-  cursor: pointer;
-  color: #666;
-  transition: color 0.2s ease;
-}
-
-.kebab-button:hover {
-  color: #333;
 }
 
 .action-modal {
@@ -488,12 +466,26 @@ body {
   text-align: center;
 }
 
-.goal-card.swiping .goal-card-content {
-  transition: none;
-}
 .goal-title {
-  margin-bottom: 0px;
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+  flex: 1;
 }
+
+.goal-dday {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary-color, #007bff);
+  background-color: rgba(0, 123, 255, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  margin-bottom: 0.3rem;
+  display: inline-block;
+  text-align: center;
+}
+
 .goal-title[contenteditable="true"] {
   background: var(--gray-100);
   padding: var(--spacing-1) var(--spacing-2);
@@ -738,6 +730,48 @@ body {
 .form-group textarea {
   min-height: 100px;
   resize: vertical;
+}
+
+/* 날짜 선택기 스타일 */
+.date-selector {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.date-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.date-group label {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #666);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.date-select {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 6px;
+  text-align: center;
+  background-color: white;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.date-select:focus {
+  outline: none;
+  border-color: var(--primary-color, #007bff);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
 .submit-button {
@@ -1339,4 +1373,90 @@ body {
 .daily-message-content {
   font-size: 1rem;
   color: #333;
+}
+
+/* 오늘의 TODO 섹션 */
+.today-todo-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.7rem;
+  color: var(--primary-color);
+}
+.today-todo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.5rem 0;
+}
+.today-todo-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.7rem 0.5rem;
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 1rem;
+  background: white;
+  border-radius: 0.5rem;
+  margin-bottom: 0.3rem;
+  transition: background 0.2s;
+}
+.today-todo-item.completed {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+.today-todo-more {
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0 0 0;
+  padding: 0.7rem 0;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.today-todo-more:hover {
+  background: var(--primary-color-dark);
+}
+.todo-title {
+  flex: 1;
+  font-weight: 500;
+}
+.todo-goal {
+  font-size: 0.95em;
+  color: var(--gray-500);
+  margin-left: 0.5rem;
+}
+#todayTodosSection {
+  margin-bottom: 1.5rem;
+}
+
+.today-todos-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  border: 2px dashed #dee2e6;
+  margin: 20px 0;
+}
+
+.empty-message {
+  text-align: center;
+  color: #6c757d;
+}
+
+.empty-message p:first-child {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #495057;
+}
+
+.empty-message p:last-child {
+  font-size: 14px;
+  color: #868e96;
 }

@@ -37,9 +37,35 @@
             <input
               type="text"
               id="userGoal"
-              placeholder="예: 매일 책 읽기 20분"
+              placeholder="예: 자격증 취득하기"
               required
             />
+          </div>
+        </div>
+      </div>
+      <!-- Step 2-1: Goal End Date -->
+      <div class="step" data-step="2-1">
+        <div class="goal-end-date-input">
+          <h3>목표의 종료일을 선택하세요</h3>
+          <div class="date-selector">
+            <div class="date-group">
+              <label for="yearSelect">연도</label>
+              <select id="yearSelect" class="date-select">
+                <!-- 연도 옵션들은 JavaScript에서 동적으로 생성 -->
+              </select>
+            </div>
+            <div class="date-group">
+              <label for="monthSelect">월</label>
+              <select id="monthSelect" class="date-select">
+                <!-- 월 옵션들은 JavaScript에서 동적으로 생성 -->
+              </select>
+            </div>
+            <div class="date-group">
+              <label for="daySelect">일</label>
+              <select id="daySelect" class="date-select">
+                <!-- 일 옵션들은 JavaScript에서 동적으로 생성 -->
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -52,7 +78,7 @@
             <input
               type="text"
               id="rewardName"
-              placeholder="예: 유튜브 보기"
+              placeholder="예: 치킨 먹기"
               required
             />
           </div>
@@ -99,6 +125,7 @@
         <button id="prevButton" class="btn btn-secondary" disabled>이전</button>
         <div class="step-indicators">
           <span class="step-dot active"></span>
+          <span class="step-dot"></span>
           <span class="step-dot"></span>
           <span class="step-dot"></span>
           <span class="step-dot"></span>

@@ -69,6 +69,10 @@
         <div class="daily-message-content" id="dailyMessage">화이팅</div>
       </div> -->
 
+      <!-- 오늘의 TODO 섹션 -->
+      <h2 class="section-title">오늘의 TODO</h2>
+      <div class="card" id="todayTodosSection"></div>
+
       <!-- GoalCardList -->
       <div class="goal-list">
         <h2 class="section-title">나의 목표</h2>
@@ -103,16 +107,29 @@
             />
           </div>
           <div class="form-group">
-            <label for="goalDescription">설명 (선택사항)</label>
-            <textarea
-              id="goalDescription"
-              placeholder="목표에 대한 설명을 입력하세요"
-            ></textarea>
+            <label for="goalEndDate">목표 종료일</label>
+            <div class="date-selector">
+              <div class="date-group">
+                <label for="yearSelect">연도</label>
+                <select id="yearSelect" class="date-select">
+                  <!-- 연도 옵션들은 JavaScript에서 동적으로 생성 -->
+                </select>
+              </div>
+              <div class="date-group">
+                <label for="monthSelect">월</label>
+                <select id="monthSelect" class="date-select">
+                  <!-- 월 옵션들은 JavaScript에서 동적으로 생성 -->
+                </select>
+              </div>
+              <div class="date-group">
+                <label for="daySelect">일</label>
+                <select id="daySelect" class="date-select">
+                  <!-- 일 옵션들은 JavaScript에서 동적으로 생성 -->
+                </select>
+              </div>
+            </div>
           </div>
           <div class="step-buttons">
-            <a href="store-setting.html" class="reward-button"
-              >보상 정하러가기</a
-            >
             <button type="submit" class="submit-button">목표 생성하기</button>
           </div>
         </form>

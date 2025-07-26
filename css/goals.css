@@ -1,0 +1,407 @@
+/* GoalCardList 스타일 (index.css에서 발췌) */
+.goal-list {
+  margin-bottom: 2rem;
+}
+.section-title {
+  font-size: 1.5rem;
+  color: var(--gray-800);
+  margin-bottom: var(--spacing-4);
+}
+.goal-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.goal-tag {
+  background: #eaf2fb;
+  color: var(--primary-color);
+  border: none;
+  border-radius: 16px;
+  padding: 4px 14px;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.goal-tag.active {
+  background: var(--primary-color);
+  color: #fff;
+}
+.goal-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0;
+  /* 스크롤 관련 스타일 제거 */
+  /* overflow-x: unset; */
+  /* overflow-y: auto; */
+  /* max-height: 70vh; */
+}
+.goal-card {
+  min-width: unset;
+  max-width: unset;
+  flex: unset;
+  margin-right: 0;
+  scroll-snap-align: unset;
+  height: auto;
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  padding: var(--spacing-4);
+}
+.goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-2);
+}
+.goal-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.goal-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+  flex: 1;
+}
+.goal-dday {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary-color, #007bff);
+  background-color: rgba(0, 123, 255, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  margin-bottom: 0.3rem;
+  display: inline-block;
+  text-align: center;
+}
+
+/* 케밥 버튼 스타일 */
+.kebab-button {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s ease;
+}
+
+.kebab-button:hover {
+  color: #333;
+}
+
+/* 액션 모달 스타일 */
+.action-modal {
+  position: absolute;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 120px;
+}
+
+.action-modal-content {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+}
+
+.action-modal-content button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: #333;
+  transition: background-color 0.2s ease;
+}
+
+.action-modal-content button:hover {
+  background-color: #f5f5f5;
+}
+
+.action-modal-content .edit-goal-button {
+  color: #007bff;
+}
+
+.action-modal-content .delete-goal-button {
+  color: #dc3545;
+}
+
+.action-modal-content button i {
+  width: 16px;
+  text-align: center;
+}
+
+/* 모달 오버레이 스타일 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 모달 스타일 */
+/* .modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-width: 90%;
+  width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: scale(0.9);
+  opacity: 0;
+  transition: all 0.3s ease-out;
+} */
+
+.modal.show {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.modal-content {
+  padding: 24px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.close-button:hover {
+  background-color: #f5f5f5;
+}
+
+/* 폼 스타일 */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+/* 날짜 선택기 스타일 */
+.date-selector {
+  display: flex;
+  gap: 12px;
+}
+
+.date-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.date-group label {
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+  color: #666;
+}
+
+.date-select {
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.date-select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+/* 버튼 스타일 */
+.step-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.submit-button {
+  flex: 1;
+  padding: 12px 24px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+.cancel-button {
+  flex: 1;
+  padding: 12px 24px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cancel-button:hover {
+  background-color: #545b62;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.goal-todos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease;
+}
+.todo-item:hover {
+  background-color: var(--background-color);
+}
+.todo-checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--border-color);
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.todo-checkbox.checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+.todo-text {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--text-color);
+  transition: all 0.2s ease;
+}
+.todo-text.completed {
+  text-decoration: line-through;
+  color: var(--gray-500);
+}
+.goal-filter-tags {
+  display: flex;
+  gap: 0.7rem;
+  margin-bottom: 1.2rem;
+}
+.goal-filter-tag {
+  border: none;
+  border-radius: 16px;
+  padding: 6px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  color: #fff;
+  opacity: 0.85;
+}
+.goal-filter-tag.active {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  opacity: 1;
+}
+.tag-all {
+  background: #e3f0ff;
+  color: #357abd;
+}
+.tag-doing {
+  background: #357abd;
+  color: #fff;
+}
+.tag-fail {
+  background: #d32f2f;
+  color: #fff;
+}
+.tag-success {
+  background: #2ecc71;
+  color: #fff;
+}
