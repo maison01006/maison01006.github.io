@@ -1,0 +1,117 @@
+import type { Recipe } from './types'
+import { generateId } from './storage'
+
+export const SEED_RECIPES: Recipe[] = [
+  {
+    id: generateId(),
+    clientName: '박지연',
+    treatmentDate: '2026-03-17',
+    treatmentTags: ['발레아쥬'],
+    heatTreatment: false,
+    preTreatmentTags: ['올라플렉스 No.1', '두피보호제'],
+    postTreatmentTags: ['산성 샴푸', '컬러락'],
+    memo: '두피 민감 — 두피보호제 필수. 다음엔 한 톤 더 밝게 요청.',
+    hairState: {
+      damageLevel: 3,
+      currentLevel: 7,
+      naturalLevel: 4,
+      grayPercentage: 15,
+      hairThickness: 'NORMAL',
+      bleachCount: 1,
+    },
+    zones: [
+      {
+        id: generateId(),
+        zoneName: '신생부 (뿌리)',
+        applicationOrder: 1,
+        processingTime: 35,
+        products: [
+          { id: generateId(), brandName: 'Wella', shadeCode: '7/1', productType: 'CREAM', ratio: 1, isOxidizer: false },
+          { id: generateId(), brandName: 'Wella', shadeCode: '8/3', productType: 'CREAM', ratio: 1, isOxidizer: false },
+          { id: generateId(), brandName: '산화제', shadeCode: '', productType: 'CREAM', ratio: 1, isOxidizer: true, oxidizerVolume: 20 },
+        ],
+      },
+      {
+        id: generateId(),
+        zoneName: '모끝 (기시술부)',
+        applicationOrder: 2,
+        processingTime: 20,
+        products: [
+          { id: generateId(), brandName: 'Wella', shadeCode: '9/1', productType: 'CREAM', ratio: 1, isOxidizer: false },
+          { id: generateId(), brandName: '산화제', shadeCode: '', productType: 'CREAM', ratio: 2, isOxidizer: true, oxidizerVolume: 10 },
+        ],
+      },
+    ],
+    photos: [],
+    createdAt: new Date('2026-03-17').toISOString(),
+    updatedAt: new Date('2026-03-17').toISOString(),
+  },
+  {
+    id: generateId(),
+    clientName: '최민호',
+    treatmentDate: '2026-03-16',
+    treatmentTags: ['커버그레이'],
+    heatTreatment: false,
+    preTreatmentTags: [],
+    postTreatmentTags: ['산성 샴푸'],
+    memo: '새치 비율 40%로 높음. 6/0 비율 늘림.',
+    hairState: {
+      damageLevel: 2,
+      currentLevel: 5,
+      naturalLevel: 4,
+      grayPercentage: 40,
+      hairThickness: 'THICK',
+      bleachCount: 0,
+    },
+    zones: [
+      {
+        id: generateId(),
+        zoneName: '전체 (신생부)',
+        applicationOrder: 1,
+        processingTime: 30,
+        products: [
+          { id: generateId(), brandName: 'Igora', shadeCode: '5/0', productType: 'CREAM', ratio: 1, isOxidizer: false },
+          { id: generateId(), brandName: 'Igora', shadeCode: '6/0', productType: 'CREAM', ratio: 2, isOxidizer: false },
+          { id: generateId(), brandName: '산화제', shadeCode: '', productType: 'CREAM', ratio: 2, isOxidizer: true, oxidizerVolume: 20 },
+        ],
+      },
+    ],
+    photos: [],
+    createdAt: new Date('2026-03-16').toISOString(),
+    updatedAt: new Date('2026-03-16').toISOString(),
+  },
+  {
+    id: generateId(),
+    clientName: '이수진',
+    treatmentDate: '2026-03-15',
+    treatmentTags: ['전체 염색'],
+    heatTreatment: true,
+    preTreatmentTags: ['올라플렉스 No.1'],
+    postTreatmentTags: ['컬러락'],
+    memo: '원피스 핑크 원함. 탈색 후 발색.',
+    hairState: {
+      damageLevel: 4,
+      currentLevel: 9,
+      naturalLevel: 5,
+      grayPercentage: 0,
+      hairThickness: 'THIN',
+      bleachCount: 2,
+    },
+    zones: [
+      {
+        id: generateId(),
+        zoneName: '전체',
+        applicationOrder: 1,
+        processingTime: 40,
+        products: [
+          { id: generateId(), brandName: 'Wella', shadeCode: '8/22', productType: 'CREAM', ratio: 3, isOxidizer: false },
+          { id: generateId(), brandName: 'Wella', shadeCode: 'Clear', productType: 'CREAM', ratio: 1, isOxidizer: false },
+          { id: generateId(), brandName: '산화제', shadeCode: '', productType: 'CREAM', ratio: 2, isOxidizer: true, oxidizerVolume: 30 },
+        ],
+      },
+    ],
+    photos: [],
+    createdAt: new Date('2026-03-15').toISOString(),
+    updatedAt: new Date('2026-03-15').toISOString(),
+  },
+]
