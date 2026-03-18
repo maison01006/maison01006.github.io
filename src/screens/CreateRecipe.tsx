@@ -427,44 +427,36 @@ function ZoneCard({
         {zone.products.map(p => (
           <div key={p.id} className="space-y-2">
             {p.isOxidizer ? (
-              <>
-                {/* Oxidizer row 1: label + select */}
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-violet-500 flex-shrink-0">산화제</span>
-                  <select
-                    value={p.oxidizerVolume ?? 20}
-                    onChange={e => onUpdateProduct(p.id, { oxidizerVolume: Number(e.target.value) as 10|20|30|40 })}
-                    className="flex-1 text-sm font-bold text-violet-600 bg-violet-50 border border-violet-100 rounded-xl px-3 py-3 outline-none cursor-pointer min-h-[48px]"
-                  >
-                    {OX_VOLS.map(v => (
-                      <option key={v} value={v}>{OX_PCT[v]} ({v}vol)</option>
-                    ))}
-                  </select>
-                </div>
-                {/* Oxidizer row 2: ratio + delete */}
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-400">배합 비율</span>
-                  <div className="flex items-center gap-1.5 flex-1">
-                    <span className="text-sm text-gray-300">×</span>
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      step="0.5"
-                      min="0.5"
-                      value={p.ratio}
-                      onChange={e => onUpdateProduct(p.id, { ratio: Number(e.target.value) })}
-                      className="w-20 text-center text-sm font-bold text-gray-600 bg-gray-50 border border-gray-200 rounded-xl py-3 outline-none min-h-[48px]"
-                    />
-                  </div>
-                  <button
-                    onClick={() => onRemoveProduct(p.id)}
-                    className="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-300 cursor-pointer hover:text-red-400 transition-colors"
-                    aria-label="제품 삭제"
-                  >
-                    <Trash2 size={15} />
-                  </button>
-                </div>
-              </>
+              /* 산화제 · 선택 · × · 비율 · 삭제 — 한 줄 */
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold text-violet-500 flex-shrink-0">산화제</span>
+                <select
+                  value={p.oxidizerVolume ?? 20}
+                  onChange={e => onUpdateProduct(p.id, { oxidizerVolume: Number(e.target.value) as 10|20|30|40 })}
+                  className="flex-1 min-w-0 text-sm font-bold text-violet-600 bg-violet-50 border border-violet-100 rounded-xl px-2 py-3 outline-none cursor-pointer min-h-[48px]"
+                >
+                  {OX_VOLS.map(v => (
+                    <option key={v} value={v}>{OX_PCT[v]} ({v}vol)</option>
+                  ))}
+                </select>
+                <span className="text-sm text-gray-300 flex-shrink-0">×</span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  step="0.5"
+                  min="0.5"
+                  value={p.ratio}
+                  onChange={e => onUpdateProduct(p.id, { ratio: Number(e.target.value) })}
+                  className="w-14 flex-shrink-0 text-center text-sm font-bold text-gray-600 bg-gray-50 border border-gray-200 rounded-xl py-3 outline-none min-h-[48px]"
+                />
+                <button
+                  onClick={() => onRemoveProduct(p.id)}
+                  className="min-w-[44px] min-h-[44px] flex-shrink-0 flex items-center justify-center text-gray-300 cursor-pointer hover:text-red-400 transition-colors"
+                  aria-label="제품 삭제"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
             ) : (
               /* 브랜드 · 호수 · 비율 · 삭제 — 한 줄 */
               <div className="flex items-center gap-1.5">

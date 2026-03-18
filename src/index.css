@@ -1,17 +1,105 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
+@import "tw-animate-css";
 
+@custom-variant dark (&:is(.dark *));
+
+/* ────────────────────────────────────────────
+   다홍색 디자인 시스템 — CSS 토큰
+   Primary: #E8321C (다홍, HSL 9 80% 51%)
+   ──────────────────────────────────────────── */
+@theme inline {
+  --color-background:           var(--background);
+  --color-foreground:           var(--foreground);
+  --color-card:                 var(--card);
+  --color-card-foreground:      var(--card-foreground);
+  --color-popover:              var(--popover);
+  --color-popover-foreground:   var(--popover-foreground);
+  --color-primary:              var(--primary);
+  --color-primary-foreground:   var(--primary-foreground);
+  --color-secondary:            var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted:                var(--muted);
+  --color-muted-foreground:     var(--muted-foreground);
+  --color-accent:               var(--accent);
+  --color-accent-foreground:    var(--accent-foreground);
+  --color-destructive:          var(--destructive);
+  --color-border:               var(--border);
+  --color-input:                var(--input);
+  --color-ring:                 var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.75rem;
+
+  /* ── 다홍색 Light Mode 팔레트 ── */
+  --background:            oklch(0.985 0.004 75);   /* 따뜻한 오프화이트 */
+  --foreground:            oklch(0.18  0.02  25);   /* 다크 웜 블랙 */
+
+  --card:                  oklch(1.0   0     0);
+  --card-foreground:       oklch(0.18  0.02  25);
+
+  --popover:               oklch(1.0   0     0);
+  --popover-foreground:    oklch(0.18  0.02  25);
+
+  /* 메인: 다홍색 #E8321C */
+  --primary:               oklch(0.55  0.22  25);
+  --primary-foreground:    oklch(1.0   0     0);
+
+  /* 세컨더리: 연 다홍 배경 */
+  --secondary:             oklch(0.96  0.03  25);
+  --secondary-foreground:  oklch(0.40  0.15  25);
+
+  /* 뮤트 */
+  --muted:                 oklch(0.96  0.005 60);
+  --muted-foreground:      oklch(0.52  0.01  40);
+
+  /* 액센트: 따뜻한 골드 */
+  --accent:                oklch(0.78  0.17  70);
+  --accent-foreground:     oklch(0.18  0.02  25);
+
+  --destructive:           oklch(0.55  0.22  25);   /* 다홍 = destructive 겸용 */
+
+  --border:                oklch(0.90  0.01  60);
+  --input:                 oklch(0.90  0.01  60);
+  --ring:                  oklch(0.55  0.22  25);   /* 다홍 포커스 링 */
+}
+
+/* ────────────────────────────────────────────
+   글로벌 기본
+   ──────────────────────────────────────────── */
 * { box-sizing: border-box; }
 
 body {
   font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #F0EFF5;
-  color: #1E1B2E;
+  background-color: var(--background);
+  color: var(--foreground);
   margin: 0;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root { min-height: 100dvh; }
 
+@layer base {
+  * {
+    border-color: var(--border);
+    outline-color: color-mix(in oklch, var(--ring) 50%, transparent);
+  }
+}
+
+/* ────────────────────────────────────────────
+   유틸리티
+   ──────────────────────────────────────────── */
 .no-scroll::-webkit-scrollbar { display: none; }
 .no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* 다홍 그라디언트 */
+.bg-dahong-gradient {
+  background: linear-gradient(135deg, oklch(0.55 0.22 25), oklch(0.62 0.20 35));
+}
