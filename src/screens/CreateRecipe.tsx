@@ -415,12 +415,12 @@ function ZoneCard({
       </div>
 
       {/* Products */}
-      <div className="px-3 py-2 space-y-1.5">
+      <div className="px-3 py-2 space-y-2">
         {zone.products.map(p => (
-          <div key={p.id} className="flex items-center gap-2">
+          <div key={p.id} className="flex flex-col gap-1.5">
             {p.isOxidizer ? (
-              <>
-                <span className="text-[11px] font-semibold text-violet-500 w-12">산화제</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-semibold text-violet-500 w-12 flex-shrink-0">산화제</span>
                 <select
                   value={p.oxidizerVolume ?? 20}
                   onChange={e => onUpdateProduct(p.id, { oxidizerVolume: Number(e.target.value) as 10|20|30|40 })}
@@ -430,38 +430,56 @@ function ZoneCard({
                     <option key={v} value={v}>{OX_PCT[v]} ({v}vol)</option>
                   ))}
                 </select>
-              </>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <span className="text-[10px] text-gray-300">×</span>
+                  <input
+                    type="number"
+                    step="0.5"
+                    min="0.5"
+                    value={p.ratio}
+                    onChange={e => onUpdateProduct(p.id, { ratio: Number(e.target.value) })}
+                    className="w-14 text-center text-sm font-bold text-gray-500 bg-gray-50 border border-gray-100 rounded-lg py-2.5 outline-none"
+                  />
+                </div>
+                <button onClick={() => onRemoveProduct(p.id)} className="text-gray-200 cursor-pointer hover:text-red-400 transition-colors flex-shrink-0">
+                  <Trash2 size={13} />
+                </button>
+              </div>
             ) : (
               <>
-                <select
-                  value={p.brandName}
-                  onChange={e => onUpdateProduct(p.id, { brandName: e.target.value })}
-                  className="text-xs font-semibold text-gray-500 bg-pink-50 border border-pink-100 rounded-lg px-2 py-2.5 outline-none cursor-pointer w-24"
-                >
-                  {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
-                </select>
-                <input
-                  value={p.shadeCode}
-                  onChange={e => onUpdateProduct(p.id, { shadeCode: e.target.value })}
-                  placeholder="호수 (예:7/1)"
-                  className="flex-1 text-sm font-bold text-pink-800 bg-pink-50 border border-pink-100 rounded-lg px-3 py-2.5 outline-none placeholder:text-gray-200"
-                />
+                <div className="flex items-center gap-2">
+                  <select
+                    value={p.brandName}
+                    onChange={e => onUpdateProduct(p.id, { brandName: e.target.value })}
+                    className="flex-1 text-xs font-semibold text-gray-500 bg-pink-50 border border-pink-100 rounded-lg px-2 py-2.5 outline-none cursor-pointer"
+                  >
+                    {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
+                  </select>
+                  <button onClick={() => onRemoveProduct(p.id)} className="text-gray-200 cursor-pointer hover:text-red-400 transition-colors flex-shrink-0">
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    value={p.shadeCode}
+                    onChange={e => onUpdateProduct(p.id, { shadeCode: e.target.value })}
+                    placeholder="호수 (예: 7/1)"
+                    className="flex-1 text-sm font-bold text-pink-800 bg-pink-50 border border-pink-100 rounded-lg px-3 py-2.5 outline-none placeholder:text-gray-200"
+                  />
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <span className="text-[10px] text-gray-300">×</span>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="0.5"
+                      value={p.ratio}
+                      onChange={e => onUpdateProduct(p.id, { ratio: Number(e.target.value) })}
+                      className="w-14 text-center text-sm font-bold text-gray-500 bg-gray-50 border border-gray-100 rounded-lg py-2.5 outline-none"
+                    />
+                  </div>
+                </div>
               </>
             )}
-            <div className="flex items-center gap-1 flex-shrink-0">
-              <span className="text-[10px] text-gray-300">×</span>
-              <input
-                type="number"
-                step="0.5"
-                min="0.5"
-                value={p.ratio}
-                onChange={e => onUpdateProduct(p.id, { ratio: Number(e.target.value) })}
-                className="w-14 text-center text-sm font-bold text-gray-500 bg-gray-50 border border-gray-100 rounded-lg py-2.5 outline-none"
-              />
-            </div>
-            <button onClick={() => onRemoveProduct(p.id)} className="text-gray-200 cursor-pointer hover:text-red-400 transition-colors flex-shrink-0">
-              <Trash2 size={13} />
-            </button>
           </div>
         ))}
 
