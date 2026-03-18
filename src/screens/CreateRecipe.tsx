@@ -132,11 +132,17 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
     <div className="flex flex-col h-full">
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
-        <button onClick={onCancel} className="p-2 cursor-pointer text-gray-500"><X size={22} /></button>
+        <button
+          onClick={onCancel}
+          className="min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer text-gray-500"
+          aria-label="닫기"
+        >
+          <X size={22} />
+        </button>
         <div className="text-base font-bold">{source ? '레시피 수정' : '새 레시피'}</div>
         <button
           onClick={handleSave}
-          className="text-sm font-bold text-pink-500 px-3 py-1.5 cursor-pointer"
+          className="min-w-[44px] min-h-[44px] flex items-center justify-center text-sm font-bold text-pink-500 px-3 cursor-pointer"
         >
           저장
         </button>
@@ -148,11 +154,8 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
           <button
             key={m}
             onClick={() => setMode(m)}
-            className={`flex-1 py-2 text-[13px] font-semibold rounded-full transition-all cursor-pointer
-              ${mode === m
-                ? 'text-white shadow-sm'
-                : 'text-gray-400'
-              }`}
+            className={`flex-1 py-2.5 text-sm font-semibold rounded-full transition-all cursor-pointer
+              ${mode === m ? 'text-white shadow-sm' : 'text-gray-400'}`}
             style={mode === m ? { background: 'linear-gradient(135deg,#EC4899,#8B5CF6)' } : {}}
           >
             {m === 'quick' ? '빠른 기록' : '상세 기록'}
@@ -161,12 +164,12 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
       </div>
 
       {/* Scrollable form */}
-      <div className="flex-1 overflow-y-auto no-scroll pb-6">
+      <div className="flex-1 overflow-y-auto no-scroll pb-8">
         <input type="file" accept="image/*" ref={fileRef} onChange={handleFileChange} className="hidden" />
 
         {/* Photos */}
-        <FieldLabel icon={<Camera size={12} className="text-pink-500" />} label="사진" required />
-        <div className="flex gap-2 px-4 mb-4">
+        <FieldLabel icon={<Camera size={13} className="text-pink-500" />} label="사진" required />
+        <div className="flex gap-2 px-4 mb-5">
           {(['BEFORE','AFTER','REFERENCE'] as PhotoType[]).map(type => {
             const photo = photoOf(type)
             const labels = { BEFORE: '시술 전', AFTER: '시술 후', REFERENCE: '레퍼런스' }
@@ -174,14 +177,14 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
               <div
                 key={type}
                 onClick={() => handlePhotoClick(type)}
-                className="flex-1 aspect-square rounded-xl overflow-hidden cursor-pointer border-2 border-dashed border-pink-100 flex items-center justify-center flex-col gap-1 relative transition-all hover:border-pink-400"
+                className="flex-1 aspect-square rounded-xl overflow-hidden cursor-pointer border-2 border-dashed border-pink-100 flex items-center justify-center flex-col gap-1 relative transition-all hover:border-pink-400 active:scale-95"
               >
                 {photo ? (
-                  <img src={photo.dataUrl} alt={type} className="absolute inset-0 w-full h-full object-cover" />
+                  <img src={photo.dataUrl} alt={labels[type]} className="absolute inset-0 w-full h-full object-cover" />
                 ) : (
                   <>
-                    <Camera size={20} className="text-gray-200" />
-                    <span className="text-[10px] font-semibold text-gray-300">{labels[type]}</span>
+                    <Camera size={22} className="text-gray-200" />
+                    <span className="text-xs font-semibold text-gray-300">{labels[type]}</span>
                   </>
                 )}
               </div>
@@ -190,24 +193,21 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
         </div>
 
         {/* Damage level */}
-        <FieldLabel icon={<span className="text-pink-500 text-[10px]">●</span>} label="손상도" required />
-        <div className="mx-4 mb-4 bg-white rounded-xl p-3 shadow-sm">
-          <div className="flex justify-between text-[11px] text-gray-400 mb-2">
+        <FieldLabel icon={<span className="text-pink-500 text-xs">●</span>} label="손상도" required />
+        <div className="mx-4 mb-5 bg-white rounded-xl p-4 shadow-sm">
+          <div className="flex justify-between text-xs text-gray-400 mb-3">
             <span className="font-semibold">모발 손상 단계</span>
             <span>1=건강 · 5=극손상</span>
           </div>
           <DamageBar value={hairState.damageLevel} onChange={v => setHairState(s => ({ ...s, damageLevel: v }))} />
         </div>
 
-        {/* Zone section label */}
-        <FieldLabel icon={<FlaskConical size={12} className="text-pink-500" />} label="구간별 배합" required />
-
-        {/* Zones */}
+        {/* Zone section */}
+        <FieldLabel icon={<FlaskConical size={13} className="text-pink-500" />} label="구간별 배합" required />
         {zones.map(zone => (
           <ZoneCard
             key={zone.id}
             zone={zone}
-
             onUpdate={p => updateZone(zone.id, p)}
             onAddProduct={() => addProduct(zone.id)}
             onUpdateProduct={(pid, p) => updateProduct(zone.id, pid, p)}
@@ -218,92 +218,93 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
 
         <button
           onClick={addZone}
-          className="flex items-center justify-center gap-1.5 mx-4 mb-4 py-2.5 border-2 border-dashed border-pink-200 rounded-xl text-pink-400 text-[13px] font-semibold cursor-pointer transition-all hover:border-pink-400 hover:bg-pink-50"
+          className="flex items-center justify-center gap-2 mx-4 mb-5 py-3.5 border-2 border-dashed border-pink-200 rounded-xl text-pink-400 text-sm font-semibold cursor-pointer transition-all hover:border-pink-400 hover:bg-pink-50 active:scale-98 min-h-[48px]"
         >
-          <Plus size={14} />구간 추가
+          <Plus size={16} />구간 추가
         </button>
 
-        {/* Treatment type + options */}
-        <FieldLabel icon={<span className="text-pink-500">●</span>} label="시술 유형" />
-        <div className="px-4 mb-4">
-          <div className="flex flex-wrap gap-1.5">
+        {/* Treatment type */}
+        <FieldLabel icon={<span className="text-pink-500 text-xs">●</span>} label="시술 유형" />
+        <div className="px-4 mb-5">
+          <div className="flex flex-wrap gap-2">
             {TREATMENT_TAGS.map(t => (
               <button
                 key={t}
                 onClick={() => toggleTag(treatmentTags, t, setTreatmentTags)}
-                className={`text-xs font-semibold px-3 py-1.5 rounded-full cursor-pointer transition-all
+                className={`text-sm font-semibold px-3.5 py-2 rounded-full cursor-pointer transition-all min-h-[40px]
                   ${treatmentTags.includes(t)
                     ? 'bg-violet-500 text-white'
-                    : 'bg-white text-gray-500 border border-gray-100'
+                    : 'bg-white text-gray-500 border border-gray-200'
                   }`}
               >
                 {t}
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-2 mt-2">
-            <label className="flex items-center gap-1.5 cursor-pointer text-[12px] text-gray-500">
-              <input
-                type="checkbox"
-                checked={heatTreatment}
-                onChange={e => setHeatTreatment(e.target.checked)}
-                className="accent-pink-500"
-              />
-              열처리
-            </label>
+          {/* Heat + date — separate rows for mobile clarity */}
+          <label className="flex items-center gap-2 mt-3 cursor-pointer min-h-[44px]">
+            <input
+              type="checkbox"
+              checked={heatTreatment}
+              onChange={e => setHeatTreatment(e.target.checked)}
+              className="accent-pink-500 w-4 h-4"
+            />
+            <span className="text-sm text-gray-500">열처리</span>
+          </label>
+          <div className="mt-2">
             <input
               value={treatmentDate}
               onChange={e => setTreatmentDate(e.target.value)}
               type="date"
-              className="ml-auto text-xs text-gray-500 border border-gray-100 rounded-lg px-2 py-1 bg-white"
+              className="w-full text-sm text-gray-600 border border-gray-200 rounded-xl px-4 py-3 bg-white outline-none focus:border-pink-300 min-h-[48px]"
             />
           </div>
         </div>
 
         {/* Client name */}
-        <FieldLabel icon={<span className="text-pink-500">●</span>} label="고객 이름 (선택)" />
-        <div className="px-4 mb-4">
+        <FieldLabel icon={<span className="text-pink-500 text-xs">●</span>} label="고객 이름 (선택)" />
+        <div className="px-4 mb-5">
           <input
             value={clientName}
             onChange={e => setClientName(e.target.value)}
             placeholder="직접 입력"
-            className="w-full bg-white rounded-xl px-4 py-3.5 text-sm shadow-sm border border-pink-50 outline-none focus:border-pink-300 placeholder:text-gray-300"
+            className="w-full bg-white rounded-xl px-4 py-3.5 text-base shadow-sm border border-pink-100 outline-none focus:border-pink-300 placeholder:text-gray-300 min-h-[52px]"
           />
         </div>
 
         {/* Memo */}
-        <FieldLabel icon={<span className="text-pink-500">●</span>} label="메모" />
-        <div className="px-4 mb-4">
+        <FieldLabel icon={<span className="text-pink-500 text-xs">●</span>} label="메모" />
+        <div className="px-4 mb-5">
           <textarea
             value={memo}
             onChange={e => setMemo(e.target.value)}
             placeholder="특이사항, 다음 시술 시 주의점..."
-            rows={5}
-            className="w-full bg-white rounded-xl px-4 py-3.5 text-sm shadow-sm border border-pink-50 outline-none focus:border-pink-300 placeholder:text-gray-300 resize-none"
+            rows={4}
+            className="w-full bg-white rounded-xl px-4 py-3.5 text-base shadow-sm border border-pink-100 outline-none focus:border-pink-300 placeholder:text-gray-300 resize-none leading-relaxed"
           />
         </div>
 
         {/* Detail mode only */}
         {mode === 'detail' && (
           <>
-            {/* Hair detail */}
-            <FieldLabel icon={<span className="text-pink-500">●</span>} label="모발 상세" />
-            <div className="px-4 mb-4">
-              <div className="grid grid-cols-2 gap-2">
+            <FieldLabel icon={<span className="text-pink-500 text-xs">●</span>} label="모발 상세" />
+            <div className="px-4 mb-5">
+              <div className="grid grid-cols-2 gap-3">
                 {[
                   { label: '현재 레벨 (1-10)', key: 'currentLevel' },
                   { label: '자연 레벨 (1-10)', key: 'naturalLevel' },
                   { label: '새치 비율 (%)', key: 'grayPercentage' },
                   { label: '탈색 횟수', key: 'bleachCount' },
                 ].map(({ label, key }) => (
-                  <div key={key} className="bg-white rounded-xl px-3 py-2.5 shadow-sm border border-pink-50">
-                    <div className="text-[10px] text-gray-300 mb-1">{label}</div>
+                  <div key={key} className="bg-white rounded-xl px-4 py-3 shadow-sm border border-pink-100">
+                    <div className="text-xs text-gray-400 mb-1.5">{label}</div>
                     <input
                       type="number"
+                      inputMode="numeric"
                       min={0}
                       value={(hairState as unknown as Record<string,unknown>)[key] as number ?? ''}
                       onChange={e => setHairState(s => ({ ...s, [key]: e.target.value ? Number(e.target.value) : undefined }))}
-                      className="w-full text-sm font-semibold outline-none bg-transparent"
+                      className="w-full text-base font-semibold outline-none bg-transparent min-h-[32px]"
                       placeholder="—"
                     />
                   </div>
@@ -311,15 +312,13 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
               </div>
             </div>
 
-            {/* Pre/Post tags */}
-            <FieldLabel icon={<Layers size={12} className="text-pink-500" />} label="전·후처리" />
-            <div className="mx-4 mb-4 bg-white rounded-xl p-3 shadow-sm border border-pink-50 space-y-3">
+            <FieldLabel icon={<Layers size={13} className="text-pink-500" />} label="전·후처리" />
+            <div className="mx-4 mb-5 bg-white rounded-xl p-4 shadow-sm border border-pink-100 space-y-4">
               <div>
-                <div className="text-[11px] font-semibold text-gray-400 mb-1.5">전처리 (Pre-treatment)</div>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="text-xs font-semibold text-gray-400 mb-2">전처리 (Pre-treatment)</div>
+                <div className="flex flex-wrap gap-2">
                   {PRE_TAGS.map(t => (
-                    <button key={t} onClick={() => toggleTag(preTags, t, setPreTags)}
-                      className="cursor-pointer">
+                    <button key={t} onClick={() => toggleTag(preTags, t, setPreTags)} className="cursor-pointer min-h-[36px]">
                       <Tag variant={preTags.includes(t) ? 'pre' : 'color'} className={`cursor-pointer ${!preTags.includes(t) ? 'opacity-40' : ''}`}>
                         {t}
                       </Tag>
@@ -328,11 +327,10 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
                 </div>
               </div>
               <div>
-                <div className="text-[11px] font-semibold text-gray-400 mb-1.5">후처리 (Post-treatment)</div>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="text-xs font-semibold text-gray-400 mb-2">후처리 (Post-treatment)</div>
+                <div className="flex flex-wrap gap-2">
                   {POST_TAGS.map(t => (
-                    <button key={t} onClick={() => toggleTag(postTags, t, setPostTags)}
-                      className="cursor-pointer">
+                    <button key={t} onClick={() => toggleTag(postTags, t, setPostTags)} className="cursor-pointer min-h-[36px]">
                       <Tag variant={postTags.includes(t) ? 'post' : 'color'} className={`cursor-pointer ${!postTags.includes(t) ? 'opacity-40' : ''}`}>
                         {t}
                       </Tag>
@@ -348,7 +346,7 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
         <div className="px-4">
           <button
             onClick={handleSave}
-            className="w-full py-4 rounded-2xl text-white font-bold text-base flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-98 transition-transform"
+            className="w-full py-4 rounded-2xl text-white font-bold text-base flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-98 transition-transform min-h-[56px]"
             style={{ background: 'linear-gradient(135deg,#EC4899,#8B5CF6)' }}
           >
             레시피 저장
@@ -361,9 +359,9 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
 
 function FieldLabel({ icon, label, required }: { icon: React.ReactNode; label: string; required?: boolean }) {
   return (
-    <div className="flex items-center gap-1.5 px-4 mb-2 text-[12px] font-bold text-gray-400">
+    <div className="flex items-center gap-1.5 px-4 mb-2 text-xs font-bold text-gray-400 uppercase tracking-wide">
       {icon}{label}
-      {required && <span className="text-[10px] font-semibold text-pink-400">필수</span>}
+      {required && <span className="text-[11px] font-semibold text-pink-400 normal-case tracking-normal">필수</span>}
     </div>
   )
 }
@@ -382,99 +380,128 @@ function ZoneCard({
   const color = orderColors[(zone.applicationOrder - 1) % orderColors.length]
 
   return (
-    <div className="mx-4 mb-2.5 bg-white rounded-xl shadow-sm overflow-hidden border border-pink-50">
-      {/* Zone header */}
-      <div className="flex items-center gap-2 px-3 py-2.5 bg-pink-50/50 border-b border-pink-50">
-        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: color }} />
-        <input
-          value={zone.zoneName}
-          onChange={e => onUpdate({ zoneName: e.target.value })}
-          className="flex-1 text-[13px] font-bold bg-transparent outline-none"
-        />
-        <span
-          className="text-[10px] font-black px-1.5 py-0.5 rounded-full text-white"
-          style={{ background: color }}
-        >
-          {zone.applicationOrder}차
-        </span>
-        <div className="flex items-center gap-1 text-[12px] text-gray-400">
-          <Clock size={11} />
+    <div className="mx-4 mb-3 bg-white rounded-2xl shadow-sm overflow-hidden border border-pink-100">
+      {/* Zone header — 2 rows for mobile */}
+      <div className="px-4 py-3 bg-pink-50/60 border-b border-pink-100 space-y-2">
+        {/* Row 1: dot + name + order badge + delete */}
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: color }} />
+          <input
+            value={zone.zoneName}
+            onChange={e => onUpdate({ zoneName: e.target.value })}
+            className="flex-1 text-sm font-bold bg-transparent outline-none min-h-[36px]"
+          />
+          <span
+            className="text-xs font-black px-2.5 py-1 rounded-full text-white flex-shrink-0"
+            style={{ background: color }}
+          >
+            {zone.applicationOrder}차
+          </span>
+          {onRemove && (
+            <button
+              onClick={onRemove}
+              className="min-w-[36px] min-h-[36px] flex items-center justify-center text-gray-300 cursor-pointer hover:text-red-400 transition-colors"
+              aria-label="구간 삭제"
+            >
+              <Trash2 size={15} />
+            </button>
+          )}
+        </div>
+        {/* Row 2: processing time */}
+        <div className="flex items-center gap-2">
+          <Clock size={13} className="text-gray-400 flex-shrink-0" />
+          <span className="text-xs text-gray-400">방치 시간</span>
           <input
             type="number"
+            inputMode="numeric"
             value={zone.processingTime}
             onChange={e => onUpdate({ processingTime: Number(e.target.value) })}
-            className="w-12 text-center font-semibold outline-none bg-transparent text-sm"
+            className="w-16 text-center font-bold text-sm outline-none bg-white border border-gray-200 rounded-lg py-1.5 min-h-[36px]"
           />
-          <span className="text-[10px]">분</span>
+          <span className="text-xs text-gray-400">분</span>
         </div>
-        {onRemove && (
-          <button onClick={onRemove} className="text-gray-200 cursor-pointer hover:text-red-400 transition-colors">
-            <Trash2 size={14} />
-          </button>
-        )}
       </div>
 
       {/* Products */}
-      <div className="px-3 py-2 space-y-2">
+      <div className="px-4 py-3 space-y-3">
         {zone.products.map(p => (
-          <div key={p.id} className="flex flex-col gap-1.5">
+          <div key={p.id} className="space-y-2">
             {p.isOxidizer ? (
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-semibold text-violet-500 w-12 flex-shrink-0">산화제</span>
-                <select
-                  value={p.oxidizerVolume ?? 20}
-                  onChange={e => onUpdateProduct(p.id, { oxidizerVolume: Number(e.target.value) as 10|20|30|40 })}
-                  className="flex-1 text-sm font-bold text-violet-600 bg-violet-50 border border-violet-100 rounded-lg px-3 py-2.5 outline-none cursor-pointer"
-                >
-                  {OX_VOLS.map(v => (
-                    <option key={v} value={v}>{OX_PCT[v]} ({v}vol)</option>
-                  ))}
-                </select>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <span className="text-[10px] text-gray-300">×</span>
-                  <input
-                    type="number"
-                    step="0.5"
-                    min="0.5"
-                    value={p.ratio}
-                    onChange={e => onUpdateProduct(p.id, { ratio: Number(e.target.value) })}
-                    className="w-14 text-center text-sm font-bold text-gray-500 bg-gray-50 border border-gray-100 rounded-lg py-2.5 outline-none"
-                  />
+              <>
+                {/* Oxidizer row 1: label + select */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-violet-500 flex-shrink-0">산화제</span>
+                  <select
+                    value={p.oxidizerVolume ?? 20}
+                    onChange={e => onUpdateProduct(p.id, { oxidizerVolume: Number(e.target.value) as 10|20|30|40 })}
+                    className="flex-1 text-sm font-bold text-violet-600 bg-violet-50 border border-violet-100 rounded-xl px-3 py-3 outline-none cursor-pointer min-h-[48px]"
+                  >
+                    {OX_VOLS.map(v => (
+                      <option key={v} value={v}>{OX_PCT[v]} ({v}vol)</option>
+                    ))}
+                  </select>
                 </div>
-                <button onClick={() => onRemoveProduct(p.id)} className="text-gray-200 cursor-pointer hover:text-red-400 transition-colors flex-shrink-0">
-                  <Trash2 size={13} />
-                </button>
-              </div>
+                {/* Oxidizer row 2: ratio + delete */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400">배합 비율</span>
+                  <div className="flex items-center gap-1.5 flex-1">
+                    <span className="text-sm text-gray-300">×</span>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      step="0.5"
+                      min="0.5"
+                      value={p.ratio}
+                      onChange={e => onUpdateProduct(p.id, { ratio: Number(e.target.value) })}
+                      className="w-20 text-center text-sm font-bold text-gray-600 bg-gray-50 border border-gray-200 rounded-xl py-3 outline-none min-h-[48px]"
+                    />
+                  </div>
+                  <button
+                    onClick={() => onRemoveProduct(p.id)}
+                    className="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-300 cursor-pointer hover:text-red-400 transition-colors"
+                    aria-label="제품 삭제"
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </div>
+              </>
             ) : (
               <>
+                {/* Dye row 1: brand + delete */}
                 <div className="flex items-center gap-2">
                   <select
                     value={p.brandName}
                     onChange={e => onUpdateProduct(p.id, { brandName: e.target.value })}
-                    className="flex-1 text-xs font-semibold text-gray-500 bg-pink-50 border border-pink-100 rounded-lg px-2 py-2.5 outline-none cursor-pointer"
+                    className="flex-1 text-sm font-semibold text-gray-600 bg-pink-50 border border-pink-100 rounded-xl px-3 py-3 outline-none cursor-pointer min-h-[48px]"
                   >
                     {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
                   </select>
-                  <button onClick={() => onRemoveProduct(p.id)} className="text-gray-200 cursor-pointer hover:text-red-400 transition-colors flex-shrink-0">
-                    <Trash2 size={13} />
+                  <button
+                    onClick={() => onRemoveProduct(p.id)}
+                    className="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-300 cursor-pointer hover:text-red-400 transition-colors"
+                    aria-label="제품 삭제"
+                  >
+                    <Trash2 size={15} />
                   </button>
                 </div>
+                {/* Dye row 2: shade + ratio */}
                 <div className="flex items-center gap-2">
                   <input
                     value={p.shadeCode}
                     onChange={e => onUpdateProduct(p.id, { shadeCode: e.target.value })}
                     placeholder="호수 (예: 7/1)"
-                    className="flex-1 text-sm font-bold text-pink-800 bg-pink-50 border border-pink-100 rounded-lg px-3 py-2.5 outline-none placeholder:text-gray-200"
+                    className="flex-1 text-base font-bold text-pink-800 bg-pink-50 border border-pink-100 rounded-xl px-3 py-3 outline-none placeholder:text-gray-300 min-h-[48px]"
                   />
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <span className="text-[10px] text-gray-300">×</span>
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <span className="text-sm text-gray-300">×</span>
                     <input
                       type="number"
+                      inputMode="decimal"
                       step="0.5"
                       min="0.5"
                       value={p.ratio}
                       onChange={e => onUpdateProduct(p.id, { ratio: Number(e.target.value) })}
-                      className="w-14 text-center text-sm font-bold text-gray-500 bg-gray-50 border border-gray-100 rounded-lg py-2.5 outline-none"
+                      className="w-20 text-center text-sm font-bold text-gray-600 bg-gray-50 border border-gray-200 rounded-xl py-3 outline-none min-h-[48px]"
                     />
                   </div>
                 </div>
@@ -485,9 +512,9 @@ function ZoneCard({
 
         <button
           onClick={onAddProduct}
-          className="flex items-center gap-1 text-[11px] text-pink-400 font-semibold py-1 cursor-pointer hover:text-pink-600 transition-colors"
+          className="flex items-center gap-1.5 text-sm text-pink-400 font-semibold py-2 cursor-pointer hover:text-pink-600 transition-colors min-h-[44px]"
         >
-          <Plus size={12} />제품 추가
+          <Plus size={14} />제품 추가
         </button>
       </div>
     </div>
