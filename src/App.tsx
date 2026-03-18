@@ -35,10 +35,10 @@ export default function App() {
   const currentRecipe = screen.type === 'DETAIL' ? getRecipe(screen.recipeId) : null
 
   return (
-    <div className="flex justify-center min-h-screen bg-gray-100">
+    <div className="flex justify-center min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
       <div
-        className="relative w-full max-w-[390px] min-h-screen bg-[#FFF8FB] overflow-hidden shadow-2xl"
-        style={{ fontFamily: "'Noto Sans KR', sans-serif" }}
+        className="relative w-full max-w-[390px] min-h-screen overflow-hidden"
+        style={{ backgroundColor: 'var(--background)', boxShadow: 'var(--shadow-xl)', fontFamily: "'Noto Sans KR', sans-serif" }}
       >
         {screen.type === 'FEED' && (
           <RecipeFeed
@@ -70,9 +70,9 @@ export default function App() {
         )}
 
         {screen.type === 'DETAIL' && !currentRecipe && (
-          <div className="flex items-center justify-center py-32 text-gray-400 text-sm">
+          <div className="flex items-center justify-center py-32 text-sm" style={{ color: 'var(--muted-foreground)' }}>
             레시피를 찾을 수 없습니다.
-            <button onClick={() => setScreen({ type: 'FEED' })} className="ml-2 text-pink-500 underline cursor-pointer">
+            <button onClick={() => setScreen({ type: 'FEED' })} className="ml-2 underline cursor-pointer" style={{ color: 'var(--primary)' }}>
               목록으로
             </button>
           </div>

@@ -1,11 +1,5 @@
 const LABELS = ['건강', '약손상', '중손상', '강손상', '극손상']
-const COLORS = [
-  'bg-emerald-500',
-  'bg-lime-500',
-  'bg-amber-500',
-  'bg-orange-500',
-  'bg-red-500',
-]
+const COLORS = ['#10B981', '#84CC16', '#F59E0B', '#F97316', '#EF4444']
 
 interface Props {
   value: 1 | 2 | 3 | 4 | 5
@@ -24,12 +18,11 @@ export default function DamageBar({ value, onChange, readOnly }: Props) {
             type="button"
             disabled={readOnly}
             onClick={() => onChange?.(n as 1|2|3|4|5)}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer
-              ${active
-                ? `${COLORS[n-1]} text-white shadow-sm`
-                : 'bg-pink-50 text-gray-400 border border-pink-100'
-              }
-              ${readOnly ? 'cursor-default' : ''}`}
+            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${readOnly ? 'cursor-default' : 'cursor-pointer'}`}
+            style={active
+              ? { backgroundColor: COLORS[n-1], color: '#fff', boxShadow: 'var(--shadow-sm)' }
+              : { backgroundColor: '#FDF2F8', color: '#9D174D', border: '1px solid #F9A8D4' }
+            }
           >
             {n}
             <span className="block text-[9px] font-normal mt-0.5 opacity-80">{LABELS[n-1]}</span>

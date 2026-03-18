@@ -4,10 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ────────────────────────────────────────────
-   다홍색 디자인 시스템 — CSS 토큰
-   Primary: #E8321C (다홍, HSL 9 80% 51%)
-   ──────────────────────────────────────────── */
 @theme inline {
   --color-background:           var(--background);
   --color-foreground:           var(--foreground);
@@ -37,42 +33,52 @@
 :root {
   --radius: 0.75rem;
 
-  /* ── 다홍색 Light Mode 팔레트 ── */
-  --background:            oklch(0.985 0.004 75);   /* 따뜻한 오프화이트 */
-  --foreground:            oklch(0.18  0.02  25);   /* 다크 웜 블랙 */
+  /* ── Design System: Smart Color Recipe Book ── */
+  /* Primary: #EC4899 | Secondary: #F9A8D4 | CTA: #8B5CF6 | BG: #FDF2F8 | Text: #831843 */
 
-  --card:                  oklch(1.0   0     0);
-  --card-foreground:       oklch(0.18  0.02  25);
+  --background:            #FDF2F8;
+  --foreground:            #831843;
 
-  --popover:               oklch(1.0   0     0);
-  --popover-foreground:    oklch(0.18  0.02  25);
+  --card:                  #FFFFFF;
+  --card-foreground:       #831843;
 
-  /* 메인: 다홍색 #E8321C */
-  --primary:               oklch(0.55  0.22  25);
-  --primary-foreground:    oklch(1.0   0     0);
+  --popover:               #FFFFFF;
+  --popover-foreground:    #831843;
 
-  /* 세컨더리: 연 다홍 배경 */
-  --secondary:             oklch(0.96  0.03  25);
-  --secondary-foreground:  oklch(0.40  0.15  25);
+  --primary:               #EC4899;
+  --primary-foreground:    #FFFFFF;
 
-  /* 뮤트 */
-  --muted:                 oklch(0.96  0.005 60);
-  --muted-foreground:      oklch(0.52  0.01  40);
+  --secondary:             #F9A8D4;
+  --secondary-foreground:  #831843;
 
-  /* 액센트: 따뜻한 골드 */
-  --accent:                oklch(0.78  0.17  70);
-  --accent-foreground:     oklch(0.18  0.02  25);
+  --muted:                 #FDF2F8;
+  --muted-foreground:      #9D174D;
 
-  --destructive:           oklch(0.55  0.22  25);   /* 다홍 = destructive 겸용 */
+  --accent:                #8B5CF6;
+  --accent-foreground:     #FFFFFF;
 
-  --border:                oklch(0.90  0.01  60);
-  --input:                 oklch(0.90  0.01  60);
-  --ring:                  oklch(0.55  0.22  25);   /* 다홍 포커스 링 */
+  --destructive:           #EF4444;
+
+  --border:                #F9A8D4;
+  --input:                 #F9A8D4;
+  --ring:                  #EC4899;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* Shadows — Soft UI Evolution */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+  --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
 }
 
-/* ────────────────────────────────────────────
-   글로벌 기본
-   ──────────────────────────────────────────── */
 * { box-sizing: border-box; }
 
 body {
@@ -93,13 +99,12 @@ body {
   }
 }
 
-/* ────────────────────────────────────────────
-   유틸리티
-   ──────────────────────────────────────────── */
 .no-scroll::-webkit-scrollbar { display: none; }
 .no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* 다홍 그라디언트 */
-.bg-dahong-gradient {
-  background: linear-gradient(135deg, oklch(0.55 0.22 25), oklch(0.62 0.20 35));
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

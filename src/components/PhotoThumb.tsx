@@ -7,15 +7,6 @@ interface Props {
   className?: string
 }
 
-const BEFORE_GRADIENT = 'linear-gradient(135deg, #4B5563, #6B7280)'
-const AFTER_COLORS: Record<string, string> = {
-  '발레아쥬': 'linear-gradient(135deg, #EC4899, #BE185D)',
-  '커버그레이': 'linear-gradient(135deg, #78350F, #A16207)',
-  '전체 염색': 'linear-gradient(135deg, #F472B6, #EC4899)',
-  '탈색': 'linear-gradient(135deg, #FDE68A, #F59E0B)',
-  default: 'linear-gradient(135deg, #EC4899, #8B5CF6)',
-}
-
 export default function PhotoThumb({ before, after, size = 76, className = '' }: Props) {
   return (
     <div
@@ -24,7 +15,7 @@ export default function PhotoThumb({ before, after, size = 76, className = '' }:
     >
       <div
         className="flex-1 flex items-center justify-center text-[9px] font-bold text-white"
-        style={{ background: before ? undefined : BEFORE_GRADIENT }}
+        style={{ background: before ? undefined : 'linear-gradient(135deg, #4B5563, #6B7280)' }}
       >
         {before
           ? <img src={before.dataUrl} alt="before" className="w-full h-full object-cover" />
@@ -32,7 +23,7 @@ export default function PhotoThumb({ before, after, size = 76, className = '' }:
       </div>
       <div
         className="flex-1 flex items-center justify-center text-[9px] font-bold text-white"
-        style={{ background: after ? undefined : AFTER_COLORS.default }}
+        style={{ background: after ? undefined : 'linear-gradient(135deg, #EC4899, #8B5CF6)' }}
       >
         {after
           ? <img src={after.dataUrl} alt="after" className="w-full h-full object-cover" />

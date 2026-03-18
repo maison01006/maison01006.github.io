@@ -65,19 +65,23 @@ export default function RecipeFeed({ recipes, onSelect, onCreate }: Props) {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="px-5 pt-4 pb-2">
-        <div className="text-2xl font-bold tracking-tight">염색 레시피</div>
-        <div className="text-xs text-gray-400 mt-0.5">{recipes.length}개 기록됨</div>
+        <div className="text-2xl font-bold tracking-tight" style={{ color: '#831843' }}>염색 레시피</div>
+        <div className="text-xs mt-0.5" style={{ color: '#9D174D' }}>{recipes.length}개 기록됨</div>
       </div>
 
       {/* Search */}
       <div className="mx-4 mb-3">
-        <div className="flex items-center gap-2.5 bg-white rounded-full px-4 py-3 shadow-sm">
-          <Search size={16} className="text-gray-300 flex-shrink-0" />
+        <div
+          className="flex items-center gap-2.5 rounded-full px-4 py-3"
+          style={{ backgroundColor: '#fff', boxShadow: 'var(--shadow-sm)', border: '1px solid #F9A8D4' }}
+        >
+          <Search size={16} className="flex-shrink-0" style={{ color: '#F9A8D4' }} />
           <input
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="제품, 호수, 색상, 메모 검색..."
-            className="flex-1 text-sm outline-none bg-transparent placeholder:text-gray-300"
+            className="flex-1 text-sm outline-none bg-transparent"
+            style={{ color: '#831843' }}
           />
         </div>
       </div>
@@ -88,11 +92,11 @@ export default function RecipeFeed({ recipes, onSelect, onCreate }: Props) {
           <button
             key={f}
             onClick={() => setActiveFilter(f)}
-            className={`text-xs font-semibold px-3.5 py-1.5 rounded-full whitespace-nowrap flex-shrink-0 transition-all cursor-pointer
-              ${activeFilter === f
-                ? 'bg-pink-500 text-white shadow-sm'
-                : 'bg-white text-gray-500 border border-gray-100'
-              }`}
+            className="text-xs font-semibold px-3.5 py-1.5 rounded-full whitespace-nowrap flex-shrink-0 transition-all duration-200 cursor-pointer"
+            style={activeFilter === f
+              ? { backgroundColor: '#EC4899', color: '#fff', boxShadow: 'var(--shadow-sm)' }
+              : { backgroundColor: '#fff', color: '#9D174D', border: '1px solid #F9A8D4' }
+            }
           >
             {f}
           </button>
@@ -102,7 +106,7 @@ export default function RecipeFeed({ recipes, onSelect, onCreate }: Props) {
       {/* Recipe list */}
       <div className="flex-1 overflow-y-auto no-scroll px-4 pb-24 space-y-3">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 text-gray-300">
+          <div className="flex flex-col items-center justify-center py-24" style={{ color: '#F9A8D4' }}>
             <FlaskConical size={48} className="mb-3 opacity-40" />
             <div className="text-sm font-medium">레시피가 없습니다</div>
             <div className="text-xs mt-1">아래 + 버튼으로 첫 레시피를 기록하세요</div>
@@ -112,20 +116,21 @@ export default function RecipeFeed({ recipes, onSelect, onCreate }: Props) {
             <div
               key={r.id}
               onClick={() => onSelect(r.id)}
-              className="bg-white rounded-2xl p-3 flex gap-3 shadow-sm active:scale-[0.98] transition-transform cursor-pointer"
+              className="rounded-2xl p-3 flex gap-3 active:scale-[0.98] transition-transform duration-200 cursor-pointer"
+              style={{ backgroundColor: '#fff', boxShadow: 'var(--shadow-md)' }}
             >
               <PhotoThumb before={before(r)} after={after(r)} size={76} />
               <div className="flex-1 min-w-0">
-                <div className="text-[11px] text-gray-400 font-medium">
+                <div className="text-[11px] font-medium" style={{ color: '#9D174D' }}>
                   {r.clientName || '—'} · 손상도 Lv.{r.hairState.damageLevel}
                 </div>
-                <div className="text-[11px] text-gray-300 mt-0.5">{formatDate(r.treatmentDate)}</div>
+                <div className="text-[11px] mt-0.5" style={{ color: '#F9A8D4' }}>{formatDate(r.treatmentDate)}</div>
                 <div className="flex gap-1 mt-1.5 flex-wrap">
                   {r.treatmentTags.map(t => (
                     <Tag key={t} variant="type">{t}</Tag>
                   ))}
                 </div>
-                <div className="text-[11px] text-gray-400 mt-1.5 leading-relaxed line-clamp-2">
+                <div className="text-[11px] mt-1.5 leading-relaxed line-clamp-2" style={{ color: '#9D174D' }}>
                   {formulaSummary(r)}
                 </div>
               </div>
@@ -137,8 +142,8 @@ export default function RecipeFeed({ recipes, onSelect, onCreate }: Props) {
       {/* FAB */}
       <button
         onClick={onCreate}
-        className="fixed bottom-6 right-5 w-14 h-14 rounded-full flex items-center justify-center text-white shadow-xl cursor-pointer transition-transform active:scale-95"
-        style={{ background: 'linear-gradient(135deg, #EC4899, #8B5CF6)' }}
+        className="fixed bottom-6 right-5 w-14 h-14 rounded-full flex items-center justify-center text-white cursor-pointer transition-transform duration-200 active:scale-95"
+        style={{ backgroundColor: '#8B5CF6', boxShadow: 'var(--shadow-xl)' }}
       >
         <Plus size={26} />
       </button>

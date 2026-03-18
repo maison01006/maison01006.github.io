@@ -71,17 +71,9 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
     setter(list.includes(item) ? list.filter(x => x !== item) : [...list, item])
   }
 
-  function addZone() {
-    setZones(prev => [...prev, makeDefaultZone(prev.length + 1)])
-  }
-
-  function removeZone(id: string) {
-    setZones(prev => prev.filter(z => z.id !== id).map((z, i) => ({ ...z, applicationOrder: i + 1 })))
-  }
-
-  function updateZone(id: string, patch: Partial<Zone>) {
-    setZones(prev => prev.map(z => z.id === id ? { ...z, ...patch } : z))
-  }
+  function addZone() { setZones(prev => [...prev, makeDefaultZone(prev.length + 1)]) }
+  function removeZone(id: string) { setZones(prev => prev.filter(z => z.id !== id).map((z, i) => ({ ...z, applicationOrder: i + 1 }))) }
+  function updateZone(id: string, patch: Partial<Zone>) { setZones(prev => prev.map(z => z.id === id ? { ...z, ...patch } : z)) }
 
   function addProduct(zoneId: string) {
     setZones(prev => prev.map(z =>
@@ -132,31 +124,26 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
     <div className="flex flex-col h-full">
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
-        <button
-          onClick={onCancel}
-          className="min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer text-gray-500"
-          aria-label="닫기"
-        >
+        <button onClick={onCancel} className="min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer" style={{ color: '#9D174D' }} aria-label="닫기">
           <X size={22} />
         </button>
-        <div className="text-base font-bold">{source ? '레시피 수정' : '새 레시피'}</div>
-        <button
-          onClick={handleSave}
-          className="min-w-[44px] min-h-[44px] flex items-center justify-center text-sm font-bold text-pink-500 px-3 cursor-pointer"
-        >
+        <div className="text-base font-bold" style={{ color: '#831843' }}>{source ? '레시피 수정' : '새 레시피'}</div>
+        <button onClick={handleSave} className="min-w-[44px] min-h-[44px] flex items-center justify-center text-sm font-bold px-3 cursor-pointer" style={{ color: '#EC4899' }}>
           저장
         </button>
       </div>
 
       {/* Mode toggle */}
-      <div className="flex mx-4 mb-3 bg-white rounded-full p-1 shadow-sm flex-shrink-0">
+      <div className="flex mx-4 mb-3 rounded-full p-1 flex-shrink-0" style={{ backgroundColor: '#fff', boxShadow: 'var(--shadow-sm)' }}>
         {(['quick','detail'] as const).map(m => (
           <button
             key={m}
             onClick={() => setMode(m)}
-            className={`flex-1 py-2.5 text-sm font-semibold rounded-full transition-all cursor-pointer
-              ${mode === m ? 'text-white shadow-sm' : 'text-gray-400'}`}
-            style={mode === m ? { background: 'linear-gradient(135deg,#EC4899,#8B5CF6)' } : {}}
+            className="flex-1 py-2.5 text-sm font-semibold rounded-full transition-all duration-200 cursor-pointer"
+            style={mode === m
+              ? { background: 'linear-gradient(135deg, #EC4899, #8B5CF6)', color: '#fff', boxShadow: 'var(--shadow-sm)' }
+              : { color: '#9D174D' }
+            }
           >
             {m === 'quick' ? '빠른 기록' : '상세 기록'}
           </button>
@@ -168,7 +155,7 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
         <input type="file" accept="image/*" ref={fileRef} onChange={handleFileChange} className="hidden" />
 
         {/* Photos */}
-        <FieldLabel icon={<Camera size={13} className="text-pink-500" />} label="사진" required />
+        <FieldLabel icon={<Camera size={13} style={{ color: '#EC4899' }} />} label="사진" required />
         <div className="flex gap-2 px-4 mb-5">
           {(['BEFORE','AFTER','REFERENCE'] as PhotoType[]).map(type => {
             const photo = photoOf(type)
@@ -177,14 +164,15 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
               <div
                 key={type}
                 onClick={() => handlePhotoClick(type)}
-                className="flex-1 aspect-square rounded-xl overflow-hidden cursor-pointer border-2 border-dashed border-pink-100 flex items-center justify-center flex-col gap-1 relative transition-all hover:border-pink-400 active:scale-95"
+                className="flex-1 aspect-square rounded-xl overflow-hidden cursor-pointer flex items-center justify-center flex-col gap-1 relative transition-all duration-200 active:scale-95"
+                style={{ border: '2px dashed #F9A8D4' }}
               >
                 {photo ? (
                   <img src={photo.dataUrl} alt={labels[type]} className="absolute inset-0 w-full h-full object-cover" />
                 ) : (
                   <>
-                    <Camera size={22} className="text-gray-200" />
-                    <span className="text-xs font-semibold text-gray-300">{labels[type]}</span>
+                    <Camera size={22} style={{ color: '#F9A8D4' }} />
+                    <span className="text-xs font-semibold" style={{ color: '#F9A8D4' }}>{labels[type]}</span>
                   </>
                 )}
               </div>
@@ -193,17 +181,17 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
         </div>
 
         {/* Damage level */}
-        <FieldLabel icon={<span className="text-pink-500 text-xs">●</span>} label="손상도" required />
-        <div className="mx-4 mb-5 bg-white rounded-xl p-4 shadow-sm">
-          <div className="flex justify-between text-xs text-gray-400 mb-3">
-            <span className="font-semibold">모발 손상 단계</span>
-            <span>1=건강 · 5=극손상</span>
+        <FieldLabel icon={<span style={{ color: '#EC4899', fontSize: '10px' }}>●</span>} label="손상도" required />
+        <div className="mx-4 mb-5 rounded-xl p-4" style={{ backgroundColor: '#fff', boxShadow: 'var(--shadow-sm)' }}>
+          <div className="flex justify-between text-xs mb-3">
+            <span className="font-semibold" style={{ color: '#9D174D' }}>모발 손상 단계</span>
+            <span style={{ color: '#F9A8D4' }}>1=건강 · 5=극손상</span>
           </div>
           <DamageBar value={hairState.damageLevel} onChange={v => setHairState(s => ({ ...s, damageLevel: v }))} />
         </div>
 
         {/* Zone section */}
-        <FieldLabel icon={<FlaskConical size={13} className="text-pink-500" />} label="구간별 배합" required />
+        <FieldLabel icon={<FlaskConical size={13} style={{ color: '#EC4899' }} />} label="구간별 배합" required />
         {zones.map(zone => (
           <ZoneCard
             key={zone.id}
@@ -218,76 +206,74 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
 
         <button
           onClick={addZone}
-          className="flex items-center justify-center gap-2 mx-4 mb-5 py-3.5 border-2 border-dashed border-pink-200 rounded-xl text-pink-400 text-sm font-semibold cursor-pointer transition-all hover:border-pink-400 hover:bg-pink-50 active:scale-98 min-h-[48px]"
+          className="flex items-center justify-center gap-2 mx-4 mb-5 py-3.5 rounded-xl text-sm font-semibold cursor-pointer transition-all duration-200 min-h-[48px]"
+          style={{ border: '2px dashed #F9A8D4', color: '#EC4899', backgroundColor: 'transparent' }}
         >
           <Plus size={16} />구간 추가
         </button>
 
         {/* Treatment type */}
-        <FieldLabel icon={<span className="text-pink-500 text-xs">●</span>} label="시술 유형" />
+        <FieldLabel icon={<span style={{ color: '#EC4899', fontSize: '10px' }}>●</span>} label="시술 유형" />
         <div className="px-4 mb-5">
           <div className="flex flex-wrap gap-2">
             {TREATMENT_TAGS.map(t => (
               <button
                 key={t}
                 onClick={() => toggleTag(treatmentTags, t, setTreatmentTags)}
-                className={`text-sm font-semibold px-3.5 py-2 rounded-full cursor-pointer transition-all min-h-[40px]
-                  ${treatmentTags.includes(t)
-                    ? 'bg-violet-500 text-white'
-                    : 'bg-white text-gray-500 border border-gray-200'
-                  }`}
+                className="text-sm font-semibold px-3.5 py-2 rounded-full cursor-pointer transition-all duration-200 min-h-[40px]"
+                style={treatmentTags.includes(t)
+                  ? { backgroundColor: '#8B5CF6', color: '#fff' }
+                  : { backgroundColor: '#fff', color: '#9D174D', border: '1px solid #F9A8D4' }
+                }
               >
                 {t}
               </button>
             ))}
           </div>
-          {/* Heat + date — separate rows for mobile clarity */}
           <label className="flex items-center gap-2 mt-3 cursor-pointer min-h-[44px]">
-            <input
-              type="checkbox"
-              checked={heatTreatment}
-              onChange={e => setHeatTreatment(e.target.checked)}
-              className="accent-pink-500 w-4 h-4"
-            />
-            <span className="text-sm text-gray-500">열처리</span>
+            <input type="checkbox" checked={heatTreatment} onChange={e => setHeatTreatment(e.target.checked)} className="accent-pink-500 w-4 h-4" />
+            <span className="text-sm" style={{ color: '#9D174D' }}>열처리</span>
           </label>
           <div className="mt-2">
             <input
               value={treatmentDate}
               onChange={e => setTreatmentDate(e.target.value)}
               type="date"
-              className="w-full text-sm text-gray-600 border border-gray-200 rounded-xl px-4 py-3 bg-white outline-none focus:border-pink-300 min-h-[48px]"
+              className="w-full text-sm rounded-xl px-4 py-3 outline-none min-h-[48px] transition-colors duration-200"
+              style={{ color: '#831843', border: '1px solid #F9A8D4', backgroundColor: '#fff' }}
             />
           </div>
         </div>
 
         {/* Client name */}
-        <FieldLabel icon={<span className="text-pink-500 text-xs">●</span>} label="고객 이름 (선택)" />
+        <FieldLabel icon={<span style={{ color: '#EC4899', fontSize: '10px' }}>●</span>} label="고객 이름 (선택)" />
         <div className="px-4 mb-5">
           <input
             value={clientName}
             onChange={e => setClientName(e.target.value)}
             placeholder="직접 입력"
-            className="w-full bg-white rounded-xl px-4 py-3.5 text-base shadow-sm border border-pink-100 outline-none focus:border-pink-300 placeholder:text-gray-300 min-h-[52px]"
+            className="w-full rounded-xl px-4 py-3.5 text-base outline-none min-h-[52px] transition-colors duration-200"
+            style={{ backgroundColor: '#fff', boxShadow: 'var(--shadow-sm)', border: '1px solid #F9A8D4', color: '#831843' }}
           />
         </div>
 
         {/* Memo */}
-        <FieldLabel icon={<span className="text-pink-500 text-xs">●</span>} label="메모" />
+        <FieldLabel icon={<span style={{ color: '#EC4899', fontSize: '10px' }}>●</span>} label="메모" />
         <div className="px-4 mb-5">
           <textarea
             value={memo}
             onChange={e => setMemo(e.target.value)}
             placeholder="특이사항, 다음 시술 시 주의점..."
             rows={4}
-            className="w-full bg-white rounded-xl px-4 py-3.5 text-base shadow-sm border border-pink-100 outline-none focus:border-pink-300 placeholder:text-gray-300 resize-none leading-relaxed"
+            className="w-full rounded-xl px-4 py-3.5 text-base outline-none resize-none leading-relaxed transition-colors duration-200"
+            style={{ backgroundColor: '#fff', boxShadow: 'var(--shadow-sm)', border: '1px solid #F9A8D4', color: '#831843' }}
           />
         </div>
 
         {/* Detail mode only */}
         {mode === 'detail' && (
           <>
-            <FieldLabel icon={<span className="text-pink-500 text-xs">●</span>} label="모발 상세" />
+            <FieldLabel icon={<span style={{ color: '#EC4899', fontSize: '10px' }}>●</span>} label="모발 상세" />
             <div className="px-4 mb-5">
               <div className="grid grid-cols-2 gap-3">
                 {[
@@ -296,8 +282,8 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
                   { label: '새치 비율 (%)', key: 'grayPercentage' },
                   { label: '탈색 횟수', key: 'bleachCount' },
                 ].map(({ label, key }) => (
-                  <div key={key} className="bg-white rounded-xl px-4 py-3 shadow-sm border border-pink-100">
-                    <div className="text-xs text-gray-400 mb-1.5">{label}</div>
+                  <div key={key} className="rounded-xl px-4 py-3" style={{ backgroundColor: '#fff', boxShadow: 'var(--shadow-sm)', border: '1px solid #F9A8D4' }}>
+                    <div className="text-xs mb-1.5" style={{ color: '#9D174D' }}>{label}</div>
                     <input
                       type="number"
                       inputMode="numeric"
@@ -305,6 +291,7 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
                       value={(hairState as unknown as Record<string,unknown>)[key] as number ?? ''}
                       onChange={e => setHairState(s => ({ ...s, [key]: e.target.value ? Number(e.target.value) : undefined }))}
                       className="w-full text-base font-semibold outline-none bg-transparent min-h-[32px]"
+                      style={{ color: '#831843' }}
                       placeholder="—"
                     />
                   </div>
@@ -312,10 +299,10 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
               </div>
             </div>
 
-            <FieldLabel icon={<Layers size={13} className="text-pink-500" />} label="전·후처리" />
-            <div className="mx-4 mb-5 bg-white rounded-xl p-4 shadow-sm border border-pink-100 space-y-4">
+            <FieldLabel icon={<Layers size={13} style={{ color: '#EC4899' }} />} label="전·후처리" />
+            <div className="mx-4 mb-5 rounded-xl p-4 space-y-4" style={{ backgroundColor: '#fff', boxShadow: 'var(--shadow-sm)', border: '1px solid #F9A8D4' }}>
               <div>
-                <div className="text-xs font-semibold text-gray-400 mb-2">전처리 (Pre-treatment)</div>
+                <div className="text-xs font-semibold mb-2" style={{ color: '#9D174D' }}>전처리 (Pre-treatment)</div>
                 <div className="flex flex-wrap gap-2">
                   {PRE_TAGS.map(t => (
                     <button key={t} onClick={() => toggleTag(preTags, t, setPreTags)} className="cursor-pointer min-h-[36px]">
@@ -327,7 +314,7 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
                 </div>
               </div>
               <div>
-                <div className="text-xs font-semibold text-gray-400 mb-2">후처리 (Post-treatment)</div>
+                <div className="text-xs font-semibold mb-2" style={{ color: '#9D174D' }}>후처리 (Post-treatment)</div>
                 <div className="flex flex-wrap gap-2">
                   {POST_TAGS.map(t => (
                     <button key={t} onClick={() => toggleTag(postTags, t, setPostTags)} className="cursor-pointer min-h-[36px]">
@@ -346,8 +333,8 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
         <div className="px-4">
           <button
             onClick={handleSave}
-            className="w-full py-4 rounded-2xl text-white font-bold text-base flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-98 transition-transform min-h-[56px]"
-            style={{ background: 'linear-gradient(135deg,#EC4899,#8B5CF6)' }}
+            className="w-full py-4 rounded-2xl text-white font-bold text-base flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] transition-transform duration-200 min-h-[56px]"
+            style={{ backgroundColor: '#8B5CF6', boxShadow: 'var(--shadow-lg)' }}
           >
             레시피 저장
           </button>
@@ -359,9 +346,9 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
 
 function FieldLabel({ icon, label, required }: { icon: React.ReactNode; label: string; required?: boolean }) {
   return (
-    <div className="flex items-center gap-1.5 px-4 mb-2 text-xs font-bold text-gray-400 uppercase tracking-wide">
+    <div className="flex items-center gap-1.5 px-4 mb-2 text-xs font-bold uppercase tracking-wide" style={{ color: '#9D174D' }}>
       {icon}{label}
-      {required && <span className="text-[11px] font-semibold text-pink-400 normal-case tracking-normal">필수</span>}
+      {required && <span className="text-[11px] font-semibold normal-case tracking-normal" style={{ color: '#EC4899' }}>필수</span>}
     </div>
   )
 }
@@ -380,45 +367,38 @@ function ZoneCard({
   const color = orderColors[(zone.applicationOrder - 1) % orderColors.length]
 
   return (
-    <div className="mx-4 mb-3 bg-white rounded-2xl shadow-sm overflow-hidden border border-pink-100">
-      {/* Zone header — 2 rows for mobile */}
-      <div className="px-4 py-3 bg-pink-50/60 border-b border-pink-100 space-y-2">
-        {/* Row 1: dot + name + order badge + delete */}
+    <div className="mx-4 mb-3 rounded-2xl overflow-hidden" style={{ backgroundColor: '#fff', boxShadow: 'var(--shadow-sm)', border: '1px solid #F9A8D4' }}>
+      {/* Zone header */}
+      <div className="px-4 py-3 space-y-2" style={{ backgroundColor: '#FDF2F8', borderBottom: '1px solid #F9A8D4' }}>
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: color }} />
           <input
             value={zone.zoneName}
             onChange={e => onUpdate({ zoneName: e.target.value })}
             className="flex-1 text-sm font-bold bg-transparent outline-none min-h-[36px]"
+            style={{ color: '#831843' }}
           />
-          <span
-            className="text-xs font-black px-2.5 py-1 rounded-full text-white flex-shrink-0"
-            style={{ background: color }}
-          >
+          <span className="text-xs font-black px-2.5 py-1 rounded-full text-white flex-shrink-0" style={{ background: color }}>
             {zone.applicationOrder}차
           </span>
           {onRemove && (
-            <button
-              onClick={onRemove}
-              className="min-w-[36px] min-h-[36px] flex items-center justify-center text-gray-300 cursor-pointer hover:text-red-400 transition-colors"
-              aria-label="구간 삭제"
-            >
+            <button onClick={onRemove} className="min-w-[36px] min-h-[36px] flex items-center justify-center cursor-pointer transition-colors duration-200" style={{ color: '#F9A8D4' }} aria-label="구간 삭제">
               <Trash2 size={15} />
             </button>
           )}
         </div>
-        {/* Row 2: processing time */}
         <div className="flex items-center gap-2">
-          <Clock size={13} className="text-gray-400 flex-shrink-0" />
-          <span className="text-xs text-gray-400">방치 시간</span>
+          <Clock size={13} style={{ color: '#9D174D' }} />
+          <span className="text-xs" style={{ color: '#9D174D' }}>방치 시간</span>
           <input
             type="number"
             inputMode="numeric"
             value={zone.processingTime}
             onChange={e => onUpdate({ processingTime: Number(e.target.value) })}
-            className="w-16 text-center font-bold text-sm outline-none bg-white border border-gray-200 rounded-lg py-1.5 min-h-[36px]"
+            className="w-16 text-center font-bold text-sm outline-none rounded-lg py-1.5 min-h-[36px]"
+            style={{ backgroundColor: '#fff', border: '1px solid #F9A8D4', color: '#831843' }}
           />
-          <span className="text-xs text-gray-400">분</span>
+          <span className="text-xs" style={{ color: '#9D174D' }}>분</span>
         </div>
       </div>
 
@@ -427,43 +407,35 @@ function ZoneCard({
         {zone.products.map(p => (
           <div key={p.id} className="space-y-2">
             {p.isOxidizer ? (
-              /* 산화제 · 선택 · × · 비율 · 삭제 — 한 줄 */
               <div className="flex items-center gap-1.5">
-                <span className="text-xs font-bold text-violet-500 flex-shrink-0">산화제</span>
+                <span className="text-xs font-bold flex-shrink-0" style={{ color: '#8B5CF6' }}>산화제</span>
                 <select
                   value={p.oxidizerVolume ?? 20}
                   onChange={e => onUpdateProduct(p.id, { oxidizerVolume: Number(e.target.value) as 10|20|30|40 })}
-                  className="flex-1 min-w-0 text-sm font-bold text-violet-600 bg-violet-50 border border-violet-100 rounded-xl px-2 py-3 outline-none cursor-pointer min-h-[48px]"
+                  className="flex-1 min-w-0 text-sm font-bold rounded-xl px-2 py-3 outline-none cursor-pointer min-h-[48px]"
+                  style={{ color: '#8B5CF6', backgroundColor: '#EDE9FE', border: '1px solid #C4B5FD' }}
                 >
-                  {OX_VOLS.map(v => (
-                    <option key={v} value={v}>{OX_PCT[v]} ({v}vol)</option>
-                  ))}
+                  {OX_VOLS.map(v => <option key={v} value={v}>{OX_PCT[v]} ({v}vol)</option>)}
                 </select>
-                <span className="text-sm text-gray-300 flex-shrink-0">×</span>
+                <span className="text-sm flex-shrink-0" style={{ color: '#F9A8D4' }}>×</span>
                 <input
-                  type="number"
-                  inputMode="decimal"
-                  step="0.5"
-                  min="0.5"
+                  type="number" inputMode="decimal" step="0.5" min="0.5"
                   value={p.ratio}
                   onChange={e => onUpdateProduct(p.id, { ratio: Number(e.target.value) })}
-                  className="w-14 flex-shrink-0 text-center text-sm font-bold text-gray-600 bg-gray-50 border border-gray-200 rounded-xl py-3 outline-none min-h-[48px]"
+                  className="w-14 flex-shrink-0 text-center text-sm font-bold rounded-xl py-3 outline-none min-h-[48px]"
+                  style={{ color: '#831843', backgroundColor: '#FDF2F8', border: '1px solid #F9A8D4' }}
                 />
-                <button
-                  onClick={() => onRemoveProduct(p.id)}
-                  className="min-w-[44px] min-h-[44px] flex-shrink-0 flex items-center justify-center text-gray-300 cursor-pointer hover:text-red-400 transition-colors"
-                  aria-label="제품 삭제"
-                >
+                <button onClick={() => onRemoveProduct(p.id)} className="min-w-[44px] min-h-[44px] flex-shrink-0 flex items-center justify-center cursor-pointer transition-colors duration-200" style={{ color: '#F9A8D4' }} aria-label="제품 삭제">
                   <Trash2 size={15} />
                 </button>
               </div>
             ) : (
-              /* 브랜드 · 호수 · 비율 · 삭제 — 한 줄 */
               <div className="flex items-center gap-1.5">
                 <select
                   value={p.brandName}
                   onChange={e => onUpdateProduct(p.id, { brandName: e.target.value })}
-                  className="w-[90px] flex-shrink-0 text-xs font-semibold text-gray-600 bg-pink-50 border border-pink-100 rounded-xl px-2 py-3 outline-none cursor-pointer min-h-[48px]"
+                  className="w-[90px] flex-shrink-0 text-xs font-semibold rounded-xl px-2 py-3 outline-none cursor-pointer min-h-[48px]"
+                  style={{ color: '#9D174D', backgroundColor: '#FDF2F8', border: '1px solid #F9A8D4' }}
                 >
                   {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
                 </select>
@@ -471,23 +443,18 @@ function ZoneCard({
                   value={p.shadeCode}
                   onChange={e => onUpdateProduct(p.id, { shadeCode: e.target.value })}
                   placeholder="호수 (예: 7/1)"
-                  className="flex-1 min-w-0 text-sm font-bold text-pink-800 bg-pink-50 border border-pink-100 rounded-xl px-3 py-3 outline-none placeholder:text-gray-300 min-h-[48px]"
+                  className="flex-1 min-w-0 text-sm font-bold rounded-xl px-3 py-3 outline-none min-h-[48px]"
+                  style={{ color: '#831843', backgroundColor: '#FDF2F8', border: '1px solid #F9A8D4' }}
                 />
-                <span className="text-sm text-gray-300 flex-shrink-0">×</span>
+                <span className="text-sm flex-shrink-0" style={{ color: '#F9A8D4' }}>×</span>
                 <input
-                  type="number"
-                  inputMode="decimal"
-                  step="0.5"
-                  min="0.5"
+                  type="number" inputMode="decimal" step="0.5" min="0.5"
                   value={p.ratio}
                   onChange={e => onUpdateProduct(p.id, { ratio: Number(e.target.value) })}
-                  className="w-14 flex-shrink-0 text-center text-sm font-bold text-gray-600 bg-gray-50 border border-gray-200 rounded-xl py-3 outline-none min-h-[48px]"
+                  className="w-14 flex-shrink-0 text-center text-sm font-bold rounded-xl py-3 outline-none min-h-[48px]"
+                  style={{ color: '#831843', backgroundColor: '#FDF2F8', border: '1px solid #F9A8D4' }}
                 />
-                <button
-                  onClick={() => onRemoveProduct(p.id)}
-                  className="min-w-[44px] min-h-[44px] flex-shrink-0 flex items-center justify-center text-gray-300 cursor-pointer hover:text-red-400 transition-colors"
-                  aria-label="제품 삭제"
-                >
+                <button onClick={() => onRemoveProduct(p.id)} className="min-w-[44px] min-h-[44px] flex-shrink-0 flex items-center justify-center cursor-pointer transition-colors duration-200" style={{ color: '#F9A8D4' }} aria-label="제품 삭제">
                   <Trash2 size={15} />
                 </button>
               </div>
@@ -497,7 +464,8 @@ function ZoneCard({
 
         <button
           onClick={onAddProduct}
-          className="flex items-center gap-1.5 text-sm text-pink-400 font-semibold py-2 cursor-pointer hover:text-pink-600 transition-colors min-h-[44px]"
+          className="flex items-center gap-1.5 text-sm font-semibold py-2 cursor-pointer transition-colors duration-200 min-h-[44px]"
+          style={{ color: '#EC4899' }}
         >
           <Plus size={14} />제품 추가
         </button>
