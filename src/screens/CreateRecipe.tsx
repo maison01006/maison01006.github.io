@@ -466,46 +466,39 @@ function ZoneCard({
                 </div>
               </>
             ) : (
-              <>
-                {/* Dye row 1: brand + delete */}
-                <div className="flex items-center gap-2">
-                  <select
-                    value={p.brandName}
-                    onChange={e => onUpdateProduct(p.id, { brandName: e.target.value })}
-                    className="flex-1 text-sm font-semibold text-gray-600 bg-pink-50 border border-pink-100 rounded-xl px-3 py-3 outline-none cursor-pointer min-h-[48px]"
-                  >
-                    {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
-                  </select>
-                  <button
-                    onClick={() => onRemoveProduct(p.id)}
-                    className="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-300 cursor-pointer hover:text-red-400 transition-colors"
-                    aria-label="제품 삭제"
-                  >
-                    <Trash2 size={15} />
-                  </button>
-                </div>
-                {/* Dye row 2: shade + ratio */}
-                <div className="flex items-center gap-2">
-                  <input
-                    value={p.shadeCode}
-                    onChange={e => onUpdateProduct(p.id, { shadeCode: e.target.value })}
-                    placeholder="호수 (예: 7/1)"
-                    className="flex-1 text-base font-bold text-pink-800 bg-pink-50 border border-pink-100 rounded-xl px-3 py-3 outline-none placeholder:text-gray-300 min-h-[48px]"
-                  />
-                  <div className="flex items-center gap-1.5 flex-shrink-0">
-                    <span className="text-sm text-gray-300">×</span>
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      step="0.5"
-                      min="0.5"
-                      value={p.ratio}
-                      onChange={e => onUpdateProduct(p.id, { ratio: Number(e.target.value) })}
-                      className="w-20 text-center text-sm font-bold text-gray-600 bg-gray-50 border border-gray-200 rounded-xl py-3 outline-none min-h-[48px]"
-                    />
-                  </div>
-                </div>
-              </>
+              /* 브랜드 · 호수 · 비율 · 삭제 — 한 줄 */
+              <div className="flex items-center gap-1.5">
+                <select
+                  value={p.brandName}
+                  onChange={e => onUpdateProduct(p.id, { brandName: e.target.value })}
+                  className="w-[90px] flex-shrink-0 text-xs font-semibold text-gray-600 bg-pink-50 border border-pink-100 rounded-xl px-2 py-3 outline-none cursor-pointer min-h-[48px]"
+                >
+                  {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
+                </select>
+                <input
+                  value={p.shadeCode}
+                  onChange={e => onUpdateProduct(p.id, { shadeCode: e.target.value })}
+                  placeholder="호수 (예: 7/1)"
+                  className="flex-1 min-w-0 text-sm font-bold text-pink-800 bg-pink-50 border border-pink-100 rounded-xl px-3 py-3 outline-none placeholder:text-gray-300 min-h-[48px]"
+                />
+                <span className="text-sm text-gray-300 flex-shrink-0">×</span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  step="0.5"
+                  min="0.5"
+                  value={p.ratio}
+                  onChange={e => onUpdateProduct(p.id, { ratio: Number(e.target.value) })}
+                  className="w-14 flex-shrink-0 text-center text-sm font-bold text-gray-600 bg-gray-50 border border-gray-200 rounded-xl py-3 outline-none min-h-[48px]"
+                />
+                <button
+                  onClick={() => onRemoveProduct(p.id)}
+                  className="min-w-[44px] min-h-[44px] flex-shrink-0 flex items-center justify-center text-gray-300 cursor-pointer hover:text-red-400 transition-colors"
+                  aria-label="제품 삭제"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
             )}
           </div>
         ))}
