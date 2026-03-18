@@ -286,7 +286,7 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
             value={clientName}
             onChange={e => setClientName(e.target.value)}
             placeholder="직접 입력"
-            className="w-full bg-white rounded-xl px-4 py-3 text-sm shadow-sm border border-pink-50 outline-none focus:border-pink-300 placeholder:text-gray-300"
+            className="w-full bg-white rounded-xl px-4 py-3.5 text-sm shadow-sm border border-pink-50 outline-none focus:border-pink-300 placeholder:text-gray-300"
           />
         </div>
 
@@ -297,8 +297,8 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
             value={memo}
             onChange={e => setMemo(e.target.value)}
             placeholder="특이사항, 다음 시술 시 주의점..."
-            rows={3}
-            className="w-full bg-white rounded-xl px-4 py-3 text-sm shadow-sm border border-pink-50 outline-none focus:border-pink-300 placeholder:text-gray-300 resize-none"
+            rows={5}
+            className="w-full bg-white rounded-xl px-4 py-3.5 text-sm shadow-sm border border-pink-50 outline-none focus:border-pink-300 placeholder:text-gray-300 resize-none"
           />
         </div>
 
@@ -423,7 +423,7 @@ function ZoneCard({
             type="number"
             value={zone.processingTime}
             onChange={e => onUpdate({ processingTime: Number(e.target.value) })}
-            className="w-10 text-center font-semibold outline-none bg-transparent"
+            className="w-12 text-center font-semibold outline-none bg-transparent text-sm"
           />
           <span className="text-[10px]">분</span>
         </div>
@@ -444,7 +444,7 @@ function ZoneCard({
                 <select
                   value={p.oxidizerVolume ?? 20}
                   onChange={e => onUpdateProduct(p.id, { oxidizerVolume: Number(e.target.value) as 10|20|30|40 })}
-                  className="flex-1 text-xs font-bold text-violet-600 bg-violet-50 border border-violet-100 rounded-lg px-2 py-1.5 outline-none cursor-pointer"
+                  className="flex-1 text-sm font-bold text-violet-600 bg-violet-50 border border-violet-100 rounded-lg px-3 py-2.5 outline-none cursor-pointer"
                 >
                   {OX_VOLS.map(v => (
                     <option key={v} value={v}>{OX_PCT[v]} ({v}vol)</option>
@@ -456,7 +456,7 @@ function ZoneCard({
                 <select
                   value={p.brandName}
                   onChange={e => onUpdateProduct(p.id, { brandName: e.target.value })}
-                  className="text-[11px] font-semibold text-gray-500 bg-pink-50 border border-pink-100 rounded-lg px-2 py-1.5 outline-none cursor-pointer w-24"
+                  className="text-xs font-semibold text-gray-500 bg-pink-50 border border-pink-100 rounded-lg px-2 py-2.5 outline-none cursor-pointer w-24"
                 >
                   {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
                   <option value={selectedBrand}>{selectedBrand}</option>
@@ -465,7 +465,7 @@ function ZoneCard({
                   value={p.shadeCode}
                   onChange={e => onUpdateProduct(p.id, { shadeCode: e.target.value })}
                   placeholder="호수 (예:7/1)"
-                  className="flex-1 text-[12px] font-bold text-pink-800 bg-pink-50 border border-pink-100 rounded-lg px-2 py-1.5 outline-none placeholder:text-gray-200"
+                  className="flex-1 text-sm font-bold text-pink-800 bg-pink-50 border border-pink-100 rounded-lg px-3 py-2.5 outline-none placeholder:text-gray-200"
                 />
               </>
             )}
@@ -477,7 +477,7 @@ function ZoneCard({
                 min="0.5"
                 value={p.ratio}
                 onChange={e => onUpdateProduct(p.id, { ratio: Number(e.target.value) })}
-                className="w-10 text-center text-[12px] font-bold text-gray-500 bg-gray-50 border border-gray-100 rounded-lg py-1.5 outline-none"
+                className="w-14 text-center text-sm font-bold text-gray-500 bg-gray-50 border border-gray-100 rounded-lg py-2.5 outline-none"
               />
             </div>
             <button onClick={() => onRemoveProduct(p.id)} className="text-gray-200 cursor-pointer hover:text-red-400 transition-colors flex-shrink-0">
