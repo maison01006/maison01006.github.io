@@ -43,7 +43,6 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
   const [photos, setPhotos] = useState<Photo[]>(source?.photos ?? [])
   const [hairState, setHairState] = useState<HairState>(source?.hairState ?? { damageLevel: 3 })
   const [zones, setZones] = useState<Zone[]>(source?.zones?.length ? source.zones : [makeDefaultZone(1)])
-  const [selectedBrand, setSelectedBrand] = useState(BRANDS[0])
 
   const fileRef = useRef<HTMLInputElement>(null)
   const [pendingPhotoType, setPendingPhotoType] = useState<PhotoType>('BEFORE')
@@ -87,7 +86,7 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
   function addProduct(zoneId: string) {
     setZones(prev => prev.map(z =>
       z.id === zoneId
-        ? { ...z, products: [...z.products, { id: generateId(), brandName: selectedBrand, shadeCode: '', productType: 'CREAM', ratio: 1, isOxidizer: false }] }
+        ? { ...z, products: [...z.products, { id: generateId(), brandName: BRANDS[0], shadeCode: '', productType: 'CREAM', ratio: 1, isOxidizer: false }] }
         : z
     ))
   }
@@ -200,33 +199,15 @@ export default function CreateRecipe({ source, onSave, onCancel }: Props) {
           <DamageBar value={hairState.damageLevel} onChange={v => setHairState(s => ({ ...s, damageLevel: v }))} />
         </div>
 
-        {/* Brand presets */}
+        {/* Zone section label */}
         <FieldLabel icon={<FlaskConical size={12} className="text-pink-500" />} label="구간별 배합" required />
-        <div className="px-4 mb-2">
-          <div className="text-[10px] text-gray-300 font-semibold mb-1.5">브랜드 선택</div>
-          <div className="flex gap-1.5 flex-wrap">
-            {BRANDS.map(b => (
-              <button
-                key={b}
-                onClick={() => setSelectedBrand(b)}
-                className={`text-xs font-semibold px-3 py-1.5 rounded-full border-1.5 cursor-pointer transition-all
-                  ${selectedBrand === b
-                    ? 'bg-pink-500 text-white border-pink-500'
-                    : 'bg-white text-gray-500 border-gray-100'
-                  }`}
-              >
-                {b}
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Zones */}
         {zones.map(zone => (
           <ZoneCard
             key={zone.id}
             zone={zone}
-            selectedBrand={selectedBrand}
+
             onUpdate={p => updateZone(zone.id, p)}
             onAddProduct={() => addProduct(zone.id)}
             onUpdateProduct={(pid, p) => updateProduct(zone.id, pid, p)}
@@ -388,10 +369,9 @@ function FieldLabel({ icon, label, required }: { icon: React.ReactNode; label: s
 }
 
 function ZoneCard({
-  zone, selectedBrand, onUpdate, onAddProduct, onUpdateProduct, onRemoveProduct, onRemove
+  zone, onUpdate, onAddProduct, onUpdateProduct, onRemoveProduct, onRemove
 }: {
   zone: Zone
-  selectedBrand: string
   onUpdate: (p: Partial<Zone>) => void
   onAddProduct: () => void
   onUpdateProduct: (id: string, p: Partial<ZoneProduct>) => void
@@ -459,7 +439,6 @@ function ZoneCard({
                   className="text-xs font-semibold text-gray-500 bg-pink-50 border border-pink-100 rounded-lg px-2 py-2.5 outline-none cursor-pointer w-24"
                 >
                   {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
-                  <option value={selectedBrand}>{selectedBrand}</option>
                 </select>
                 <input
                   value={p.shadeCode}
