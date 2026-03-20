@@ -1,6 +1,7 @@
 export type ProductType = 'CREAM' | 'GEL' | 'LIQUID' | 'POWDER'
 export type PhotoType = 'BEFORE' | 'AFTER' | 'REFERENCE'
 export type HairThickness = 'THIN' | 'NORMAL' | 'THICK'
+export type ColorFamily = 'ASH' | 'GOLD' | 'COPPER' | 'VIOLET' | 'NATURAL' | 'FANTASY'
 
 export interface ZoneProduct {
   id: string
@@ -33,7 +34,8 @@ export interface HairState {
 
 export interface Photo {
   id: string
-  dataUrl: string
+  storageKey: string
+  thumbnailKey: string
   photoType: PhotoType
   sortOrder: number
 }
@@ -51,11 +53,21 @@ export interface Recipe {
   hairState: HairState
   zones: Zone[]
   photos: Photo[]
+  colorFamily?: ColorFamily[]
+  isFavorite: boolean
+  schemaVersion: number
   createdAt: string
   updatedAt: string
 }
 
+export interface StoredData {
+  schemaVersion: number
+  recipes: Recipe[]
+}
+
 export type Screen =
   | { type: 'FEED' }
-  | { type: 'CREATE'; sourceRecipe?: Recipe }
+  | { type: 'CREATE'; sourceRecipe?: Recipe; isEdit?: boolean }
   | { type: 'DETAIL'; recipeId: string }
+
+export const CURRENT_SCHEMA_VERSION = 2

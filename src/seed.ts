@@ -1,4 +1,5 @@
 import type { Recipe } from './types'
+import { CURRENT_SCHEMA_VERSION } from './types'
 import { generateId } from './storage'
 
 export const SEED_RECIPES: Recipe[] = [
@@ -11,6 +12,9 @@ export const SEED_RECIPES: Recipe[] = [
     preTreatmentTags: ['올라플렉스 No.1', '두피보호제'],
     postTreatmentTags: ['산성 샴푸', '컬러락'],
     memo: '두피 민감 — 두피보호제 필수. 다음엔 한 톤 더 밝게 요청.',
+    colorFamily: ['ASH'],
+    isFavorite: true,
+    schemaVersion: CURRENT_SCHEMA_VERSION,
     hairState: {
       damageLevel: 3,
       currentLevel: 7,
@@ -18,6 +22,7 @@ export const SEED_RECIPES: Recipe[] = [
       grayPercentage: 15,
       hairThickness: 'NORMAL',
       bleachCount: 1,
+      previousColor: '6/1 애쉬 브라운',
     },
     zones: [
       {
@@ -26,9 +31,9 @@ export const SEED_RECIPES: Recipe[] = [
         applicationOrder: 1,
         processingTime: 35,
         products: [
-          { id: generateId(), brandName: 'Wella', shadeCode: '7/1', productType: 'CREAM', ratio: 1, isOxidizer: false },
-          { id: generateId(), brandName: 'Wella', shadeCode: '8/3', productType: 'CREAM', ratio: 1, isOxidizer: false },
-          { id: generateId(), brandName: '산화제', shadeCode: '', productType: 'CREAM', ratio: 1, isOxidizer: true, oxidizerVolume: 20 },
+          { id: generateId(), brandName: 'Wella', shadeCode: '7/1', productType: 'CREAM', ratio: 1, amountGram: 30, isOxidizer: false },
+          { id: generateId(), brandName: 'Wella', shadeCode: '8/3', productType: 'CREAM', ratio: 1, amountGram: 30, isOxidizer: false },
+          { id: generateId(), brandName: '산화제', shadeCode: '', productType: 'CREAM', ratio: 1, amountGram: 60, isOxidizer: true, oxidizerVolume: 20 },
         ],
       },
       {
@@ -37,8 +42,8 @@ export const SEED_RECIPES: Recipe[] = [
         applicationOrder: 2,
         processingTime: 20,
         products: [
-          { id: generateId(), brandName: 'Wella', shadeCode: '9/1', productType: 'CREAM', ratio: 1, isOxidizer: false },
-          { id: generateId(), brandName: '산화제', shadeCode: '', productType: 'CREAM', ratio: 2, isOxidizer: true, oxidizerVolume: 10 },
+          { id: generateId(), brandName: 'Wella', shadeCode: '9/1', productType: 'CREAM', ratio: 1, amountGram: 40, isOxidizer: false },
+          { id: generateId(), brandName: '산화제', shadeCode: '', productType: 'CREAM', ratio: 2, amountGram: 80, isOxidizer: true, oxidizerVolume: 10 },
         ],
       },
     ],
@@ -55,6 +60,9 @@ export const SEED_RECIPES: Recipe[] = [
     preTreatmentTags: [],
     postTreatmentTags: ['산성 샴푸'],
     memo: '새치 비율 40%로 높음. 6/0 비율 늘림.',
+    colorFamily: ['NATURAL'],
+    isFavorite: false,
+    schemaVersion: CURRENT_SCHEMA_VERSION,
     hairState: {
       damageLevel: 2,
       currentLevel: 5,
@@ -89,6 +97,9 @@ export const SEED_RECIPES: Recipe[] = [
     preTreatmentTags: ['올라플렉스 No.1'],
     postTreatmentTags: ['컬러락'],
     memo: '원피스 핑크 원함. 탈색 후 발색.',
+    colorFamily: ['FANTASY'],
+    isFavorite: false,
+    schemaVersion: CURRENT_SCHEMA_VERSION,
     hairState: {
       damageLevel: 4,
       currentLevel: 9,
@@ -96,6 +107,7 @@ export const SEED_RECIPES: Recipe[] = [
       grayPercentage: 0,
       hairThickness: 'THIN',
       bleachCount: 2,
+      previousColor: '탈색 후 옐로우 베이스',
     },
     zones: [
       {
